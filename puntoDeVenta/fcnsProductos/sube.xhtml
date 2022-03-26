@@ -1,0 +1,165 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+			<p:row>
+				<p:column style="width:250px">
+					<p:panelGrid style="width:100%" columns="1"
+						styleClass="panelNoBorder">
+						
+						<p:commandButton value="Administración"
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							type="button" icon="pi pi-home"
+							id="AdmButton" />
+							
+						<p:commandButton value="Turnos" 
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"							
+							type="button" icon="pi pi-home"
+							id="TurnoButton" />
+						
+						<p:divider />
+
+						<p:commandButton value="Cargar Tarjeta" 
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="webSocketCargarTarjeta();return false;"
+							id="sube_oper_carga" />
+
+						<p:commandButton value="Anular Carga" 
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="PF('confirmaAnulaCargaDialogWV').show()"
+							id="sube_oper_anular" />
+
+						<p:commandButton value="Reimprimir Ultimo Ticket"
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="webSocketReimprimirUltimoTicket();return false;"
+							id="sube_oper_reimp" />
+
+						<p:commandButton value="Consulta Saldo Tarjeta" 
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom" 
+							onclick="PF('blockPanelGral').show();webSocketConsultarSaldoTarjeta();return false;"
+							id="sube_oper_saldo_tarjeta" />
+
+						<p:commandButton value="Consultar Saldo LG" 
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="PF('blockPanelGral').show();webSocketConsultarSaldoLG();return false;"
+							id="sube_oper_saldo_lg" />
+
+						<p:commandButton value="Cons. Ult. Carga Tarjeta"
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="PF('blockPanelGral').show();webSocketConsultarUltimaCarga();return false;"
+							id="sube_oper_consultar_ultima_carga" />
+
+						<p:commandButton value="Debitar Saldo de Tarjeta"
+							style="width:100%;text-align:left;"
+							styleClass="textoFontSizeCustom"
+							onclick="webSocketDebitarSaldoTarjeta();return false;"
+							id="sube_oper_debitar_tarjeta"
+							rendered="#{usuarioHelper.usuarioSession().mostrarPantallasDeSube == 2}" />
+					</p:panelGrid>
+				</p:column>
+
+				<p:column style="vertical-align:top !important">
+					<p:panelGrid styleClass="panelNoBorder" style="width: 100%;">
+						<p:row style="height: 62px;">
+							<p:column style="width: 33%;">
+								<div style="text-align: center;">
+									<h3 style="margin-bottom: 0; margin-top: 0;font-size: 15px;">INICIALIZADO</h3>
+									<div id='inicializado'>
+										<p:graphicImage name="images/raya-negra.png" height="30" />
+									</div>
+								</div>
+							</p:column>
+
+							<p:column style="width: 33%;">
+								<div style="text-align: center;">
+									<h3 style="margin-bottom: 0; margin-top: 0;font-size: 15px;">TURNO</h3>
+									<div id='turno'>
+										<p:graphicImage name="images/raya-negra.png" height="30" />
+									</div>
+								</div>
+							</p:column>
+
+							<p:column style="width: 33%;">
+								<div style="text-align: center;">
+									<h3 style="margin-bottom: 0; margin-top: 0;font-size: 15px;">LOTES</h3>
+									<div id='lote'>
+										<p:graphicImage name="images/raya-negra.png" height="30" />
+									</div>
+								</div>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+					<p:divider />
+
+					<p:outputPanel>
+						<div id="output" class="ui-g"
+							style="display: initial; text-align: center;"></div>
+
+					</p:outputPanel>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+
+		<p:remoteCommand name="inicializadoOK">
+			<f:param name="param_name"
+				assignTo="#{puntoVentaView.forzarInicializarSube}" />
+		</p:remoteCommand>
+
+		<p:tieredMenu overlay="true" trigger="AdmButton" my="left top"
+			at="left bottom" style="width:200px">
+			<p:menuitem value="Identificar"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionIdentificar();"
+				styleClass="font-bold" id="sube_adm_iden" />
+			<p:menuitem value="Inicializar"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionInicializar();"
+				styleClass="font-bold" id="sube_adm_inic" />
+			<p:menuitem value="Actualizar Tablas"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionActualizarTablas();"
+				styleClass="font-bold" id="sube_adm_actt" />
+			<p:menuitem value="Alta LG"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionAltaLG();"
+				styleClass="font-bold" id="sube_adm_aalg" />
+			<p:menuitem value="Desvincular LG"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionDesvincularLG();"
+				styleClass="font-bold" id="sube_adm_deslg" />
+			<p:menuitem value="Ejec. Comando Rem."
+				onclick="PF('blockPanelGral').show();webSocketAdministracionEjecComandoRem();"
+				styleClass="font-bold" id="sube_adm_ecre" />
+			<p:menuitem value="Version DLL"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionVersionDll();"
+				styleClass="font-bold" id="sube_adm_vdll" />
+			<p:menuitem value="Reiniciar SUBE-LG"
+				onclick="PF('blockPanelGral').show();webSocketAdministracionReiniciarSubeLG();"
+				styleClass="font-bold" id="sube_adm_rslg" />
+		</p:tieredMenu>
+
+		<p:tieredMenu overlay="true" trigger="TurnoButton" my="left top"
+			at="left bottom" style="width:200px">
+			<p:menuitem value="Abrir Turno"
+				onclick="PF('blockPanelGral').show();webSocketTurnosAbrir();"
+				styleClass="font-bold" id="sube_turnos_abrir" />
+			<p:menuitem value="Cerrar Turno"
+				onclick="PF('blockPanelGral').show();webSocketTurnosCerrar();"
+				styleClass="font-bold" id="sube_turnos_cerrar" />
+			<p:menuitem value="Informar Lotes"
+				onclick="PF('blockPanelGral').show();webSocketTurnosInformarLotes();"
+				styleClass="font-bold" id="sube_turnos_lotes" />
+		</p:tieredMenu>
+
+	</sec:authorize>
+</ui:composition>

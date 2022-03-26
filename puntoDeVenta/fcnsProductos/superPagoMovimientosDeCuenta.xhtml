@@ -1,0 +1,234 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		<style>
+			.ui-datatable-scrollable-header-box{
+				margin-right: 0px !important;
+			}
+		</style>
+		<p:panel id="panelFiltro" widgetVar="panelFiltroWG"
+			toggleable="true" collapsed="true" toggleTitle="Click para ver Grafico de saldos">
+			<p:ajax event="toggle"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);" />
+
+			<f:facet name="header"><span style="font-size: larger;">#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.productoDescripcion} - Nro. de Cuenta: #{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.numeroCuenta}</span></f:facet>
+
+				
+			<p:panelGrid columns="3" layout="flex" columnClasses="p-col-12 p-md-4, p-col-12 p-md-4, p-col-12 p-md-4" style="margin-right: 0.2em; margin-left: 0.2em;" rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}">
+				<h:outputText></h:outputText>
+				<p:lineChart model="#{superPagoView.cartesianLinerModel}"  style="width: 100%; height: 100px;" />
+				<h:outputText></h:outputText>
+			</p:panelGrid>
+		</p:panel>
+
+		<p:panelGrid id="gridFiltroFecha" columns="4" rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}">
+			<p:column>
+				<p:outputLabel value="Fecha Desde" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfDde" pattern="dd/MM/yyyy HH:mm" navigator="true" inputStyle="width:100%" showTime="true"
+					maxdate="#{superPagoView.fechaAhora}" validatorMessage="Fecha y hora invalida"
+					value="#{superPagoView.fechaDesde}">
+				</p:datePicker>
+			</p:column>
+
+			<p:column>
+				<p:outputLabel value="Fecha Hasta" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfHta" pattern="dd/MM/yyyy HH:mm"
+					navigator="true" inputStyle="width:100%" showTime="true"
+					value="#{superPagoView.fechaHasta}"
+					maxdate="#{superPagoView.fechaHoy}"
+					validatorMessage="Fecha y hora invalida">
+				</p:datePicker>
+
+				<p:spacer width="5"/>
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarMovimientosDeCuenta}"
+					icon="pi pi-filter" oncomplete="PF('movimientosDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Movimientos de Cuenta"
+					rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}"/>
+
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarMovimientosDeCtaPendientes}"
+					icon="pi pi-filter" oncomplete="PF('movimientosDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Movimientos de Cuenta"
+					rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}"/>
+			</p:column>
+		</p:panelGrid>
+
+		<p:outputPanel id="outputPanelTabla">
+			<p:dataTable align="center" id="movimientosDT" widgetVar="movimientosDTWV" rows="150" var="movCta" lazy="true"
+				value="#{superPagoView.movimientosDeCuenta}" sortMode="single" 
+				sortOrder="DESCENDING" 
+				paginator="true" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+				paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+				emptyMessage="No existen registros para mostrar."
+				style="margin-top:3px;table-layout: fixed; width:100%;" liveResize="true" showGridlines="false"
+				rowExpandMode="single"><!--  -->
+	
+				<p:ajax event="rowToggle" listener="#{superPagoView.verDetalleMovCta}"/>
+	
+				<f:facet name="header"  rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}">
+					<div class="p-formgrid p-grid">
+						<div class="p-field p-col">
+							<p:outputPanel id="panelSaldo">
+								<p:outputPanel rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}">
+									<h:outputText value="Saldo Disponible:" style="font-size: 14px;"/>
+								 
+									<h:outputText value="#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.saldo}"
+										class="cuenta-price"  
+										style="font-size: 14px;text-align: center;width: 100%;font-weight: bold;#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.saldo > 0 ? 'color: green;' : 'color: red;'  }" >
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.simboloMoneda} " />
+									</h:outputText>
+									
+									<p:spacer width="20"/>
+									<h:outputText value="-" style="font-size: 14px;" rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}"/>
+									<p:spacer width="20"/>
+									
+									<h:outputText value="(*) Importe Transacciones Pendientes:" style="font-size: 14px;"
+									  rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}"/>
+								 
+									<h:outputText value="#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.saldoPendiente}"
+										class="cuenta-price"  
+										style="font-size: 14px;text-align: center;width: 100%;font-weight: bold;#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.saldo > 0 ? 'color: green;' : 'color: red;'  }" 
+										rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}">
+										<f:convertNumber pattern="¤#,##0.00" currencySymbol="#{usuarioHelper.usuarioSession().superPagoInstance.cuentaSeleccionada.simboloMoneda} " />
+									</h:outputText>
+								</p:outputPanel>
+							</p:outputPanel>
+						</div>
+											
+						<div class="p-field p-fixed-col" style="width:40px;padding-top:10px">
+							<p:spacer height="5"/>
+							<p:commandButton icon="pi pi-refresh" update="movimientosDT gridFiltroFecha panelSaldo" title="Refrescar movimientos de cuenta" actionListener="#{superPagoView.refrescarCuenta}"
+								oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+						</div>
+						
+						<div class="p-field p-fixed-col" style="width:40px;padding-top:10px">
+							<p:spacer height="5"/>
+							<p:commandButton icon="pi pi-filter-slash" onclick="PF('movimientosDTWV').clearFilters()" update="movimientosDT gridFiltroFecha panelSaldo" actionListener="#{superPagoView.borrarFiltrosFecha('MOVCTA')}" 
+								rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}" oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+
+							<p:commandButton icon="pi pi-filter-slash" onclick="PF('movimientosDTWV').clearFilters()" update="movimientosDT gridFiltroFecha panelSaldo" actionListener="#{superPagoView.borrarFiltrosFecha('MOVCTAPEN')}" 
+								rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}" oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+						</div>
+					</div>
+				</f:facet>
+				
+				<f:facet name="{Exporters}">
+					<h:commandLink id="b_expTrxInfTrx" title="Exportar CSV"
+						update="outputPanelTabla,msgsProductos" ajax="false"
+						actionListener="#{superPagoView.exportarMovimientosDeCta}"
+						onclick="PrimeFaces.monitorDownload(PF('blockPanelGral').show(), PF('blockPanelGral').hide());"><i class="pi pi-file" style="color:#00A038;font-size: large;"></i>
+					</h:commandLink>
+				</f:facet>
+				<!-- style="width:1rem !important;height:1rem !important;line-height:1.5rem !important" -->
+				<p:column exportable="false" style="width:10px">
+            		<p:rowToggler rendered="#{movCta.codMnemonicoClasificacion == 'MOVSYSORI'}"/>
+        		</p:column>
+
+				<p:column headerText="Fecha" style="width:110px" rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}" 
+					sortBy="#{movCta.fechaAcreditacion}">
+					<h:outputText value="#{movCta.fechaAcreditacion}">
+						<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss"
+							timeZone="${usuarioHelper.usuarioSession().husoHorario}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:110px" rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}"
+					sortBy="#{movCta.fechaMovimiento}">
+					<h:outputText value="#{movCta.fechaMovimiento}">
+						<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm"
+							timeZone="${usuarioHelper.usuarioSession().husoHorario}" />
+					</h:outputText>
+				</p:column>
+
+				<ui:remove>
+				<p:column headerText="Clasificacion" style="width:150px">
+					<h:outputText value="#{movCta.descClasificacion}"/>
+				</p:column>
+				</ui:remove>
+
+				<ui:remove>
+				<p:column headerText="Usuario"  style="width:120px">
+					<h:outputText value="(#{movCta.idUsuario}) #{movCta.usuario}" />
+				</p:column>
+				</ui:remove>
+	
+				<ui:remove>			
+				<p:column headerText="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes ? 'Movimientos Pendientes' : 'Movimientos'}"  width="100%">
+					<h:outputText value="#{movCta.concepto}" />
+				</p:column>
+				</ui:remove>
+				
+				<p:column headerText="Concepto" style="width:100%">
+					<h:outputText value="#{movCta.concepto}" />
+				</p:column>
+
+				<p:column headerText="Observacion"  style="width:150px">
+					<h:outputText value="#{stringHelper.cutOffStr(movCta.obs,20)}" title="#{movCta.obs}"/>
+				</p:column>
+
+				<p:column headerText="Acreditaciones" width="120" rendered="#{usuarioHelper.usuarioSession().superPagoInstance.mostrarDebeHaber}">
+					<h:outputText value="#{movCta.impCredito}"
+						styleClass="cuenta-price"
+						style="float:right;color: green;"
+						rendered="#{movCta.impCredito > 0}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>	
+				</p:column>
+
+				<p:column headerText="Débitos" width="120" rendered="#{usuarioHelper.usuarioSession().superPagoInstance.mostrarDebeHaber}">
+					<h:outputText value="#{movCta.impDebito}"
+						styleClass="cuenta-price"
+						style="float:right;color: red;"
+						rendered="#{movCta.impDebito > 0}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>	
+				</p:column>
+
+				<p:column headerText="Importe" style="width:120px" rendered="#{!usuarioHelper.usuarioSession().superPagoInstance.mostrarDebeHaber}"
+					filterBy="#{movCta.importe}"
+					filterStyle="width:100% !important;" sortBy="#{movCta.importe}">
+					<f:facet name="filter">
+						<p:selectOneMenu style="width:100%"
+							onchange="PF('movimientosDTWV').filter()" 
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemLabel="Todas" itemValue="0" />
+							<f:selectItem itemLabel="Debitos" itemValue="1" />
+							<f:selectItem itemLabel="Creditos" itemValue="2" />
+						</p:selectOneMenu>
+					</f:facet>
+
+					<h:outputText value="#{movCta.importe}"
+						styleClass="cuenta-price"
+						style="float:right;#{movCta.importe > 0 ? 'color: green;' : 'color: red;'  }">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>	
+				</p:column>
+				
+				<!-- SE AGREGAN LOS DETALLES DE CADA SUBSISTEMA -->
+		        <p:rowExpansion>
+		        	<p:outputPanel rendered="#{movCta.moduloOrigen.codigoModulo == 'GPE'}">
+		        		<ui:include src="/secure/puntoDeVenta/fcnsProductos/superPagoDetalleMovCtaGPE.xhtml" />
+		        	</p:outputPanel>
+
+		        	<p:outputPanel rendered="#{movCta.moduloOrigen.codigoModulo == 'TRFELEC'}">
+		        		<ui:include src="/secure/puntoDeVenta/fcnsProductos/superPagoDetalleMovCtaTRFELEC.xhtml" />
+		        	</p:outputPanel>
+		        </p:rowExpansion>
+
+				<f:facet name="footer"  rendered="#{usuarioHelper.usuarioSession().superPagoInstance.operacionesPendientes}">
+					<h:outputText value="(*) A este importe se le descontarán  aranceles + impuestos  al momento de la acreditación."  styleClass="fontSize10"/>
+				</f:facet>
+			</p:dataTable>
+			
+		</p:outputPanel>
+	</sec:authorize>
+
+</ui:composition>

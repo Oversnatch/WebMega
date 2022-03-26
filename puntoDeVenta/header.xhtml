@@ -1,0 +1,156 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<h:form id="formHeader" prependId="false" style="width: 100%;">
+			<input type="hidden" name="${_csrf.parameterName}"
+				value="${_csrf.token}" />
+
+			<div class="ui-g-2 contenedorlogo">
+				<p:outputPanel
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhLogo']}">
+					<div class="logo">
+						<p:graphicImage url="#{usuarioHelper.usuarioSession().logoChico}" />
+					</div>
+				</p:outputPanel>
+			</div>
+			<div class="ui-g-10 sinpadding" style="padding-top: 10px !important;">
+				<div class="ui-g">
+					<div class="ui-g-2 items">
+						<p:outputPanel
+							rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhCliente']}">
+							<div class="ui-g">
+								<div class="ui-lg-3 hidden-xs icono">
+									<p:graphicImage
+										name="images/administracion/header/iconos/cliente.png"
+										style="align:right" />
+								</div>
+								<div class="ui-lg-9 ui-g-12 icono_texto">
+									<span class="icono_titulo">Cliente:</span><br />
+									<h:outputText
+										value="#{usuarioHelper.usuarioSession().idCliente} - #{stringHelper.cutOffStr(usuarioHelper.usuarioSession().razonSocial,20)}"
+										title="#{usuarioHelper.usuarioSession().idCliente} - #{usuarioHelper.usuarioSession().razonSocial}" />
+								</div>
+							</div>
+						</p:outputPanel>
+					</div>
+
+					<div class="ui-g-2 items">
+						<p:outputPanel
+							rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhUser']}">
+							<div class="ui-g">
+								<div class="ui-lg-3 hidden-xs icono">
+									<p:graphicImage
+										name="images/administracion/header/iconos/usuario.png"
+										style="align:right" />
+								</div>
+								<div class="ui-lg-9 ui-g-12 icono_texto">
+									<span class="icono_titulo">Usuario:</span><br />
+									<h:outputText
+										value="#{stringHelper.cutOffStr((usuarioHelper.usuarioSession().nombre.concat(' - ').concat(usuarioHelper.usuarioSession().apellido)),20)}"
+										title="#{usuarioHelper.usuarioSession().nombre} #{usuarioHelper.usuarioSession().apellido}" />
+								</div>
+							</div>
+						</p:outputPanel>
+					</div>
+
+					<div class="ui-g-2 items">
+						<p:outputPanel
+							rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhSaldo'] and !usuarioHelper.usuarioSession().permisosReducidosEnModuloDeCuentas}">
+							<div class="ui-g">
+								<div class="ui-lg-3 hidden-xs icono">
+									<p:graphicImage
+										name="images/administracion/header/iconos/saldo.png"
+										style="align:right" />
+								</div>
+								<div class="ui-lg-9 ui-g-12 icono_texto">
+									<span class="icono_titulo">Saldo:</span><br />
+									<!-- SALDO DEL CLIENTE -->
+									<h:commandLink>
+										<h:outputText id="refSaldo" styleClass="textoHeader"
+											value="#{empty usuarioHelper.usuarioSession().saldoDisponible? 'Error' : usuarioHelper.usuarioSession().saldoDisponible}"
+											style="cursor:pointer">
+											<f:convertNumber pattern="$####.00" />
+										</h:outputText>
+										<p:ajax event="click"
+											onstart="refreshSaldo();ACGSiteScriptsFCNS.refreshMonPV();" />
+									</h:commandLink>
+								</div>
+							</div>
+						</p:outputPanel>
+					</div>
+					<div class="ui-g-2 items"
+						style="#{usuarioHelper.usuarioSession().permitirLimiteDescubierto ? 'display:block' : 'display:none'}">
+						<p:outputPanel
+							rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhLimDesc']}">
+							<div class="ui-g">
+								<p:outputPanel id="panelSaldoUsuario"
+									rendered="#{usuarioHelper.usuarioSession().permitirLimiteDescubierto}">
+
+									<div class="ui-lg-3 hidden-xs icono">
+										<p:graphicImage
+											name="images/administracion/header/iconos/lim_desc.png"
+											style="align:right" />
+									</div>
+									<div class="ui-lg-9 ui-g-12 icono_texto">
+
+										<span class="icono_titulo">Lim. Desc:</span><br />
+										<h:commandLink>
+											<h:outputText id="limDesc" styleClass="textoHeader"
+												value="#{empty usuarioHelper.usuarioSession().valorLimiteDescubierto? 'Error' : usuarioHelper.usuarioSession().valorLimiteDescubierto}"
+												style="cursor:pointer"
+												rendered="#{usuarioHelper.usuarioSession().permitirLimiteDescubierto}">
+												<f:convertNumber pattern="$####.00" />
+											</h:outputText>
+											<p:ajax event="click"
+												onstart="refreshSaldo();ACGSiteScriptsFCNS.refreshMonPV();" />
+										</h:commandLink>
+
+									</div>
+								</p:outputPanel>
+							</div>
+						</p:outputPanel>
+					</div>
+
+					<div class="ui-g-2 items">
+						<p:outputPanel
+							rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3headerhCC']}">
+
+							<div class="ui-g">
+								<div class="ui-lg-3 hidden-xs icono">
+									<p:graphicImage
+										name="images/administracion/header/iconos/cc.png"
+										style="align:right" />
+								</div>
+								<div class="ui-lg-9 ui-g-12 icono_texto">
+									<span class="icono_titulo">C.C.:</span><br />
+									<h:commandLink>
+										<h:outputText id="estadoCC" styleClass="textoHeader"
+											value="#{puntoVentaView.ecc eq null ? 'Error' : puntoVentaView.ecc}"
+											style="cursor:pointer">
+											<f:convertNumber pattern="$####.00" />
+										</h:outputText>
+										<p:ajax event="click"
+											onstart="refreshSaldo();ACGSiteScriptsFCNS.refreshMonPV();" />
+									</h:commandLink>
+								</div>
+							</div>
+						</p:outputPanel>
+
+					</div>
+				</div>
+			</div>
+			<p:remoteCommand name="refreshSaldo"
+				update="refSaldo,limDesc,estadoCC"
+				actionListener="#{puntoVentaView.refrescarSaldo}" global="false"
+				async="true" />
+
+		</h:form>
+	</sec:authorize>
+</ui:composition>

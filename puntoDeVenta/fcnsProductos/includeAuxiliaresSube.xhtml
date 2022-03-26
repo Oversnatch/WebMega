@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	
+		<!-- ###################################################### -->
+		<!-- DEFINICION DE PANTALLAS MODALES -->
+		<!-- ###################################################### -->
+		<p:dialog header="Confirmación" id="confirmaCargaDialog"
+			widgetVar="confirmaCargaDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto">
+	
+			<h:form id="formConfirmacionSube" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de realizar la carga?" />
+				</p:outputPanel>
+	
+				<p:divider />
+	
+				<p:commandButton icon="ui-icon-check" value="Si"
+					onclick="PF('confirmaCargaDialogWV').hide();PF('blockPanelGral').show();webSocketValidarImporteCarga();" style="margin-right: 10px;" />
+	
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaCargaDialogWV').hide()" />
+			</h:form>
+		</p:dialog>
+	
+		<p:dialog header="Confirmación" id="confirmaCargaExcedidaDialog"
+			widgetVar="confirmaCargaExcedidaDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="auto">
+	
+			<h:form id="formConfirmacionExcedido" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText id="importeExcedidoSUBE" value="" />
+				</p:outputPanel>
+	
+				<p:divider />
+	
+				<p:commandButton icon="ui-icon-check" value="Si"
+					onclick="PF('confirmaCargaExcedidaDialogWV').hide();PF('blockPanelGral').show();webSocketCargarTarjetaButton();" style="margin-right: 10px;" />
+	
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaCargaExcedidaDialogWV').hide();PF('blockPanelGral').hide();controlarBotones('', false);" />
+			</h:form>
+		</p:dialog>
+	
+		<p:dialog header="Confirmación" id="confirmaAnulaCargaDialog"
+			widgetVar="confirmaAnulaCargaDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto">
+	
+			<h:form id="formConfirmacionAnula" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de anular la carga?" />
+				</p:outputPanel>
+	
+				<p:divider />
+	
+				<p:commandButton icon="ui-icon-check" value="Si"
+					onclick="PF('confirmaAnulaCargaDialogWV').hide();PF('blockPanelGral').show();webSocketAnularCarga();" style="margin-right: 10px;"/>
+	
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaAnulaCargaDialogWV').hide()" />
+			</h:form>
+		</p:dialog>
+	
+		<!-- ###################################################### -->
+		<!-- SCRIPTS SUBE -->
+		<!-- ###################################################### -->
+		<script>
+			var INICIALIZADO_NO_OK = '<img src="#{resource['images/cancelar.png']}" title="NO Inicializado" style="height: 30px;"></img>';
+			var INICIALIZADO_OK = '<img src="#{resource['images/acuerdo.png']}" title="Inicializado OK" style="height: 30px;"></img>';
+			var INICIALIZADO_RAYA = '<img src="#{resource['images/raya-negra.png']}" title="" style="height: 30px;"></img>';
+			var TURNO_ABIERTO = '<img src="#{resource['images/desbloquear.png']}" title="Turno Abierto" style="height: 30px;"></img>';
+			var TURNO_CERRADO = '<img src="#{resource['images/bloquear.png']}" title="Turno Cerrado" style="height: 30px;"></img>';
+			var TURNO_RAYA = '<img src="#{resource['images/raya-negra.png']}" title="" style="height: 30px;"></img>';
+			var LOTE_RAYA = '<img src="#{resource['images/raya-negra.png']}" title="" style="height: 30px;"></img>';
+			var LOTE_0 = '<img src="#{resource['images/0-rojo.png']}" title="Sin Lotes Disponibles" style="height: 30px;"></img>';
+			var LOTE_1 = '<img src="#{resource['images/1-naranja.png']}" title="Un Lote Disponibles" style="height: 30px;"></img>';
+			var LOTE_2 = '<img src="#{resource['images/2-amarillo.png']}" title="Dos Lotes Disponibles" style="height: 30px;"></img>';
+			var LOTE_3 = '<img src="#{resource['images/3-verde.png']}" title="Tres Lotes Disponibles" style="height: 30px;"></img>';
+		
+			var importeSube = 0;
+			var importeSubeSinDecimal = false;
+			var importeCargaTerminadoEnCero = false;
+			var forzarInicializarSube = #{puntoVentaView.forzarInicializarSube};
+			var valorPrevio = "";
+	
+			
+			<ui:repeat var="o" value="#{usuarioHelper.usuarioSession().parametros.listParametros.value.parametro}" varStatus="status">
+				var #{o.variable.value} = '#{o.valor.value}';
+			</ui:repeat>
+		</script>
+		<h:outputScript library="js" name="sube/sube-subeTransaccion.js?v1.292" />
+		<h:outputScript library="js" name="sube/sube-webSocketTransaccion.js?v1.292" />
+		<h:outputScript library="js" name="sube/sube-webSocketMensajeria.js?v1.292" />	
+		<h:outputScript library="js" name="sube/sube.js?v1.292" />	
+	</sec:authorize>
+</ui:composition>

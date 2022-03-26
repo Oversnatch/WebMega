@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		<p:outputPanel id="mnuIconos">
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra #{puntoVentaView.icono_menu_cuentas}" title="Cuentas" actionListener="#{puntoVentaView.navegarFcnsProductos(8)}"
+				id="cbSuperPago" 
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbSuperPago']}" />				
+
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rec" title="Recargas" actionListener="#{puntoVentaView.navegarFcnsProductos(1)}"
+				id="cbRecargas"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbRecargas'] and usuarioHelper.usuarioSession().soloInformes == 0 and usuarioHelper.usuarioSession().habilitarVirtual == 1 
+		         	and ((usuarioHelper.usuarioSession().idTipoTerminal == 1) || (usuarioHelper.usuarioSession().permitirVentasPorWeb))}" />
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pin" title="Pines" actionListener="#{puntoVentaView.navegarFcnsProductos(2)}"
+				id="cbPines"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbPines'] and usuarioHelper.usuarioSession().soloInformes == 0 and usuarioHelper.usuarioSession().habilitarVirtual == 1 
+		        	and ((usuarioHelper.usuarioSession().idTipoTerminal == 1) || (usuarioHelper.usuarioSession().permitirVentasPorWeb))}" />
+			<ui:remove>		        	 	
+				<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pres" title="Préstamos" actionListener="#{puntoVentaView.navegarFcnsProductos(3)}"
+					id="cbPrestamos"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbPrestamos'] and usuarioHelper.usuarioSession().soloInformes == 0 and usuarioHelper.usuarioSession().habilitarPrestamos == 1 
+		        	 	and ((usuarioHelper.usuarioSession().idTipoTerminal == 1) || (usuarioHelper.usuarioSession().idTipoTerminal == 3) || (usuarioHelper.usuarioSession().idTipoTerminal == 6))}" />
+			</ui:remove>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-sube" title="SUBE" actionListener="#{puntoVentaView.navegarFcnsProductos(4)}"
+				id="cbSube"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbSube'] and usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}" />
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pnet" title="Provincia NET" actionListener="#{puntoVentaView.navegarFcnsProductos(5)}"
+				id="cbProvinciaNet"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbProvinciaNet'] and pNetView.mostrarPantallasDePNet == 1}" />
+				
+			<ui:remove>	
+				<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-seg" title="Seguros" actionListener="#{puntoVentaView.navegarFcnsProductos(6)}"
+					id="cbSeguros"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbSeguros'] and usuarioHelper.usuarioSession().habilitarSeguros}" />
+			</ui:remove>
+
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pago-online" title="Rapipago" actionListener="#{puntoVentaView.navegarFcnsProductos(9)}"
+				id="cbRapipago" 
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbRapipago'] and cobranzaServImpView.mostrarPantallasRapipago == 1}" />					
+
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pago-online" title="Medio Electronico de Pago" actionListener="#{puntoVentaView.navegarFcnsProductos(7)}"
+				id="cbPagosElectronicos" 
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbPagosElectronicos'] and pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}" />					
+
+		</p:outputPanel>
+	</sec:authorize>
+</ui:composition>

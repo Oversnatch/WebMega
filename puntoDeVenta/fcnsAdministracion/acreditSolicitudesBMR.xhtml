@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		
+		<p:panel id="panelFiltro" header="Filtros" widgetVar="panelFiltroWG"
+			toggleable="true">
+			<p:ajax event="toggle"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);" />
+
+			<p:panelGrid columns="6" layout="grid"
+				columnClasses="ui-g-12 ui-md-1,ui-g-12 ui-md-3,ui-g-12 ui-md-1,ui-g-12 ui-md-3, ui-g-12 ui-md-1,ui-g-12 ui-md-3"
+				styleClass="ui-panelgrid-blank ui-fluid">
+					<h:outputLabel for="fechaAcredSolicBMRDesde" value="Fecha Desde" style="top: 8px;position: relative;" />
+					<p:datePicker 
+						id="fechaAcredSolicBMRDesde" value="#{acreditSolicitudesBMRView.fechaAcredSolicBMRDesde}" 
+						monthNavigator="true" yearNavigator="true" readonlyInput="true"
+						showButtonBar="true"  showTime="true" showIcon="true"
+						pattern="dd/MM/yyyy" locale="es" maxdate="#{fechasHelper.esMenorIgualHoyHasta}" />
+
+						
+
+					<h:outputLabel for="fechaAcredSolicBMRHasta"
+								value="Fecha Hasta"  style="top: 8px;position: relative;" />
+					<p:datePicker 
+						id="fechaAcredSolicBMRHasta" value="#{acreditSolicitudesBMRView.fechaAcredSolicBMRHasta}" 
+						monthNavigator="true" yearNavigator="true" readonlyInput="true"
+						showButtonBar="true"  showTime="true" showIcon="true"
+						pattern="dd/MM/yyyy" locale="es" maxdate="#{fechasHelper.esMenorIgualHoyHasta}" />
+								
+					<h:outputLabel for="ignorarFechaAcredSolicBMR"
+								value="Ignorar Fecha"  style="top: 8px;position: relative;" />
+					
+					<p:selectBooleanCheckbox id="ignorarFechaAcredSolicBMR"
+								value="#{acreditSolicitudesBMRView.ignorarFechaAcredSolicBMR}" />
+			</p:panelGrid>	
+								
+			<div style="padding: 0.2em 0em 0em 1.0em;">
+				<p:commandButton id="b_expTrxInfTrx" value="Buscar"
+					update="outputPanelTabla, msgsProductos"
+					oncomplete="ACGSiteScriptsFCNS.productoResize();"
+					style="margin-bottom:15px;" onclick="PF('blockPanelGral').show();"
+					actionListener="#{acreditSolicitudesBMRView.leerDatosAcredBMR}" >
+				</p:commandButton>
+			</div>
+	
+
+		</p:panel>
+
+		<p:outputPanel id="outputPanelTabla">
+			<p:dataTable align="center" id="dataTableTabla" rows="150" var="inf" rowKey="#{inf.idDepAdelanto.value}" 
+				value="#{acreditSolicitudesBMRView.datoAcredBMR.listDatosDepAdel.value.datosDepAdel}"
+				selection="#{acreditSolicitudesBMRView.lstSeleccionDepsBMR}"
+				rendered="#{not empty acreditSolicitudesBMRView.datoAcredBMR.listDatosDepAdel.value.datosDepAdel}" paginator="true"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+				paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+				sortMode="single" emptyMessage="No existen registros para mostrar."
+				style="margin-top:3px;table-layout: fixed; width:100%;" >
+
+				<f:facet name="header">Solicitudes Pendientes de Acreditacion BMR</f:facet>
+
+				<p:column selectionMode="multiple" headerText="Acreditar" style="width:16px;text-align:center"/>
+				
+				<p:column headerText="ID" width="50">
+					<h:outputText value="#{inf.idDepAdelanto.value}" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column headerText="Fecha de Solicitud" width="120">
+					<h:outputText value="#{inf.fechaSolicitud}">
+						<f:converter converterId="xMLGregorianCalConverter" />
+						<f:attribute name="pattern" value="dd/MM/yyyy HH:mm:ss" />
+						<f:attribute name="timeZone"
+							value="${usuarioHelper.usuarioSession().husoHorario}" />
+					</h:outputText>
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column headerText="Cliente Dist">
+				(<h:outputText value="#{inf.idClienteDist.value}" />) 
+			     <h:outputText value="#{inf.clienteDist.value}" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column headerText="Cliente">
+				(<h:outputText value="#{inf.idCliente.value}" />) 
+			     <h:outputText value="#{inf.cliente.value}" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column headerText="Usuario que Solicito">
+				(<h:outputText value="#{inf.idUsuarioSolicito.value}" />) 
+			     <h:outputText value="#{inf.usuarioSolicito.value}" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column  headerText="Tipo Mov">
+				(<h:outputText value="#{inf.idTipoMovimiento.value}" />) 
+			     <h:outputText value="#{inf.tipoMovimiento.value}" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+				<p:column width="60" headerText="Importe">
+					<h:outputText value="#{inf.saldoPedido.value}">
+						<f:convertNumber pattern="$####.00" />
+					</h:outputText>
+					<f:facet name="footer">
+						<h:outputText value="#{acreditSolicitudesBMRView.totalAcredBMR}">
+							<f:convertNumber pattern="$####.00" />
+						</h:outputText>
+					</f:facet>
+				</p:column>
+				<p:column headerText="Clave de Acreditacion" width="120" >
+					<p:inputText id="claveAcreditacion" maxlength="10"
+						value="#{inf.claveParaAcreditacionBMR.value}" required="false" />
+					<f:facet name="footer">-</f:facet>
+				</p:column>
+
+			</p:dataTable>
+
+			<p:outputPanel id="botonesInferiores">
+				<p:confirmDialog global="true">
+					<p:commandButton value="Si" type="button"
+						onclick="PF('blockPanelGral').show()"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="No" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>			
+				
+				<p:commandButton value="Aceptar"
+					actionListener="#{acreditSolicitudesBMRView.aceptarAcreditBMR}"
+					update="outputPanelTabla, msgsProductos"
+					rendered="#{not empty acreditSolicitudesBMRView.datoAcredBMR.listDatosDepAdel}"
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);"
+					style="margin-right: 10px;"  >
+					<p:confirm header="Confirmacion"
+							message="Esta seguro que desea acreditar las solicitudes?" icon="ui-icon-alert" />
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					actionListener="#{acreditSolicitudesBMRView.cancelarAcreditBMR}"
+					update="outputPanelTabla, msgsProductos"
+					rendered="#{not empty acreditSolicitudesBMRView.datoAcredBMR.listDatosDepAdel}"
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);" >
+					<p:confirm header="Confirmacion"
+							message="Esta seguro que desea cancelar?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</p:outputPanel>
+		</p:outputPanel>
+		
+		
+		<!-- ###################################################### -->
+		<!-- INCLUSION DE SCRIPTS -->
+		<!-- ###################################################### -->
+		<h:outputScript library="js" name="reportesBMRScript.js" />
+	</sec:authorize>
+</ui:composition>

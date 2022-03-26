@@ -1,0 +1,16 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+
+		<h:outputScript library="js" name="superPagoMovimientoDeCuenta.js?v1.1" />
+	</sec:authorize>
+</ui:composition>

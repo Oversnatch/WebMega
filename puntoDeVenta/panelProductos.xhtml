@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		<h:form id="formProducto" prependId="false"
+			rendered="#{puntoVentaView.opcAIncluir != ''}"  onkeypress="return event.keyCode != 13;" style="height: calc( 100%);">
+			
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+			<p:panel closable="true"
+				header="#{puntoVentaView.tituloPanelProducto}" 
+				id="panelProductos" widgetVar="panelProductosWV" closeSpeed="0"
+				style="width:100%;margin-top:5px;height: calc( 100%);">
+				<p:messages id="msgsProductos" showDetail="false" closable="true"/>
+	
+				<p:outputPanel id="outputPanelProductos" style="overflow: none;">
+					<ui:include src="#{puntoVentaView.opcAIncluir}" />
+				</p:outputPanel>
+				
+				<p:ajax event="close" listener="#{puntoVentaView.onClose}" update="panelProductos" global="false" />
+			</p:panel>
+	
+			<script>
+				$(document).ready(function() {
+					$(document).ready(function() {
+						ACGSiteScriptsFCNS.productoResize();
+					});
+				});
+			</script>
+		</h:form>
+	
+		<p:outputPanel rendered="#{puntoVentaView.auxiliarAIncluir != ''}">
+			<!-- AUXILIAR A INCLUIR CONTIENE PANTALLAS AUXILIARES POR FUERA DEL FORM DEL LISTADO -->
+			<!-- LAS MISMAS SE ENCUENTRAN DEFINIDAS EN CADA DIRECTORIO DE FUNCION -->
+			<ui:include src="#{puntoVentaView.auxiliarAIncluir}" />
+		</p:outputPanel>
+	</sec:authorize>
+</ui:composition>

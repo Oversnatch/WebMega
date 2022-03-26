@@ -1,0 +1,272 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Confirmación" id="confirmaDelSolDinDialog"
+			widgetVar="confirmaDelSolDinDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="auto">
+
+			<h:form id="formConfirmacionDelSolDin" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de eliminar la solicitud de dinero?" />
+				</p:outputPanel>
+
+				<p:divider />
+
+				<p:commandButton icon="ui-icon-check" value="Si"
+					actionListener="#{superPagoView.configrmarEliminacionSolicitudDeDinero}"
+					process="@this" update="panelProductos"
+					oncomplete="PF('confirmaDelSolDinDialogWV').hide()}"
+					style="margin-right: 10px;" />
+
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaDelSolDinDialogWV').hide()" />
+
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Administracion de Solicitudes de dinero"
+			id="admSolDineroDialog" widgetVar="admSolDineroDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="400"
+			dynamic="true" onHide="PF('admSolDineroDialogWV').content.empty()"
+			responsive="true" position="left,top">
+
+			<p:outputPanel id="admSolDinero"
+				rendered="#{superPagoView.muestraCRUDSolicituDeDinero}">
+				<h:form id="formAdmSolDineroDialog" prependId="false">
+					<p:messages id="msgsAdminSolDin" showDetail="false" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+
+					<p:outputPanel class="ui-fluid">
+						<p:outputPanel rendered="#{superPagoView.operacion != 'ALTA'}">
+							<div class="p-formgrid p-grid">
+								<div class="p-field p-col">
+									<p:outputLabel for="idTrf" value="Id. Solicitud" />
+									<p:inputText id="idTrf"
+										value="#{superPagoView.itemTransferencia.idTransferencia}"
+										disabled="true" />
+								</div>
+
+								<div class="p-field p-col">
+									<p:outputLabel for="fechaTrf" value="Fecha Solicitud" />
+									<p:datePicker id="fechaTrf"
+										value="#{superPagoView.itemTransferencia.fechaTransferencia}"
+										monthNavigator="true" yearNavigator="true" showWeek="true"
+										disabled="true" pattern="yyyy-MM-dd" />
+								</div>
+							</div>
+
+							<p:outputPanel	rendered="#{!superPagoView.solicitudDeDineroPropia}">
+								<div class="p-field">
+									<p:outputLabel value="Solicitante" />
+									<p:inputText
+										value="(#{superPagoView.itemTransferencia.idClienteDestino}) #{superPagoView.itemTransferencia.razonSocialClienteDestino}"
+										disabled="true" />
+								</div>
+							</p:outputPanel>
+						</p:outputPanel>
+
+						<div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel rendered="#{superPagoView.operacion == 'ALTA'}" value="CUIT Cliente a solicitar"/>
+								<p:outputLabel rendered="#{superPagoView.operacion == 'DETALLE' and superPagoView.solicitudDeDineroPropia}" value="CUIT Cliente solicitado" />
+								<p:outputLabel rendered="#{superPagoView.operacion == 'CONFIRMAR' or (superPagoView.operacion == 'DETALLE' and !superPagoView.solicitudDeDineroPropia)}" value="CUIT Cliente solicitante" />
+								
+								<p:inputText id="cuitCliSol" 
+									value="#{superPagoView.cuitCliente}"
+									onkeypress="if(event.keyCode == 13) {$('#cmdBuscaCli').click(); return false;} else if(event.which &lt; 48 || event.which &gt; 57) return false;"
+									onblur="if(this.value.length > 10) {$('#cmdBuscaCli').click(); return false;}"
+									maxlength="11" onfocus="$(this).select();"
+									rendered="#{superPagoView.operacion == 'ALTA'}"/>
+
+								<p:inputText 
+									value="#{superPagoView.itemTransferencia.cuitClienteOrigen}"
+									rendered="#{superPagoView.operacion != 'ALTA' and superPagoView.solicitudDeDineroPropia}"
+									disabled="true" />
+
+								<p:inputText 
+									value="#{superPagoView.itemTransferencia.cuitClienteDestino}"
+									rendered="#{superPagoView.operacion != 'ALTA' and !superPagoView.solicitudDeDineroPropia}"
+									disabled="true" />
+							</div>
+							<div class="p-field p-col-fixed" style="width: 50px">
+								<p:spacer width="5" height="15" style="display:block"/>
+								<p:commandButton icon="pi pi-search" process="@this cuitCliSol"
+									id="cmdBuscaCli"
+									actionListener="#{superPagoView.buscarCliente}"
+									update="descCli" title="Buscar Cliente"
+									disabled="#{superPagoView.operacion != 'ALTA'}" />
+							</div>
+						</div>
+
+						<p:outputPanel rendered="#{superPagoView.operacion != 'CONFIRMACION' and superPagoView.solicitudDeDineroPropia}">
+						<div class="p-field">
+							<p:outputLabel for="descCli" value="Cliente" />
+							<p:inputText id="descCli"
+								value="(#{superPagoView.cliente.idCliente.value}) #{superPagoView.cliente.razonSocial.value}"
+								disabled="true" rendered="#{superPagoView.operacion == 'ALTA'}" />
+
+							<p:inputText
+								value="(#{superPagoView.itemTransferencia.idClienteOrigen}) #{superPagoView.itemTransferencia.razonSocialClienteOrigen}"
+								disabled="true" rendered="#{superPagoView.operacion != 'ALTA'}" />
+						</div>
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{superPagoView.operacion == 'ALTA'}">
+							<div class="p-field">
+								<p:outputLabel for="cuentaDestino"
+									value="Cuenta de acreditacion" />
+								<p:inputText id="cuentaDestino"
+									value="#{superPagoView.cuentaDestino.simboloMoneda} - #{superPagoView.cuentaDestino.numeroCuenta}"
+									disabled="true"/>
+							</div>
+						</p:outputPanel>
+
+						<div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel for="concepto" value="Concepto"/>
+								<p:inputText id="concepto" value="#{superPagoView.itemTransferencia.concepto}" disabled="#{superPagoView.operacion != 'ALTA'}"/>
+							</div>
+						</div>
+
+						<div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel value="Moneda"/>
+								<p:inputText id="msm" value="#{superPagoView.cuentaDestino.descripcionMoneda}" disabled="true"/>
+							</div>
+
+							<div class="p-field p-col">
+								<p:outputLabel id="impLbl" for="imp"
+									value="Importe Solicitado" />
+								<p:inputNumber id="imp"
+									value="#{superPagoView.itemTransferencia.importe}"
+									decimalPlaces="2" decimalSeparator="." thousandSeparator=""
+									disabled="#{superPagoView.operacion != 'ALTA'}"/>
+							</div>
+						</div>
+						
+						<p:outputPanel rendered="#{superPagoView.operacion != 'ALTA'}">
+							<div class="p-field">
+								<p:outputLabel for="cuentaOrigen" value="Cuenta origen" />
+
+								<p:inputText
+									value="#{superPagoView.itemTransferencia.descTipoIdentifOrigen} - #{superPagoView.itemTransferencia.codigoIdentifOrigen}"
+									rendered="#{superPagoView.operacion == 'DETALLE' or superPagoView.itemTransferencia.codMnemonicoEstado != 'PENDAUTMAN'}"
+									disabled="true" />
+
+								<p:selectOneMenu value="#{superPagoView.cuentaOrigen}"
+									id="cuentaOrigen" filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+									converter="#{cuentaConverter}"
+									rendered="#{superPagoView.itemTransferencia.codMnemonicoEstado == 'PENDAUTMAN' and superPagoView.operacion != 'DETALLE'}">
+									<f:selectItem itemLabel="--- Seleccione Cuenta Origen ---"
+										itemValue="#{null}" />
+									<f:selectItems value="#{superPagoView.cuentasOrigen}" var="cta"
+										itemLabel="#{cta.simboloMoneda} #{cta.numeroCuenta} - #{cta.simboloMoneda} #{cta.saldo}"
+										itemValue="#{cta}" />
+									<p:ajax event="change" update="" process="@this cuentaOrigen" />
+								</p:selectOneMenu>
+							</div>
+
+							<p:outputPanel
+								rendered="#{superPagoView.itemTransferencia.codMnemonicoEstado == 'EJETRF'}">
+								<p:outputLabel for="fecAcre" value="Fecha acreditacion" />
+								<p:inputText id="fecAcre"
+									value="#{superPagoView.itemTransferencia.fechaAcreditacionCuentaDestino}"
+									disabled="true">
+									<f:convertDateTime pattern="yyyy-MM-dd" />
+								</p:inputText>
+							</p:outputPanel>
+						</p:outputPanel>
+
+						<div class="p-field">
+							<p:outputLabel for="obs" value="Observacion" rendered="#{superPagoView.operacion != 'ALTA' and superPagoView.operacion != 'CONFIRMAR'}"/>
+							<p:inputTextarea id="obs"
+								value="#{superPagoView.itemTransferencia.obs}"
+								rendered="#{superPagoView.operacion != 'ALTA' and superPagoView.operacion != 'CONFIRMAR'}"
+								disabled="#{superPagoView.operacion == 'DETALLE' or superPagoView.operacion == 'CONFIRMAR' or superPagoView.itemTransferencia.codMnemonicoEstado != 'PENDAUTMAN'}" />
+						</div>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'CONFIRMAR'}">
+							<div class="p-field">
+								<p:outputLabel for="coms" value="Comentarios" />
+								<p:inputTextarea id="coms"
+									value="#{superPagoView.comentarios}"/>
+							</div>
+						</p:outputPanel>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-field">
+								<p:outputLabel for="estado" value="Estado" />
+								<p:inputText id="estado"
+									value="#{superPagoView.itemTransferencia.descEstado}"
+									disabled="true" />
+							</div>
+						</p:outputPanel>
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton value="Aceptar" update="@form"
+						actionListener="#{superPagoView.confirmarAceptacionSolicitudDeDinero}"
+						process="@this formAdmSolDineroDialog"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admSolDineroDialogWV').hide()"
+						rendered="#{superPagoView.operacion != 'DETALLE' and superPagoView.operacion != 'ALTA'}"
+						icon="pi pi-check" styleClass="p-mr-2">
+						<p:confirm header="Confirmation"
+							message="Esta seguro de aceptar la solicitud de dinero?"
+							icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+
+					<p:spacer width="5"/>
+					
+					<p:commandButton value="Rechazar" update="@form"
+						actionListener="#{superPagoView.configrmarRechazoSolicitudDeDinero}"
+						process="@this formAdmSolDineroDialog"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admSolDineroDialogWV').hide()"
+						rendered="#{superPagoView.operacion != 'DETALLE' and superPagoView.operacion != 'ALTA'}"
+						icon="pi pi-ban" styleClass="p-mr-2">
+						<p:confirm header="Confirmation"
+							message="Esta seguro de rechazar la solicitud de dinero?"
+							icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+
+					<p:commandButton value="Solicitar" update="@form"
+						actionListener="#{superPagoView.procesarSolicitudDinero}"
+						process="@this formAdmSolDineroDialog"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admSolDineroDialogWV').hide()"
+						icon="pi pi-check" rendered="#{superPagoView.operacion == 'ALTA'}"  styleClass="p-mr-2"/>
+
+					<p:spacer width="5"/>
+					
+					<p:commandButton icon="pi pi-times" value="Cancelar"
+						actionListener="#{superPagoView.cancelarDialogoSolicitudDeDinero}"
+						process="@this"/>
+
+					<p:confirmDialog global="true" responsive="true" width="350">
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no ui-button-flat" />
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" />
+					</p:confirmDialog>
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+
+		<h:outputScript library="js" name="superPagoSolicitudDeDinero.js?v1.1" />
+	</sec:authorize>
+</ui:composition>

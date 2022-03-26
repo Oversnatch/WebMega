@@ -1,0 +1,306 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+			<div class="ui-g">
+			<div class="ui-g-6 ui-md-6">
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%">
+					<p:row>
+						<p:column>	
+				<fieldset style="width: 100%">
+					<legend>Datos del Cliente</legend>
+					<table style="border: 0; width: 95%">
+						<tr>
+							<td><h:outputLabel for="asegApellido" value="Apellido" /></td>
+							<td>
+								<p:focus for="asegApellido" />
+								<p:inputText id="asegApellido" size="50" maxlength="50"
+									value="#{segurosView.asegApellido}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegNombre" value="Nombre" /></td>
+							<td><p:inputText id="asegNombre" size="40" maxlength="40"
+									value="#{segurosView.asegNombre}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegDNICUIT" value="DNI/CUIT" /></td>
+							<td colspan="4"><p:inputText id="asegDNICUIT" size="20"
+									maxlength="20" value="#{segurosView.asegDNICUIT}"
+									style="width:250px" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel for="asegCalle" value="Calle" /></td>
+							<td><p:inputText id="asegCalle" size="50" maxlength="50"
+									value="#{segurosView.asegCalle}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegNumero" value="Numero" /></td>
+							<td><p:inputText id="asegNumero" size="10" maxlength="10"
+									value="#{segurosView.asegNumero}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegPiso" value="Piso" /></td>
+							<td><p:inputText id="asegPiso" size="10" maxlength="10"
+									value="#{segurosView.asegPiso}" style="width:80px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegDepto" value="Depto" /></td>
+							<td><p:inputText id="asegDepto" size="10" maxlength="10"
+									value="#{segurosView.asegDepto}" style="width:80px" /></td>
+						</tr>
+
+
+
+						<tr>
+							<td><h:outputLabel for="paisSeg" value="Pais" /></td>
+							<td><p:selectOneMenu id="paisSeg"
+									value="#{segurosView.asegIdPais}" style="width:235px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.paises}" />
+									<p:ajax event="itemSelect"
+										listener="#{segurosView.onChangePais}"
+										update="provinciaSeg,localidadSeg" />
+								</p:selectOneMenu></td>
+
+							<td style=""></td>
+
+
+							<td><h:outputLabel for="provinciaSeg" value="Provincia" /></td>
+							<td><p:selectOneMenu id="provinciaSeg"
+									value="#{segurosView.asegIdProvincia}" style="width:235px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.provincias}" />
+									<p:ajax event="itemSelect"
+										listener="#{segurosView.onChangeProvincia}"
+										update="localidadSeg" />
+
+								</p:selectOneMenu></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="localidadSeg" value="Localidad" /></td>
+							<td colspan="4"><p:selectOneMenu id="localidadSeg"
+									value="#{segurosView.asegIdLocalidad}" style="width:235px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.localidades}" />
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel for="asegTelFijo" value="Telefono" /></td>
+							<td><p:inputText id="asegTelFijo" size="40" maxlength="40"
+									value="#{segurosView.asegTelFijo}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegCelular" value="Celular" /></td>
+							<td><p:inputText id="asegCelular" size="40" maxlength="40"
+									value="#{segurosView.asegCelular}" style="width:250px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="asegMail" value="Mail" /></td>
+							<td colspan="4"><p:inputText id="asegMail" size="50"
+									maxlength="50" value="#{segurosView.asegMail}"
+									style="width:250px" /></td>
+						</tr>
+
+
+					</table>
+				</fieldset>
+
+				<!-- FIN FIELDSET -->
+
+				<fieldset style="width: 100%">
+					<legend>Datos del Producto</legend>
+
+					<table style="border: 0; width: 100%">
+						<tr>
+							<td><h:outputLabel for="productoSeg" value="Producto" /></td>
+							<td><p:selectOneMenu id="productoSeg"
+									value="#{segurosView.idProducto}" style="width:321px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.productos}" />
+									<p:ajax event="change"
+										actionListener="#{segurosView.actualizarCoberturas}"
+										update="cobertura" />
+								</p:selectOneMenu></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="marca" value="Marca" /></td>
+							<td><p:inputText id="marca" size="50" maxlength="50"
+									value="#{segurosView.marca}" style="width:480px" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel for="modelo" value="Modelo" /></td>
+							<td><p:inputText id="modelo" size="50" maxlength="50"
+									value="#{segurosView.modelo}" style="width:335px" /></td>
+
+							<td style=""></td>
+
+							<td><h:outputLabel for="numeroLinea" value="Numero de Linea" /></td>
+							<td><p:inputText id="numeroLinea" size="50" maxlength="50"
+									value="#{segurosView.numeroLinea}" style="width:480px" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel for="empresaPrestataria"
+									value="Empresa Prestataria" /></td>
+							<td colspan="4"><p:selectOneMenu id="empresaPrestataria"
+									value="#{segurosView.idEmpresaPrestataria}" style="width:321px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.empresasPrestatarias}" />
+								</p:selectOneMenu></td>
+						</tr>
+					</table>
+
+				</fieldset>
+
+				<!-- FIN FIELDSET -->
+
+				<fieldset style="width: 100%">
+					<legend>Cobertura</legend>
+					<table style="border: 0; width: 100%">
+						<tr>
+							<td width="100"><h:outputLabel for="cobertura"
+									value="Cobertura" /></td>
+							<td><p:selectOneMenu id="cobertura"
+									value="#{segurosView.idCobertura}" style="width:870px"
+									defaultLabel="Seleccionar"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+									<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+									<f:selectItems value="#{segurosView.coberturas}" />
+								</p:selectOneMenu></td>
+						</tr>
+					</table>
+				</fieldset>
+
+				<!-- FIN FIELDSET -->
+
+				<fieldset style="width: 100%">
+					<legend>Forma de Pago</legend>
+					<p:outputPanel id="panelFormaDePago">
+						<table style="border: 0; width: 100%; text-align: left">
+							<tr>
+								<td width="150"><h:outputLabel for="formaPago"
+										value="Forma de Pago" /></td>
+								<td colspan="7"><p:selectOneMenu id="formaPago"
+										value="#{segurosView.idFormaPago}" style="width:321px"
+										defaultLabel="Seleccionar"
+										filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+										<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+										<f:selectItems value="#{segurosView.formasDePago}" />
+										<p:ajax event="change"
+											actionListener="#{segurosView.actualizarPanelDatosDePago}"
+											update="panelFormaDePago" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td width="150"><h:outputLabel for="tipoTarjeta"
+										value="Tipo de Tarjeta" /></td>
+								<td colspan="7"><p:selectOneMenu id="tipoTarjeta"
+										value="#{segurosView.idTipoTarjeta}" style="width:321px"
+										defaultLabel="Seleccionar"
+										filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+										<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+										<f:selectItems value="#{segurosView.tipoTarjetas}" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td width="150"><h:outputLabel for="bancos" value="Banco" /></td>
+								<td colspan="7"><p:selectOneMenu id="bancos"
+										value="#{segurosView.idBanco}" style="width:321px"
+										defaultLabel="Seleccionar"
+										filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+										<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+										<f:selectItems value="#{segurosView.bancos}" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel for="cbuDebitoBancario"
+										value="CBU para debito Bancario"
+										rendered="#{segurosView.idFormaPago == 1}" /></td>
+								<td colspan="7"><p:inputText id="cbuDebitoBancario"
+										size="30" maxlength="30"
+										value="#{segurosView.cbuDebitoBancario}" style="width:335px"
+										rendered="#{segurosView.idFormaPago == 1}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel for="tarjetaCredNumero"
+										value="Nro. Tarjeta de Credito"
+										rendered="#{segurosView.idFormaPago == 2}" /></td>
+								<td><p:inputText id="tarjetaCredNumero" size="20"
+										maxlength="20" value="#{segurosView.tarjetaCredNumero}"
+										style="width:190px" rendered="#{segurosView.idFormaPago == 2}" /></td>
+								<td style=""></td>
+								<td><h:outputLabel for="tarjetaCredVto"
+										value="Vencimiento Tarjeta de Credito (MM/AA)"
+										rendered="#{segurosView.idFormaPago == 2}" /></td>
+								<td><p:inputText id="tarjetaCredVto" size="10"
+										maxlength="10" value="#{segurosView.tarjetaCredVto}"
+										style="width:140px" rendered="#{segurosView.idFormaPago == 2}" /></td>
+								<td style=""></td>
+								<td><h:outputLabel for="tarjetaCredCodSeg"
+										value="Cod. Seguridad Tarjeta de Credito"
+										rendered="#{segurosView.idFormaPago == 2}" /></td>
+								<td><p:inputText id="tarjetaCredCodSeg" size="6"
+										maxlength="6" value="#{segurosView.tarjetaCredCodSeg}"
+										style="width:140px" rendered="#{segurosView.idFormaPago == 2}" /></td>
+							</tr>
+						</table>
+					</p:outputPanel>
+				</fieldset>
+
+
+
+			<!-- FIN FIELDSET -->
+
+			<p:confirmDialog global="true">
+				<p:commandButton value="Si" type="button"
+					onclick="PF('blockPanelGral').show()"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="No" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>	
+				
+			<p:commandButton id="bt_AltaSeguro" value="Aceptar"
+				actionListener="#{segurosView.altaSeguro}" update="panelProductos"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);">
+				<p:confirm header="Confirmacion"
+						message="Esta seguro que desea Dar de Alta el Seguro?" icon="ui-icon-alert" />					
+			</p:commandButton>
+
+			<p:commandButton id="bt_limpiar" value="Limpiar"
+				actionListener="#{segurosView.limpiarPantalla}"
+				update="panelProductos"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);">
+				<p:confirm header="Confirmacion"
+						message="Esta seguro que desea Limpiar el Formulario?" icon="ui-icon-alert" />					
+			</p:commandButton>
+						</p:column>				
+					</p:row>
+				</p:panelGrid>
+			</div>
+		</div>
+	</sec:authorize>
+</ui:composition>

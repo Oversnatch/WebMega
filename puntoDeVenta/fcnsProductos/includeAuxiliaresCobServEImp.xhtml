@@ -1,0 +1,143 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- ###################################################### -->
+		<!-- DEFINICION DE PANTALLAS MODALES -->
+		<!-- ###################################################### -->
+
+		<p:dialog header="#{cobranzaServImpView.modalPanelTitulo}"
+			id="facturaPanel" widgetVar="facturaPanelWV" modal="true"
+			resizable="false" dynamic="true" appendTo="@(body)" closable="true"
+			height="auto" width="750" closeOnEscape="true">
+
+			<h:form prependId="false" onsubmit="return false;">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
+				<f:facet name="controls">
+					<p:outputPanel>
+						<p:commandButton id="hidelinkTicketFacturaPanel" value="X"
+							style="cursor:pointer;"
+							onclick="PF('facturaPanelWV').hide();return false;" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:outputPanel id="facturaPanelGroup" style="text-align: center;">
+					<h:outputText value="#{cobranzaServImpView.transaccionDatos}"
+						escape="false" id="transaccionDatos" />
+
+					<p:outputPanel id="auxiliaresGIRE"
+						rendered="#{cobranzaServImpView.operadora eq 'GIRE'}">
+						<ui:include src="includeAuxiliaresGIRE.xhtml" />
+					</p:outputPanel>
+
+					<h:outputText value="#{cobranzaServImpView.contenido}"
+						escape="false" id="contenido" />
+				</p:outputPanel>
+
+				<br />
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="Confirmación de Cobro" id="idConfirmarPanel"
+			widgetVar="confirmarPanelWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="true" height="auto"
+			width="auto" closeOnEscape="true">
+
+			<ui:remove>
+			<p:ajax event="close" update="idConfirmarPanelForm" resetValues="true"/>
+			</ui:remove>
+					
+			<h:form id="idConfirmarPanelForm" prependId="false"
+				onsubmit="return false;">
+
+				
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
+				<p:focus for="ConfirmarMonto" />
+
+				<f:facet name="controls">
+					<p:outputPanel>
+						<p:commandButton id="hidelinkConfirmarPanel" value="X"
+							style="cursor:pointer;"
+							onclick="PF('confirmarPanel').hide();return false;" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel for="ConfirmarMontoACobrar" value="Monto A Cobrar" />
+						</p:column>
+						<p:column>
+							<p:inputText id="ConfirmarMontoACobrar"
+								name="ConfirmarMontoACobrar"
+								value="#{cobranzaServImpView.totalAPagar}" disabled="true"
+								style="text-align:right" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel value="Monto Recibido" />
+						</p:column>
+						<p:column>
+
+							<p:inputNumber id="ConfirmarMonto" name="ConfirmarMonto"
+								value="#{cobranzaServImpView.confirmarMonto}"
+								thousandSeparator="" decimalSeparator="."
+								inputStyle="text-align:right"
+								onfocus="this.setSelectionRange(0, 0);"
+								autocomplete="off"
+								emptyValue="null">
+								<p:ajax event="keyup" update="confirmarVueltoAEntregar"
+									listener="#{cobranzaServImpView.calcular}" global="false" />
+							</p:inputNumber>
+						</p:column>
+					</p:row>
+
+
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel value="Vuelto A Entregar" />
+						</p:column>
+						<p:column>
+
+							<p:inputNumber id="confirmarVueltoAEntregar"
+								name="confirmarVueltoAEntregar"
+								value="#{cobranzaServImpView.confirmarVueltoAEntregar}"
+								disabled="true" thousandSeparator="" decimalSeparator="."
+								inputStyle="text-align:right;color:#{cobranzaServImpView.confirmarVueltoAEntregarColor};background-color:#{cobranzaServImpView.confirmarVueltoAEntregarBackgroundColor};" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column style="width:120px">
+						</p:column>
+						<p:column>
+							<p:commandButton
+								action="#{cobranzaServImpView.invocarGCSI('pcf', '', '', '')}"
+								style="width: 180px" styleClass="buttonMenuContinuar"
+								name="btnMPConfirmarPagos" id="btnMPConfirmarPagos"
+								value="CONFIRMAR PAGOS (F10)" process="@this"
+								update="panelProductos"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+		<h:outputScript library="js" name="gcsi/gcsi.js" />
+		<h:outputScript library="js" name="gcsi/popup.js" />
+	</sec:authorize>
+</ui:composition>

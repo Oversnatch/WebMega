@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<div class="ui-g">
+			<div class="ui-g-6">
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%">
+					<p:row>
+						<p:column width="60">
+							<h:outputLabel for="producto" value="Producto" styleClass="texto textoFontSizeCustom" />
+						</p:column>
+
+						<p:column width="120">
+							<p:focus for="producto" />
+							<p:selectOneMenu id="producto"
+								value="#{puntoVentaView.idProductoOff}" styleClass="textoVta"
+								style="width:286px;" defaultLabel="Seleccione un Producto"
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+								<f:selectItem itemValue="" itemLabel="Seleccione un Producto" />
+								<f:selectItems value="#{puntoVentaView.productosOff}" />
+								<p:ajax event="change" onstart="PF('blockPanelGral').show();"
+									listener="#{puntoVentaView.cambiarLogoOff}"
+									update="producto,logoProdOff,panelPVimpOFF,prodOff_comentarios" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="monedaOff" value="Moneda" styleClass="texto textoFontSizeCustom" />
+						</p:column>
+						<p:column>
+							<p:selectOneMenu id="monedaOff"
+								value="#{puntoVentaView.idMonedaOff}" styleClass="textoVta"
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+								style="width:286px;" defaultLabel="Pesos">
+								<f:selectItem itemValue="$" itemLabel="Pesos" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="importeOff" value="Importe" styleClass="texto textoFontSizeCustom" />
+						</p:column>
+						<p:column>
+							<p:outputPanel id="panelPVimpOFF">
+
+								<!-- INPUTTEXT VALOR PROD OFFLINE -->
+								<p:inputNumber id="importeOff"
+									value="#{puntoVentaView.importeOff}" styleClass="textoVta"
+									inputStyle="width:286px;"
+									rendered="#{!puntoVentaView.mostrarComboImporteEnProdOff}" />
+								<!-- COMBO VALOR PROD OFFLINE -->
+								<p:selectOneMenu id="importeOffCombo"
+									value="#{puntoVentaView.importeOff}" required="false"
+									styleClass="textoVta" style="width:286px;"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+									rendered="#{puntoVentaView.mostrarComboImporteEnProdOff}">
+									<f:selectItems value="#{puntoVentaView.valoresProductosOff}" />
+								</p:selectOneMenu>
+
+							</p:outputPanel>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2">
+							<h:outputText id="prodOff_comentarios" escape="false"
+								value="#{puntoVentaView.comentariosOff}"></h:outputText>
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:divider />
+
+				<p:outputPanel id="botonesProducto">
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+							onclick="PF('blockPanelGral').show()"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton value="Confirmar Vta."
+						rendered="#{puntoVentaView.botonAceptar}"
+						actionListener="#{puntoVentaView.realizarVentaOff}"
+						process="panelProductos"
+						update="panelProductos :panelSaldoUsuario"
+						oncomplete="refreshBanner();setTimeout(function(){ACGSiteScriptsFCNS.productoResize();ACGSiteScriptsFCNS.monitorPVResize();}, 500);"
+						onkeypress="if(event.keyCode == 13) {this.click(); return false;}"
+						styleClass="textoFontSizeCustom"
+						style="margin-right: 40px;" >
+						<p:confirm header="Confirmacion"
+							message="Esta seguro realizar la venta?" icon="ui-icon-alert" />
+					</p:commandButton>
+
+					<p:commandButton value="Mostrar Ult. Ticket"
+						actionListener="#{puntoVentaView.mostrarTicket('OFFLINE')}"
+						process="@this" onclick="PF('blockPanelGral').show();"
+						rendered="#{not empty puntoVentaView.ticketOff &amp;&amp; not puntoVentaView.ticketOff.error.value.hayError.value}" 
+						styleClass="textoFontSizeCustom" />
+				</p:outputPanel>
+
+			</div>
+
+			<div class="ui-g-2">
+				<p:graphicImage id="logoProdOff" url="#{puntoVentaView.logoOff}" />
+			</div>
+
+			<div class="ui-g-4"></div>
+		</div>
+
+	</sec:authorize>
+
+</ui:composition>

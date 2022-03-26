@@ -1,0 +1,400 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:panelGrid style="width:100%;height: 100%;"
+			styleClass="panelNoBorder"
+			rendered="#{pagoElectronicoView.idAccion != 0}">
+			<p:row>
+				<p:column style="width:200px">
+					<p:outputPanel id="contenedorMenu"
+						style="border: 1px solid lightgray;padding: 3px;height: 100%;">
+						<p:panelGrid style="width:100%" columns="1"
+							styleClass="panelNoBorder">
+
+							<p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnManual" id="btnManual"
+								actionListener="#{pagoElectronicoView.accion(1)}"
+								style="width: 180px;" value="COBRAR"
+								title="Tarjeta Debito / Credito"
+								update="contenedorTabla,msgsProductos"
+								onclick="PF('blockPanelGral').show();" immediate="true"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();"
+								process="@this">
+								<p:resetInput target="panelPago" />
+							</p:commandButton>
+
+							<p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnApertura" id="btnApertura"
+								actionListener="#{pagoElectronicoView.accion(2)}"
+								style="width: 180px;" value="CONSULTAR COBRO"
+								onclick="PF('blockPanelGral').show();"
+								update="contenedorTabla,msgsProductos" immediate="true"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();"
+								process="@this" />
+
+							<p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnBarra" id="btnBarra"
+								actionListener="#{pagoElectronicoView.accion(3)}"
+								style="width: 180px;" value="ANULAR COBRO"
+								update="contenedorTabla,msgsProductos"
+								onclick="PF('blockPanelGral').show();" immediate="true"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();"
+								process="@this" />
+
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:column>
+				<p:column style="vertical-align:top !important">
+					<p:outputPanel id="contenedorTabla"
+						style="border: 1px solid lightgray;padding: 3px;width:100%;height: 100%;overflow-y: auto;overflow-x: hidden;">
+
+
+						<p:panelGrid id="panelPago"
+							rendered="#{pagoElectronicoView.idAccion == 1}"
+							styleClass="panelNoBorder">
+
+							<p:row>
+								<p:column>
+									<p:outputLabel for="number"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										value="Tarjeta Numero" /><h:outputText value="**" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column colspan="3">
+									<p:focus for="number" />
+									<p:remoteCommand name="abrirLectorDeTarjeta" actionListener="#{pagoElectronicoView.abrirDialogLectorDeTarjeta}"/>
+									<p:remoteCommand name="blanquearDatosDeTarjeta" actionListener="#{pagoElectronicoView.blanquearDatosTarjeta(false)}"/>
+									<p:remoteCommand name="validarBIN" actionListener="#{pagoElectronicoView.funcionVABI}"/>
+									<p:inputText id="number"
+										value="#{pagoElectronicoView.tarjetaNumero}"
+										styleClass="textoVta fontSize12" style="width: 90%;"
+										update="idPlanDeCuota" 
+										onkeypress="return evaluarIngresoNroTarjeta(event, this)"
+										maxlength="25">
+										<p:ajax event="blur"
+											listener="#{pagoElectronicoView.blanquearDatosTarjeta(true)}" 
+											update="logoTarjeta"
+											oncomplete="return verificarLongitudBIN($('#number').val())" global="false"/>
+									</p:inputText>
+
+									<p:commandButton title="Apertura dialogo lector de tarjeta" icon="pi pi-credit-card" actionListener="#{pagoElectronicoView.abrirDialogLectorDeTarjeta}"
+									style="float:right" tabindex="-1"/>
+								</p:column>
+								<p:column style="min-width: 120px;">									
+									<p:outputPanel id="logoTarjeta">
+										<p:graphicImage url="#{pagoElectronicoView.logo}" style="max-width: 40px;position: relative;right: 120px;" rendered="#{pagoElectronicoView.logo != null}"/>
+									</p:outputPanel>
+								</p:column>
+								<ui:remove>
+								<p:column rowspan="5">
+									<pe:creditCard id="creditCard" labelMonthYear="MM/YY"
+										placeholderExpiry="**/**" placeholderName="" />
+								</p:column>
+								</ui:remove>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="name"
+										styleClass="p-col-12 p-md-1 fontSize12" value="Titular"
+										title="Apellido y Nombre (Tal como aparece en la tarjeta)" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column colspan="3">
+									<p:inputText id="name"
+										value="#{pagoElectronicoView.tarjetaTitularNombre}"
+										styleClass="textoVta fontSize12"
+										style="width: 100%;min-width: 350px;"
+										onkeypress="setNext(event.keyCode, 'tipoIdentificacion')"
+										maxlength="50" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="expiry"
+										style="padding-top: 12px;min-width: 140px;"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										value="Expiracion Tarjeta (MM/AA)" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<ui:remove>
+									<p:inputText id="expiry" placeholder="MM/YY"  style="width: 100%;" value="#{pagoElectronicoView.tarjetaExpiracion}" maxlength="7"/>
+									</ui:remove>
+									<p:inputMask id="expiry" placeholder="MM/AA" mask="99/99" style="width: 100%;" value="#{pagoElectronicoView.tarjetaExpiracion}"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel for="cvc"
+										style="padding-top: 12px;min-width: 100px;text-align: right;"
+										styleClass="p-col-12 p-md-1 fontSize12" value="Cód. de Seg."/><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<p:password id="cvc"
+										value="#{pagoElectronicoView.codigoSeguridad}"
+										styleClass="textoVta fontSize12"  style="width: 100%;"
+										autocomplete="off"
+										onkeypress="setNext(event.keyCode, 'tipoIdentificacion')" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="tipoIdentificacion"
+										style="padding-top: 12px;"
+										styleClass="p-col-12 p-md-1 fontSize12" value="Tipo Doc." /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="tipoIdentificacion"
+										value="#{pagoElectronicoView.tipoIdentificacion}"
+										filter="#{selectOneMenuHelper.filter}"
+										filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+										style="width: 100%;" styleClass="fontSize12" >
+										<f:selectItems value="#{pagoElectronicoView.tiposDocumento}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:outputLabel for="numeroIdentificacion"
+										style="padding-top: 12px;padding-left: 15px;text-align: right;"
+										styleClass="p-col-12 p-md-1 fontSize12" value="Nro. Doc." /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<p:inputText id="numeroIdentificacion"
+										value="#{pagoElectronicoView.numeroIdentificacion}"
+										style="width: 100%;" styleClass="fontSize12"
+										onkeypress="setNext(event.keyCode, 'telefonoCliente')" maxlength="20" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="idConceptoDePago"
+										style="padding-top: 12px;min-width: 140px;"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										value="Concepto de Pago" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column colspan="3">
+									<p:selectOneMenu id="idConceptoDePago"
+										value="#{pagoElectronicoView.idConceptoDePago}"
+										style="width: 100%;min-width: 350px;"
+										styleClass="textoVta fontSize12"
+										filter="#{selectOneMenuHelper.filter}"
+										filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}" >
+										<f:selectItems value="#{pagoElectronicoView.conceptosDePago}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="moneda"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										style="padding-top: 12px;" value="Moneda" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="moneda"
+										value="#{pagoElectronicoView.moneda}"
+										styleClass="textoVta fontSize12"
+										filter="#{selectOneMenuHelper.filter}"
+										filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"  style="width: 100%;"
+										rendered="#{pagoElectronicoView.idAccion == 0 or pagoElectronicoView.idAccion == 1 }" >
+										<f:selectItem itemValue="ARS" itemLabel="Pesos ARG" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:outputLabel for="peimporte"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										style="padding-top: 12px;padding-left: 15px;text-align: right;"
+										value="Importe" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column>
+									<p:inputNumber id="peimporte" emptyValue=""
+										value="#{pagoElectronicoView.peimporte}"
+										styleClass="textoVta fontSize12" decimalPlaces="2"
+										decimalSeparator="." thousandSeparator=""  style="width: 100%;"
+										inputStyle="font-weight: bold;text-align: right;font-size: 12px;">
+										<p:ajax event="blur" update="idPlanDeCuota"
+											listener="#{pagoElectronicoView.calcularCuotas}"
+											onkeypress="setNext(event.keyCode, 'idPlanDeCuota')" />
+									</p:inputNumber>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="idPlanDeCuota"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										style="padding-top: 12px;min-width: 140px;" value="Cuotas" /><h:outputText value="*" styleClass="fontSize12" style="color:red"/>
+								</p:column>
+								<p:column colspan="3">
+									<p:selectOneMenu id="idPlanDeCuota"
+										value="#{pagoElectronicoView.planDeCuota}"
+										converter="#{planDeCuotaConverter}"
+										styleClass="textoVta fontSize12"
+										defaultLabel="Seleccione las Cuotas"
+										style="width: 100%;min-width: 350px;"
+										filter="#{selectOneMenuHelper.filter}"
+										filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+										rendered="#{pagoElectronicoView.idAccion == 0 or pagoElectronicoView.idAccion == 1 }" >
+										<f:selectItem itemValue="" itemLabel="Seleccione las Cuotas" />
+										<f:selectItems value="#{pagoElectronicoView.planesDeCuota}" var="itm"
+											itemLabel="#{itm.etiqueta}"	itemValue="#{itm}" />
+										<p:ajax event="change" update="btnPAGO" process="@this" listener="#{pagoElectronicoView.setearPlanDeCuotas}"/>
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="telefonoCliente"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										style="padding-top: 12px;min-width: 140px;"
+										value="Tel. del Cliente" />
+								</p:column>
+								<p:column colspan="3">
+									<p:inputText id="telefonoCliente"
+										value="#{pagoElectronicoView.telefonoCliente}"
+										styleClass="textoVta fontSize12"
+										style="width: 100%;min-width: 350px;" autocomplete="off" maxlength="20"
+										onkeypress="setNext(event.keyCode, 'emailCliente')" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="emailCliente"
+										styleClass="p-col-12 p-md-1 fontSize12"
+										style="padding-top: 12px;min-width: 140px;"
+										value="Email del Cliente" />
+								</p:column>
+								<p:column colspan="3">
+									<p:inputText id="emailCliente"
+										value="#{pagoElectronicoView.emailCliente}"
+										styleClass="textoVta fontSize12"
+										style="width: 100%;min-width: 350px;" autocomplete="off"
+										onkeypress="setNext(event.keyCode, 'idConceptoDePago')" maxlength="50"/>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+
+
+						<p:panel id="panelConsultas"
+							header="#{pagoElectronicoView.idAccion == 2 ? 'Consulta de Cobro Electronico' : 'Anulacion de Cobro Electronico'}"
+							rendered="#{pagoElectronicoView.idAccion != 1}" immediate="true"
+							styleClass="panelNoBorder">
+
+
+							<div class="ui-fluid"
+								style="padding-left: 20px; padding-top: 10px;">
+								<div class="p-field p-grid">
+									<p:selectOneRadio id="tipoBusqueda" value="#{pagoElectronicoView.tipoBusqueda}" unselectable="true" style="margin-top: 5px;">
+							            <f:selectItem itemLabel="Nro. de Comprobante" itemValue="NRO_COMPROBANTE"/>
+										<ui:fragment rendered="#{pagoElectronicoView.idAccion != 3}">
+							            	<f:selectItem itemLabel="Nro. Interno" itemValue="NRO_INTERNO" itemDisabled="#{pagoElectronicoView.idAccion == 3}" />
+							            </ui:fragment>
+							        </p:selectOneRadio>
+									<div class="p-col-12 p-md-1">
+										<p:inputText id="idPagoOperador"
+											value="#{pagoElectronicoView.idPagoOperador}"
+											styleClass="textoVta" style="width: 100%;min-width: 350px;"
+											required="true" >
+								            <p:keyFilter mask="num" preventPaste="false"/>
+								        </p:inputText>
+									</div>
+									<ui:remove>
+										<p:outputLabel for="idPagoOperador1"
+										styleClass="p-col-12 p-md-1"
+										style="padding-top: 12px;min-width: 160px;"
+										value="Nro. de Comprobante" />
+										<p:outputLabel for="paymentId" styleClass="p-col-12 p-md-1"
+											style="padding-top: 12px;min-width: 140px;"
+											value="Payment Id" />
+										<div class="p-col-12 p-md-1">
+											<p:inputNumber id="paymentId"
+												value="#{pagoElectronicoView.paymentId}"
+												styleClass="textoVta" decimalPlaces="0" decimalSeparator=""
+												thousandSeparator="" />
+										</div>
+										<p:outputLabel for="idPagoACG" styleClass="p-col-12 p-md-1"
+											style="padding-top: 12px;min-width: 140px;"
+											value="ID de Pago" />
+										<div class="p-col-12 p-md-1">
+											<p:inputNumber id="idPagoACG"
+												value="#{pagoElectronicoView.idPagoACG}"
+												styleClass="textoVta" decimalPlaces="0" decimalSeparator=""
+												thousandSeparator="" />
+										</div>
+									</ui:remove>
+								</div>
+								<ui:remove>
+									<div class="p-field p-grid">
+										<p:outputLabel for="numeroTicketACG"
+											style="padding-top: 12px;min-width: 140px;"
+											styleClass="p-col-12 p-md-1" value="Numero de Ticket ACG" />
+										<div class="p-col-12 p-md-1">
+											<p:inputText id="numeroTicketACG"
+												value="#{pagoElectronicoView.numeroTicketACG}"
+												styleClass="textoVta" />
+										</div>
+									</div>
+								</ui:remove>
+							</div>
+						</p:panel>
+
+
+
+						<p:outputPanel id="botonesProducto">
+							<div class="ui-fluid" style="padding-left: 20px;">
+								<div class="p-field p-grid">
+									<div class="p-col-12 p-md-5">
+										<p:divider style="min-width: 500px;" />
+									</div>
+								</div>
+								<div class="p-field p-grid">
+									<div class="p-col-12 p-sm-3 p-xl-2">
+										<p:confirmDialog global="true">
+											<p:commandButton value="Si" type="button"
+												onclick="PF('blockPanelGral').show()"
+												styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+											<p:commandButton value="No" type="button"
+												styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+										</p:confirmDialog>
+
+										<p:commandButton value="PROCESAR COBRO" id="btnPAGO"
+											actionListener="#{pagoElectronicoView.botonGPEPAGO}"
+											update="panelProductos"
+											rendered="#{pagoElectronicoView.idAccion == 1}"
+											oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);"											
+											>
+													
+											
+											<p:confirm header="Confirmacion"
+												message="Esta seguro realizar el cobro de la tarjeta #{pagoElectronicoView.medioDePago.marca} (#{pagoElectronicoView.medioDePago.tipoMedioDePago}), $#{pagoElectronicoView.peimporte} en #{pagoElectronicoView.planDeCuota.cantidadDeCuotas} Pago/s?" icon="ui-icon-alert" />
+										</p:commandButton>
+
+										<p:commandButton value="ANULAR COBRO" id="btnANPT"
+											actionListener="#{pagoElectronicoView.confirmarAnulacion}" process="@this idPagoOperador"
+											update="contenedorTabla"
+											rendered="#{pagoElectronicoView.idAccion == 3}"
+											oncomplete="if (args &amp;&amp; !args.validationFailed) PF('confirmaAnulacionDialogWV').show();"/>
+
+										<p:commandButton value="CONSULTAR COBRO" id="btnCOPA"
+											actionListener="#{pagoElectronicoView.botonGPECOPA}"
+											update="contenedorTabla"
+											rendered="#{pagoElectronicoView.idAccion == 2}" />
+									</div>
+								</div>
+							</div>
+							
+							<p:outputPanel style="padding-left:20px">
+								<span class="ui-outputlabel-rfi" style="color:red">*</span> <span>Datos obligatorios</span>
+								<BR />
+								<span class="ui-outputlabel-rfi" style="color:red">**</span> <span>Dato vacio + &lt;ENTER&gt; apertura dialogo lector de tarjeta.</span>
+							</p:outputPanel>
+						</p:outputPanel>
+					</p:outputPanel>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+	</sec:authorize>
+</ui:composition>

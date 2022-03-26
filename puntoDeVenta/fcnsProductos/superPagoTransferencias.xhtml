@@ -1,0 +1,185 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:toolbar id="botoneraTrfs">
+			<f:facet name="left">
+				<p:commandButton process="@this transfersDT" icon="pi pi-eye"
+					value="Detalle" id="btnDetTrf"
+					action="#{superPagoView.detalleTransferencia}"
+					title="Detalle de la transferencia" />
+
+				<p:spacer width="5" />
+
+				<p:commandButton process="@this" icon="pi pi-file"
+					value="Nueva" id="btnAgregaTrf"
+					action="#{superPagoView.altaTransferencia}"
+					title="Realizar nueva transferencia" />
+
+				<p:spacer width="5" />
+
+				<p:commandButton process="@this transfersDT" icon="pi pi-times-circle"
+					value="Anular" id="btnDelTrf"
+					action="#{superPagoView.anulacionTransferencia}"
+					title="Anular transferencias pendientes" 
+					rendered="false"/>
+			</f:facet>
+
+			<f:facet name="right">
+				<p:commandButton icon="pi pi-refresh" update="transfersDT"
+					title="Refrescar informacion"
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);" />
+
+				<p:spacer width="5" />
+
+				<p:commandButton value="Borrar Filtros"
+					actionListener="#{superPagoView.borrarFiltrosFecha('TRF')}"
+					onclick="PF('transfersDTWV').clearFilters()" update="transfersDT gridFiltroFecha"
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);" />
+			</f:facet>
+		</p:toolbar>
+
+		<p:panelGrid id="gridFiltroFecha" columns="4">
+			<p:column>
+				<p:outputLabel value="Fecha Desde" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfDde" pattern="yyyy-MM-dd" navigator="true" inputStyle="width:100%"
+					maxdate="#{superPagoView.fechaAhora}" validatorMessage="Fecha y hora invalida"	value="#{superPagoView.fechaDesde}">
+				</p:datePicker>
+			</p:column>
+
+			<p:column>
+				<p:outputLabel value="Fecha Hasta" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfHta" pattern="yyyy-MM-dd"
+					navigator="true" inputStyle="width:100%"
+					value="#{superPagoView.fechaHasta}"
+					maxdate="#{superPagoView.fechaHoy}">
+				</p:datePicker>
+
+				<p:spacer width="5"/>
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarTransferencias}"
+					icon="pi pi-filter" oncomplete="PF('transfersDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Transferencias"/>
+			</p:column>
+		</p:panelGrid>
+
+		<p:dataTable id="transfersDT" widgetVar="transfersDTWV"
+			value="#{superPagoView.listaDeTransferencias}" var="trf" lazy="true"
+			rowHover="true" filterEvent="enter" paginator="true"
+			rowIndexVar="desRowIndex" sortBy="#{trf.referencia}"
+			sortOrder="ASCENDING"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+			sortMode="single" emptyMessage="No existen registros para mostrar."
+			style="margin-top:3px;table-layout: fixed; width:100%;margin-bottom:0px"
+			rows="150" selectionMode="single"
+			selection="#{superPagoView.itemTransferencia}">
+
+			<p:column headerText="Id. Trf."
+				style="border-right: 1px solid #c8c8c8 !important;width:80px"
+				filterBy="#{trf.idTransferencia}"
+				filterStyle="width:100% !important;" sortBy="#{trf.idTransferencia}">
+				<h:outputText value="#{trf.idTransferencia}" style="float:right" />
+			</p:column>
+
+			<p:column headerText="Id. Usr."
+				style="border-right: 1px solid #c8c8c8 !important;width:120px">
+				<h:outputText value="#{trf.idUsuario}" style="float:right"/>
+			</p:column>
+
+			<p:column headerText="Fecha Trf."
+				style="border-right: 1px solid #c8c8c8 !important;width:120px;text-align:center"
+				sortBy="#{trf.fechaTransferencia}">
+
+				<h:outputText value="#{trf.fechaTransferencia}">
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Entidad Origen"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{trf.idEntidadOrigen}"
+				filterStyle="width:100% !important;" sortBy="#{trf.trf}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('transfersDTWV').filter()" 
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.entidadesFinancierasOrigen}" />
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{trf.descEntidadOrigen}" />
+			</p:column>
+
+			<p:column headerText="Entidad Destino"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{trf.idEntidadDestino}"
+				filterStyle="width:100% !important;" sortBy="#{trf.trf}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('transfersDTWV').filter()" 
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.entidadesFinancierasOrigen}" />
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{trf.descEntidadDestino}" />
+			</p:column>
+
+			<p:column headerText="Cliente/Titular Destino"
+				style="border-right: 1px solid #c8c8c8 !important;width:200px">
+				<h:outputText value="(#{trf.idClienteDestino}) #{stringHelper.cutOffStr(trf.razonSocialClienteDestino, 30)}"  title="#{trf.razonSocialClienteDestino}" rendered="#{trf.codMnemonicoEntDestino == 'SUPERPAGO'}"/>
+				<h:outputText value="#{stringHelper.cutOffStr(trf.titularDestino, 30)}" title="#{trf.titularDestino}" rendered="#{trf.codMnemonicoEntDestino != 'SUPERPAGO'}"/>
+			</p:column>
+
+			<p:column headerText="Moneda"
+				style="border-right: 1px solid #c8c8c8 !important;width:80px"
+				sortBy="#{trf.idMoneda}">
+				<h:outputText value="#{trf.simboloMoneda}" />
+			</p:column>
+
+			<p:column headerText="Importe"
+				style="border-right: 1px solid #c8c8c8 !important;width:100px"
+				sortBy="#{trf.importe}">
+				<h:outputText value="#{trf.importe}" style="float:right" />
+			</p:column>
+
+			<p:column headerText="Estado"
+				style="border-right: 1px solid #c8c8c8 !important;width:170px"
+				filterBy="#{trf.idEstado}" filterStyle="width:100% !important;"
+				sortBy="#{trf.descEstado}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('transfersDTWV').filter()" 
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.estadosTransferencia}" />
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{trf.descEstado}" />
+			</p:column>
+
+			<p:column headerText="Fecha Acreditacion"
+				style="border-right: 1px solid #c8c8c8 !important;width:120px;text-align:center"
+				sortBy="#{trf.fechaAcreditacionCuentaDestino}">
+
+				<h:outputText value="#{trf.fechaAcreditacionCuentaDestino}">
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputText>
+			</p:column>
+		</p:dataTable>
+
+	</sec:authorize>
+
+</ui:composition>

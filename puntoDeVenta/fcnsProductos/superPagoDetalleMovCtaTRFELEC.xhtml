@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:panelGrid>
+			<p:row>
+				<p:column colspan="6">
+					<h:outputText value="Fecha operacion: "/>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.fechaTransferencia}"
+						style="font-size: larger;">
+						<f:convertDateTime type="date" pattern="dd/MM/yyyy"
+							timeZone="${usuarioHelper.usuarioSession().husoHorario}" />
+					</h:outputText>
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="Id. Operacion:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.idTransferencia}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Tipo Operacion:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descClasificacion}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Moneda:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descripcionMoneda}"
+						styleClass="product-price" style="font-weight: bold;">
+						<f:convertNumber
+							currencySymbol="#{superPagoView.detalleTransferencia.simboloMoneda}"
+							type="currency" />
+					</h:outputText>
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="Importe:" />
+				</p:column>
+				<p:column>
+					<h:outputText value="#{superPagoView.detalleTransferencia.importe}"
+						styleClass="product-price" style="font-weight: bold;">
+						<f:convertNumber
+							currencySymbol="#{superPagoView.detalleTransferencia.simboloMoneda}"
+							type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Canal" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descCanal}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Estado:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descEstado}"
+						style="font-weight: bold;" />
+				</p:column>
+			</p:row>
+
+			<p:row rendered="#{superPagoView.detalleTransferencia.idClienteOrigen != null}">
+				<p:column>
+					<h:outputText value="Cliente origen:" />
+				</p:column>
+				<p:column colspan="2">
+					<h:outputText
+						value="(#{superPagoView.detalleTransferencia.idClienteOrigen}) #{superPagoView.detalleTransferencia.razonSocialClienteOrigen}"
+						style="font-weight: bold;" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="Cliente/Titular destino:" />
+				</p:column>
+				<p:column colspan="2">
+					<h:outputText
+						value="(#{superPagoView.detalleTransferencia.idClienteDestino}) #{superPagoView.detalleTransferencia.razonSocialClienteDestino}"
+						style="font-weight: bold;" rendered="#{superPagoView.detalleTransferencia.codMnemonicoEntDestino == 'SUPERPAGO'}"/>
+
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.titularDestino}" rendered="#{superPagoView.detalleTransferencia.codMnemonicoEntDestino != 'SUPERPAGO'}" style="font-weight: bold;" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="Ent. Origen:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descEntidadOrigen}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Tip.Id.Orig:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descTipoIdentifOrigen}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Cod.Id.Orig:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.codigoIdentifOrigen}"
+						style="font-weight: bold;" />
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="Ent. Destino:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descEntidadDestino}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Tip.Id.Dest:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.descTipoIdentifDestino}"
+						style="font-weight: bold;" />
+				</p:column>
+
+				<p:column>
+					<h:outputText value="Cod.Id.Dest:" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{superPagoView.detalleTransferencia.codigoIdentifDestino}"
+						style="font-weight: bold;" />
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+	</sec:authorize>
+</ui:composition>

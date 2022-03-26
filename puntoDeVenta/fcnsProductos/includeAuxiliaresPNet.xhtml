@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	
+		<!-- ###################################################### -->
+		<!-- DEFINICION DE PANTALLAS MODALES -->
+		<!-- ###################################################### -->
+		
+		<p:dialog header="#{pNetView.modalPanelTitulo}" id="facturaPanel"
+			widgetVar="facturaPanelWV" modal="true" resizable="false" dynamic="true"
+			appendTo="@(body)" closable="true" height="auto" width="750" closeOnEscape="true">
+			
+			<h:form prependId="false" onsubmit="return false;">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<f:facet name="controls">
+					<p:outputPanel>
+						<p:commandButton id="hidelinkTicketFacturaPanel" value="X"
+							style="cursor:pointer;"
+							onclick="PF('facturaPanelWV').hide();return false;" />
+					</p:outputPanel>
+				</f:facet>
+	
+				<p:outputPanel id="facturaPanelGroup" style="text-align: center;">
+					<h:outputText value="#{pNetView.transaccionDatos}" escape="false"
+						id="transaccionDatos" />
+					<h:outputText value="#{pNetView.contenido}" escape="false"
+						id="contenido" />
+				</p:outputPanel>
+	
+				<br />
+			</h:form>
+		</p:dialog>
+	
+	
+		<p:dialog header="Confirmación de Cobro" id="idConfirmarPanel"
+			widgetVar="confirmarPanel" modal="true" resizable="false" dynamic="true"
+			appendTo="@(body)" closable="true" height="auto" width="auto" closeOnEscape="true">		
+			
+			<p:ajax event="close" update="idConfirmarPanel" resetValues="true"/>
+			
+			<h:form id="idConfirmarPanelForm" prependId="false" onsubmit="return false;">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:focus for="ConfirmarMonto" />
+				
+				<f:facet name="controls">
+					<p:outputPanel>
+						<p:commandButton id="hidelinkConfirmarPanel" value="X"
+							style="cursor:pointer;"
+							onclick="PF('confirmarPanel').hide();return false;" />
+					</p:outputPanel>
+				</f:facet>
+	
+				<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel for="ConfirmarMontoACobrar" value="Monto A Cobrar" />
+						</p:column>
+						<p:column>
+							<p:inputText id="ConfirmarMontoACobrar"
+								name="ConfirmarMontoACobrar" value="#{pNetView.totalAPagar}"
+								disabled="true" style="text-align:right" />
+						</p:column>
+					</p:row>
+	
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel value="Monto Recibido" />
+						</p:column>
+						<p:column>
+	
+							<p:inputNumber id="ConfirmarMonto" name="ConfirmarMonto"
+								value="#{pNetView.confirmarMonto}" thousandSeparator=""
+								decimalSeparator="." inputStyle="text-align:right" onfocus="this.setSelectionRange(0, 0);">
+								<p:ajax event="keyup" update="confirmarVueltoAEntregar" listener="#{pNetView.calcular}" global="false" />
+							</p:inputNumber>  
+						</p:column>
+					</p:row>
+	
+	
+					<p:row>
+						<p:column style="width:120px">
+							<h:outputLabel value="Vuelto A Entregar" />
+						</p:column>
+						<p:column>
+	
+							<p:inputNumber id="confirmarVueltoAEntregar"
+								name="confirmarVueltoAEntregar" value="#{pNetView.confirmarVueltoAEntregar}" disabled="true"
+								thousandSeparator="" decimalSeparator="."
+								inputStyle="text-align:right;color:#{pNetView.confirmarVueltoAEntregarColor};background-color:#{pNetView.confirmarVueltoAEntregarBackgroundColor};"
+								 />
+						</p:column>
+					</p:row>
+	
+					<p:row>
+						<p:column style="width:120px">
+						</p:column>
+						<p:column>
+							<p:commandButton
+								action="#{pNetView.invocarPNet('ctp', '', '', '')}"
+								style="width: 180px" styleClass="buttonMenuContinuar"
+								name="btnMPConfirmarPagos" id="btnMPConfirmarPagos"
+								value="CONFIRMAR PAGOS (F10)" process="@this"
+								update="panelProductos"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+	
+			</h:form>
+		</p:dialog>
+	
+		<h:outputScript library="js" name="pnet/pnet.js" />
+		<h:outputScript library="js" name="pnet/popup.js" />
+		
+		
+	</sec:authorize>
+</ui:composition>

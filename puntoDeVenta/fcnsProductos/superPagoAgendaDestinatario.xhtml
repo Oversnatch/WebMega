@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:toolbar id="botoneraAgDest">
+			<f:facet name="left">
+				<p:commandButton process="@this agendaDestDT" icon="pi pi-eye"
+					value="Detalle" id="btnDetDest" action="#{superPagoView.detalleDestinatario}" title="Detalle de destinatario"/>
+
+				<p:spacer width="5"/>
+				
+				<p:commandButton process="@this" icon="pi pi-file"
+					value="Nuevo" id="btnAgregaDest" action="#{superPagoView.altaDestinatario}" title="Agregar nuevo destinatario"/>
+
+				<p:spacer width="5"/>
+				
+				<p:commandButton process="@this agendaDestDT" icon="pi pi-pencil"
+					value="Modificar" id="btnModDest" action="#{superPagoView.modificacionDestinatario}" title="Modificar destinatario"/>
+
+				<p:spacer width="5"/>
+				
+				<p:commandButton process="@this agendaDestDT" icon="pi pi-times-circle"
+					value="Eliminar" id="btnDelDest" action="#{superPagoView.eliminacionDestinatario}" title="Eliminar destinatario"/>
+			</f:facet>
+
+			<f:facet name="right">
+				<p:commandButton icon="pi pi-refresh" update="agendaDestDT" title="Refrescar informacion"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+				<p:spacer width="5"/>
+			
+				<p:commandButton value="Borrar Filtros"
+					onclick="PF('agendaDestDTWV').clearFilters()" update="agendaDestDT" 
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+			</f:facet>
+		</p:toolbar>
+	
+		<p:dataTable id="agendaDestDT" widgetVar="agendaDestDTWV"
+			value="#{superPagoView.listaDeAgendaDestinatarios}"	var="destinatario" 
+			lazy="true" rowHover="true" filterEvent="enter" paginator="true"
+			rowIndexVar="desRowIndex" sortBy="#{destinatario.referencia}" sortOrder="ASCENDING"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+			sortMode="single" emptyMessage="No existen registros para mostrar."
+			style="margin-top:3px;table-layout: fixed; width:100%;margin-bottom:0px"
+			rows="150"
+			selectionMode="single"
+			selection="#{superPagoView.itemAgendaDestinatario}">
+			
+			<p:column headerText="Referencia"
+				style="border-right: 1px solid #c8c8c8 !important;width:150px"
+				filterBy="#{destinatario.referencia}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{destinatario.referencia}">
+				<h:outputText value="#{destinatario.referencia}" />
+			</p:column>
+
+			<p:column headerText="Titular de la cta."
+				style="border-right: 1px solid #c8c8c8 !important;width:250px"
+				filterBy="#{destinatario.titular}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{destinatario.titular}">
+				<h:outputText value="#{destinatario.titular}" />
+			</p:column>
+
+			<p:column headerText="Entidad Financiera"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{destinatario.idEntidadFinanciera}"
+				filterStyle="width:100% !important;"
+				sortBy="#{destinatario.descEntidadFinanciera}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('agendaDestDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.entidadesFinancierasOrigen}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{destinatario.descEntidadFinanciera}" />
+			</p:column>
+			
+			<p:column headerText="Tipo ident. cta."
+				style="border-right: 1px solid #c8c8c8 !important;width:130px"
+				filterBy="#{destinatario.idTipoIdentifCta}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{destinatario.descTipoIdentifCta}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('agendaDestDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.tiposIdentificacionCuenta}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{destinatario.descTipoIdentifCta}" />
+			</p:column>
+			
+
+			<p:column headerText="Cod. ident. cta."
+				style="border-right: 1px solid #c8c8c8 !important;width:170px"
+				filterBy="#{destinatario.codigoIdentifCta}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{destinatario.codigoIdentifCta}">
+				<h:outputText value="#{destinatario.codigoIdentifCta}" />
+			</p:column>
+
+			<p:column headerText="Cta. Propia"
+				style="border-right: 1px solid #c8c8c8 !important;text-align:center;width:100px"
+				sortBy="#{destinatario.esCtaPropia}">
+				
+				<p:outputPanel rendered="#{destinatario.esCtaPropia}">
+					<i class="pi pi-check"/>
+				</p:outputPanel>
+			</p:column>
+		</p:dataTable>
+		
+	</sec:authorize>
+
+</ui:composition>

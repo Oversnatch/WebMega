@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Confirmación" id="confirmaDelDestinatarioDialog"
+			widgetVar="confirmaDelDestinatarioDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="auto">
+
+			<h:form id="formConfirmacionDelDestinatario" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de eliminar el destinatario?" />
+				</p:outputPanel>
+
+				<p:divider />
+
+				<p:commandButton icon="ui-icon-check" value="Si"
+					actionListener="#{superPagoView.configrmarEliminacionDestinatario}"
+					process="@this" update="panelProductos"
+					oncomplete="PF('confirmaDelDestinatarioDialogWV').hide()}"
+					style="margin-right: 10px;" />
+
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaDelDestinatarioDialogWV').hide()" />
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Administracion de Destinatarios"
+			id="admDestCtaDialog" widgetVar="admDestCtaDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="auto"
+			dynamic="true" onHide="PF('admDestCtaDialogWV').content.empty()"
+			responsive="true" position="left,top">
+
+			<p:outputPanel id="admDestCta"
+				rendered="#{superPagoView.muestraCRUDAdmDestCta}">
+				<h:form id="formAdmDestCtaDialog" prependId="false">
+					<p:messages id="msgsAdminDest" showDetail="false" />
+
+					<p:outputPanel class="ui-fluid">
+
+
+						<input type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" />
+
+						<div class="p-field">
+							<p:outputLabel for="titular" value="Titular" />
+							<p:inputText id="titular"
+								value="#{superPagoView.itemAgendaDestinatario.titular}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="tiposIdenTrib" value="Tipo Identif. Trib." />
+							<p:selectOneMenu
+								value="#{superPagoView.itemAgendaDestinatario.idTipoIdenTrib}"
+								id="tiposIdenTrib" 
+								disabled="#{superPagoView.operacion == 'DETALLE'}"
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+								<f:selectItem
+									itemLabel="--- Seleccione Identificacion Tributaria ---"
+									itemValue="#{null}" />
+								<f:selectItems
+									value="#{superPagoView.tiposIdentificacionTributaria}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="nroIdentTrib"
+								value="Nro. Identif. Tributaria." />
+							<p:inputText id="nroIdentTrib"
+								value="#{superPagoView.itemAgendaDestinatario.nroIdenTrib}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="refDest" value="Referencia" />
+							<p:inputText id="refDest"
+								value="#{superPagoView.itemAgendaDestinatario.referencia}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="tiposIdenCta" value="Identificacion Cta." />
+							<p:selectOneMenu
+								value="#{superPagoView.tipoIdentificacionCuenta}"
+								id="tiposIdenCta"
+								disabled="#{superPagoView.operacion == 'DETALLE'}"
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+								converter="#{tipoIdentificacionCtaConverter}">
+								<p:ajax event="change" update="codIdenCta entidadesFinancieras" process="@this" listener="#{superPagoView.actualizarTipoIdenCta}"/>
+								<f:selectItem itemLabel="--- Seleccione Identificacion Cta ---"
+									itemValue="#{null}" />
+								<f:selectItems	value="#{superPagoView.tiposIdentificacionCuenta}" var="itm" itemValue="#{itm}" 
+									itemLabel="#{itm.descripcion}"/>
+							</p:selectOneMenu>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="codIdenCta" value="Cod. Identif. Cta." />
+							<p:inputText id="codIdenCta"
+								value="#{superPagoView.itemAgendaDestinatario.codigoIdentifCta}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" 
+								onkeyup="return this.value.length > 21">
+								<p:ajax event="keyup" listener="#{superPagoView.validarNumeroCBU}" update="entidadesFinancieras"/>
+							</p:inputText>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="entidadesFinancieras"
+								value="Entidad Financiera" />
+							<p:selectOneMenu
+								value="#{superPagoView.itemAgendaDestinatario.idEntidadFinanciera}"
+								id="entidadesFinancieras"
+								disabled="#{superPagoView.operacion == 'DETALLE'}"
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+								<f:selectItem itemLabel="--- Seleccione Entidad Financiera ---"
+									itemValue="#{null}" />
+								<f:selectItems
+									value="#{superPagoView.entidadesFinancierasAgDest}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="ctaPropia" value="Es cuenta propia " />
+							<p:selectBooleanCheckbox id="ctaPropia"
+								value="#{superPagoView.itemAgendaDestinatario.esCtaPropia}"
+								itemLabel=""
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="estCtaCte" value="Es cuenta corriente " />
+							<p:selectBooleanCheckbox id="estCtaCte"
+								value="#{superPagoView.itemAgendaDestinatario.esCtaCte}"
+								itemLabel=""
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="email" value="Email" />
+							<p:inputText id="email"
+								value="#{superPagoView.itemAgendaDestinatario.emailNotifTransfer}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton value="Grabar" update="@form"
+						actionListener="#{superPagoView.grabarItmAgendaDestinatario}"
+						process="@this formAdmDestCtaDialog"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admDestCtaDialogWV').hide()"
+						rendered="#{superPagoView.operacion != 'DETALLE'}"
+						icon="pi pi-check" />
+
+					<p:spacer width="5"/>
+					
+					<p:commandButton icon="pi pi-times" value="Cancelar"
+						actionListener="#{superPagoView.cancelarDialogoDestinatario}"
+						process="@this" update=":agendaDestDT" />
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+
+
+		<h:outputScript library="js"
+			name="superPagoAgendaDestinatarios.js?v1.1" />
+	</sec:authorize>
+</ui:composition>

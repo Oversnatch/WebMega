@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	
+		<p:outputPanel id="mnuIconos">
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-dep-sol-adel" title="Inf. Dep. y Sol. Adelantos" actionListener="#{puntoVentaView.navegarFcnsAdministracion(2)}"
+				id="cbInfDepYSolAdelantos"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbInfDepYSolAdelantos'] and usuarioHelper.usuarioSession().soloInformes == 0 and usuarioHelper.usuarioSession().habilitarVirtual == 1}" />
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-acr-bmr" title="Acreditaciones BMR" actionListener="#{puntoVentaView.navegarFcnsAdministracion(3)}"
+				id="cbAcreditacionBMR"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbAcreditacionBMR'] and usuarioHelper.usuarioSession().soloInformes == 0 and usuarioHelper.usuarioSession().idEntidad == 1 and usuarioHelper.usuarioSession().habilitarVirtual == 1}" />
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pass" title="Cambio de clave" actionListener="#{puntoVentaView.navegarFcnsAdministracion(1)}" 
+				id="cbCambioDeClave"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbCambioDeClave']}" />
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pass" title="Seleccion de Aranceles" actionListener="#{puntoVentaView.navegarFcnsAdministracion(4)}" 
+				id="cbSelecionAranceles"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbSelecionAranceles']}" />				
+		</p:outputPanel>
+	</sec:authorize>
+</ui:composition>

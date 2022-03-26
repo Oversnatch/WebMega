@@ -1,0 +1,232 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<div class="ui-g">
+			<div class="ui-g-5 ui-md-5">
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%">
+					<p:row>
+						<p:column width="80">
+							<h:outputLabel for="producto" value="Producto" styleClass="texto textoFontSizeCustom" />
+						</p:column>
+
+						<p:column width="120">
+							<p:focus for="producto" />
+							<p:selectOneMenu id="producto"
+								value="#{puntoVentaView.idProducto}" styleClass="textoVta textoFontSizeCustom"
+								defaultLabel="Seleccione un Producto" style="width:221px;" 
+								filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+								onkeydown="setNext(event.keyCode, 'valorIn1');">
+								<f:selectItem itemValue="" itemLabel="Seleccione un Producto" />
+								<f:selectItems value="#{puntoVentaView.productos}" />
+								<p:ajax event="change" onstart="PF('blockPanelGral').show();"
+									listener="#{puntoVentaView.cambiarLogoOn}"
+									update="logoProdOn,leyenda,panelCarga,panelMoneda,panelMonedaLabel,panelPVimpON,panelPVimpONlabel,botonesProducto,prodON_comentarios,msgsProductos"
+									oncomplete="ACGSiteScriptsFCNS.refreshMonPV();" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputPanel id="leyenda">
+								<h:outputLabel value="#{puntoVentaView.leyenda}" styleClass="texto textoFontSizeCustom"  escape="false" />
+							</p:outputPanel>
+						</p:column>
+
+						<p:column>
+							<p:outputPanel id="panelCarga" style="max-width: 350px;">
+
+								<!--   valorIn1   -->
+								<h:outputLabel value="0 " style="width:30px;" class="textoVta textoFontSizeCustom"
+									rendered="#{puntoVentaView.idTipoProducto == 1}" />
+
+								<p:inputText id="valorIn1" value="#{puntoVentaView.valorIn1}"
+									styleClass="textoVta textoFontSizeCustom"
+									style="width:#{puntoVentaView.anchoValorIn1}px;margin-bottom: 3px;margin-right: 16px;"
+									maxlength="#{puntoVentaView.maxLengthValorIn1}"
+									rendered="#{puntoVentaView.anchoValorIn1 > 0}"
+									onkeypress="setNext(event.keyCode, 'valorIn2')"
+									/>
+								<p:keyFilter for="valorIn1" mask="pint" rendered="#{puntoVentaView.valorNumericoIn1}" preventPaste="false" />
+
+								<!--   valorIn2   -->
+								<h:outputLabel value=" 15 " style="width:30px;" styleClass="textoVta textoFontSizeCustom"
+									rendered="#{puntoVentaView.idTipoProducto == 1}" />
+
+								<p:inputText id="valorIn2" value="#{puntoVentaView.valorIn2}"
+									styleClass="textoVta"
+									style="width:#{puntoVentaView.anchoValorIn2}px;margin-bottom: 3px;"
+									maxlength="#{puntoVentaView.maxLengthValorIn2}"
+									rendered="#{puntoVentaView.anchoValorIn2 > 0}"
+									onkeypress="if(document.getElementById('valorIn3') != null) {setNext(event.keyCode, 'valorIn3'); }else{if(document.getElementById('importePVMain_input') != null) {setNext(event.keyCode, 'importePVMain_input'); }else{setNext(event.keyCode, 'importesDisponiblesON_input');}}"
+									 />
+								<p:keyFilter for="valorIn2" mask="pint" rendered="#{puntoVentaView.valorNumericoIn2}" preventPaste="false" />									 
+
+								<!--   valorIn3   -->
+
+								<h:outputLabel value="606126 " style="width:70px;"
+									styleClass="textoVta textoFontSizeCustom"
+									rendered="#{puntoVentaView.idTipoProducto == 15}" />
+
+								<p:inputText id="valorIn3" value="#{puntoVentaView.valorIn3}"
+									styleClass="textoVta"
+									style="width:#{puntoVentaView.anchoValorIn3}px;margin-bottom: 3px;"
+									maxlength="#{puntoVentaView.maxLengthValorIn3}"
+									rendered="#{puntoVentaView.anchoValorIn3 > 0}"
+									onkeypress="if(document.getElementById('importePVMain_input') != null) {setNext(event.keyCode, 'importePVMain_input'); }else{setNext(event.keyCode, 'importesDisponiblesON_input');}" />
+								<p:keyFilter for="valorIn3" mask="pint" rendered="#{puntoVentaView.valorNumericoIn3}" preventPaste="false" />
+																	
+							</p:outputPanel>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputPanel id="panelMonedaLabel">
+								<h:outputLabel id="labelMonedaOnLine" for="moneda"
+									value="Moneda" styleClass="texto textoFontSizeCustom"
+									rendered="#{puntoVentaView.solicitarImporte}" />
+							</p:outputPanel>
+						</p:column>
+
+						<p:column>
+							<p:outputPanel id="panelMoneda">
+								<p:selectOneMenu id="moneda" value="#{puntoVentaView.idMoneda}"
+									styleClass="textoVta" style="width:221px;"
+									rendered="#{puntoVentaView.solicitarImporte}" defaultLabel="Pesos" 
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+									onkeydown="if(document.getElementById('importePVMain_input') != null) {setNext(event.keyCode, 'importePVMain_input'); }else{setNext(event.keyCode, 'importesDisponiblesON_input');}">
+									<f:selectItem itemValue="$" itemLabel="Pesos" />
+								</p:selectOneMenu>
+							</p:outputPanel>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputPanel id="panelPVimpONlabel">
+								<h:outputLabel id="labelImporteOnLine" for="importePVMain"
+									value="Importe" styleClass="texto textoFontSizeCustom"
+									rendered="#{puntoVentaView.solicitarImporte}" />
+							</p:outputPanel>
+						</p:column>
+
+						<p:column>
+							<p:outputPanel id="panelPVimpON">
+								<p:inputNumber id="importePVMain"
+									value="#{puntoVentaView.importe}" styleClass="textoVta"
+									inputStyle="width:221px;" decimalPlaces="2"
+									decimalSeparator="." thousandSeparator=""
+									rendered="#{puntoVentaView.solicitarImporte and puntoVentaView.importesDisponiblesON == null}"
+									onkeypress="setNext(event.keyCode, 'btnConfirmarVta')"
+									 />
+
+								<p:selectOneMenu id="importesDisponiblesON"
+									value="#{puntoVentaView.importe}"
+									rendered="#{puntoVentaView.solicitarImporte and puntoVentaView.importesDisponiblesON != null}"
+									styleClass="textoVta" style="width: 221px;" defaultLabel="Seleccione un importe" 
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+									onkeypress="setNext(event.keyCode, 'btnConfirmarVta')">
+									<f:selectItem itemValue="" itemLabel="Seleccione un Importe" />
+									<f:selectItems value="#{puntoVentaView.importesDisponiblesON}" />
+								</p:selectOneMenu>
+							</p:outputPanel>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2">
+							<h:outputText id="prodON_comentarios" escape="false"
+								value="#{puntoVentaView.comentariosOn}" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:divider />
+
+				<p:outputPanel id="botonesProducto">
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+							onclick="PF('blockPanelGral').show()"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+			        <p:splitButton id="btnConfirmarVta" value="Confirmar Vta." rendered="#{puntoVentaView.botonAceptar}"
+							actionListener="#{puntoVentaView.realizarVenta}"
+							process="panelProductos"
+							update="panelProductos :panelSaldoUsuario"
+							oncomplete="refreshBanner();setTimeout(function(){ACGSiteScriptsFCNS.productoResize();ACGSiteScriptsFCNS.monitorPVResize();}, 500);"
+							onkeypress="if(event.keyCode == 13) {this.click(); return false;}"
+							styleClass="textoFontSizeCustom splitButtonMarginRight">
+							<p:confirm header="Confirmacion"
+								message="#{puntoVentaView.idTipoProducto == 15 ? 'Esta a punto de realizar la carga, recuerde luego acreditar la misma en el Dispositivo' : 'Esta seguro realizar la venta?'}" icon="ui-icon-alert" />
+				            <p:menuitem value="Con Ticket" action="#{puntoVentaView.cambiarImpresionTickets(1)}" icon="#{puntoVentaView.impresionTickets == 1 ? 'pi pi-check' : '' }" update="btnConfirmarVta" />
+				            <p:menuitem value="Sin Ticket" action="#{puntoVentaView.cambiarImpresionTickets(2)}" icon="#{puntoVentaView.impresionTickets == 2 ? 'pi pi-check' : '' }" update="btnConfirmarVta" />
+			        </p:splitButton>  
+
+					<p:commandButton value="Consultar"
+						rendered="#{not puntoVentaView.botonAceptar}"
+						actionListener="#{puntoVentaView.consultaPreviaVenta}"
+						onclick="PF('blockPanelGral').show();"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('confirmaVentaDialogWV').show();"
+						update="msgsProductos" 
+						styleClass="textoFontSizeCustom"
+						style="margin-right: 20px;"
+						 />
+
+					<p:commandButton value="Mostrar Ult. Ticket"
+						actionListener="#{puntoVentaView.mostrarTicket('ONLINE')}"
+						process="@this" onclick="PF('blockPanelGral').show();"
+						rendered="#{not empty puntoVentaView.ticket &amp;&amp; not puntoVentaView.ticket.error.value.hayError.value}"
+						update="msgsProductos" 
+						styleClass="textoFontSizeCustom"
+						style="margin-right: 10px;"
+						/>
+
+					<p:commandButton value="Cerrar Lote"
+						actionListener="#{puntoVentaView.cerrarLote}" process="@this"
+						onclick="PF('blockPanelGral').show();" update="msgsProductos" 
+						styleClass="textoFontSizeCustom"
+						style="margin-right: 10px;" >
+						<p:confirm header="Confirmacion"
+							message="Esta seguro de cerrar el lote?" icon="ui-icon-alert" />
+					</p:commandButton>
+
+					<p:commandButton value="Consultar Lote"
+						actionListener="#{puntoVentaView.consultarLote}" process="@this"
+						onclick="PF('blockPanelGral').show();" update="msgsProductos" 
+						styleClass="textoFontSizeCustom"
+						style="margin-bottom: 10px;" />
+
+				</p:outputPanel>
+			</div>
+
+			<div class="ui-g-1 ui-md-1">
+				<p:graphicImage id="logoProdOn" url="#{puntoVentaView.logoOn}"
+					style="max-width:120px" />
+			</div>
+
+			<div class="ui-g-6 ui-md-6">
+				<p:outputPanel id="panelGroupMonPV" style="text-align:center;">
+					<ui:include src="panelMonitorPV.xhtml" />
+				</p:outputPanel>
+			</div>
+		</div>
+
+		<p:remoteCommand name="refreshMonProductosOnlinePV" update="panelGroupMonPV"
+			actionListener="#{monitorTrxsView.inicializarMonitoreo}"
+			oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.monitorPVResize();}, 500);" global="false" async="true" />
+
+		
+	</sec:authorize>
+
+
+</ui:composition>

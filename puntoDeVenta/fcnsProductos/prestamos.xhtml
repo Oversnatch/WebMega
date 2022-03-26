@@ -1,0 +1,176 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+			<div class="ui-g">
+			<div class="ui-g-6 ui-md-6">
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%">
+					<p:row>
+						<p:column>
+							<p:focus for="rbTipoBeneficiario" />
+							<p:tooltip for="rbTipoBeneficiario" trackMouse="true"
+								showDelay="500" styleClass="tooltip">
+								<span style="white-space: nowrap"> Seleccione el Tipo de
+									Beneficiario y cargue el identificador en la caja de texto de
+									la derecha<br /> NB=Numero de Beneficiario; DNI=Documento
+									Unico de Identidad; LI=Libreta de Enrolamiento; LC=Libreta
+									Civica
+								</span>
+							</p:tooltip>
+							<h:selectOneRadio id="rbTipoBeneficiario"
+								value="#{puntoVentaView.rbTipoBeneficiario}">
+								<f:selectItem itemValue="0" itemLabel="NB" />
+								<f:selectItem itemValue="1" itemLabel="DNI" />
+								<f:selectItem itemValue="2" itemLabel="LE" />
+								<f:selectItem itemValue="3" itemLabel="LC" />
+							</h:selectOneRadio>
+						</p:column>
+
+						<p:column>
+							<p:tooltip for="j_idBeneficiario" trackMouse="true"
+								showDelay="500" styleClass="tooltip">
+								<span style="white-space: nowrap"> Para el caso de
+									Jubilados, seleccionar Nro Beneficiario e ingresar el Numero de
+									ANSES </span>
+							</p:tooltip>
+							<p:inputText id="j_idBeneficiario" maxlength="30" size="30"
+								value="#{puntoVentaView.idBeneficiarioPrestamo}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="j_importeNeto" value="Importe Neto de Recibo" />
+							<p:tooltip for="j_importeNeto" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Importe Neto que
+									recibe por recibo </span>
+							</p:tooltip>
+						</p:column>
+
+						<p:column>
+							<p:inputText id="j_importeNeto" maxlength="15" size="15"
+								value="#{puntoVentaView.importePrestamo}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="j_nroTel" value="Telefono" />
+							<p:tooltip for="j_areaTel" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Prefijo de Ciudad del
+									Telefono Fijo </span>
+							</p:tooltip>
+							<p:tooltip for="j_nroTel" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Numero del Telefono
+									Fijo </span>
+							</p:tooltip>
+						</p:column>
+
+						<p:column>
+							<p:inputText id="j_areaTel" maxlength="5" size="5"
+								value="#{puntoVentaView.caractTelFijoPrestamo}" /> - <p:inputText
+								id="j_nroTel" maxlength="15"
+								value="#{puntoVentaView.numeroTelFijoPrestamo}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="j_nroCel" value="Celular" />
+							<p:tooltip for="j_areaCel" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Prefijo de Ciudad del
+									Telefono Celular </span>
+							</p:tooltip>
+							<p:tooltip for="j_nroCel" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Numero del Telefono
+									Celular </span>
+							</p:tooltip>
+						</p:column>
+
+						<p:column>
+							<p:inputText id="j_areaCel" maxlength="5" size="5"
+								value="#{puntoVentaView.caractCelularPrestamo}" /> - <p:inputText
+								id="j_nroCel" maxlength="15"
+								value="#{puntoVentaView.numeroCelularPrestamo}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputLabel for="j_mail" value="Mail" />
+							<p:tooltip for="j_mail" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Mail del Beneficiario
+								</span>
+							</p:tooltip>
+						</p:column>
+
+						<p:column>
+							<p:inputText id="j_mail" maxlength="70" size="70"
+								value="#{puntoVentaView.mailPrestamo}" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+				<p:divider />
+
+				<p:outputPanel>
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+							onclick="PF('blockPanelGral').show()"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton id="bt_enviarSolicCons" value="Enviar"
+						actionListener="#{puntoVentaView.solicPrestamoConsulta}"
+						update="panelProductos :panelSaldoUsuario"
+						oncomplete="refreshBanner();setTimeout(function(){ACGSiteScriptsFCNS.puntoVentaResize();ACGSiteScriptsFCNS.monitorPVResize();}, 500);">
+						<p:confirm header="Confirmacion"
+							message="Esta seguro solicitar el prestamo?" icon="ui-icon-alert" />
+					</p:commandButton>
+
+					<p:tooltip for="bt_enviarSolicCons" trackMouse="true"
+						showDelay="500" styleClass="tooltip">
+						<span style="white-space: nowrap"> Envio de Solicitud de
+							Prestamo o Consulta </span>
+					</p:tooltip>
+				</p:outputPanel>
+			</div>
+
+			<div class="ui-g-6 ui-md-6">
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%;">
+					<p:row>
+						<p:column>
+							<h:outputLabel for="j_chk_consulta" value="Consulta" />
+
+							<p:tooltip for="j_chk_consulta" trackMouse="true" showDelay="500"
+								styleClass="tooltip">
+								<span style="white-space: nowrap"> Ingresando el ID
+									Beneficiario y tildando esta opcion, <br /> se realiza la
+									consulta del estado de la solicitud
+								</span>
+							</p:tooltip>
+
+							<div></div>
+
+							<p:selectBooleanCheckbox id="j_chk_consulta"
+								value="#{puntoVentaView.consultaPrestamo}" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+			</div>
+		</div>
+	</sec:authorize>
+</ui:composition>

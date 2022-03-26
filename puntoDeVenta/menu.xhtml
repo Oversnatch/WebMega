@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		<div class="ui-g-12" style="padding-bottom: 0px;padding-left: 3px;">
+			<h:form id="formMenuPpal" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<div class="p-grid">
+					<div class="p-col" style="padding-bottom: 0.2em !important;padding-left: 8px;padding-right: 0px;">
+						<p:tabMenu id="admTabMenu" activeIndex="#{puntoVentaView.indiceMenu}">
+							<p:menuitem value="Productos" id="miProductos"
+								actionListener="#{puntoVentaView.activaMenuIconos(0)}"
+								rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3admTabMenumiProductos']}"
+							/>
+							<p:menuitem value="Gestión" id="miGestion"
+								actionListener="#{puntoVentaView.activaMenuIconos(1)}" 
+								rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3admTabMenumiGestion']}" 
+							/>
+							<p:menuitem value="Reportes" id="miReportes"
+								actionListener="#{puntoVentaView.navegarFcnsPuntoDeVenta(2)}"
+								rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3admTabMenumiReportes']}" 
+							/>
+							<p:menuitem value="Publicidad" id="miPublicidad"
+								actionListener="#{puntoVentaView.navegarFcnsPuntoDeVenta(3)}"
+								rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3admTabMenumiPublicidad']}" 
+							/>								
+							<p:menuitem value="Reimpresión de Tickets" id="miReimpresionDeTickets"
+								actionListener="#{puntoVentaView.activaMenuIconos(4)}"
+								rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3admTabMenumiReimpresionDeTickets'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}" 
+							/>
+						</p:tabMenu>
+					</div>
+	
+					<div class="p-col-fixed" style="width: 50px;text-align:right;margin-right:5px;padding:0px;padding-right: 0.5em;">
+						<div style="border-bottom: 1px solid #c8c8c8;-moz-border-radius: 0px 0px 3px 0px; -webkit-border-radius: 0px 0px 3px 0px; border-radius: 0px 0px 3px 0px;">
+							<ui:include src="/secure/templates/bntSalir.xhtml" />
+						</div>					
+					</div>
+				</div>
+			</h:form>
+		</div>
+	</sec:authorize>		
+</ui:composition>

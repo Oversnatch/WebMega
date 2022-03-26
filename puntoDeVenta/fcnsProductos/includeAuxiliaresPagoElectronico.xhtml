@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Confirmación" id="confirmaAnulacionDialog"
+			widgetVar="confirmaAnulacionDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto" dynamic="true"
+			onHide="PF('confirmaAnulacionDialogWV').content.empty()">
+
+			<p:outputPanel id="confAnul"
+				rendered="#{pagoElectronicoView.muestraConfirmaAnulacion}">
+				<h:form id="formConfirmacion" prependId="false">
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+					<p:outputPanel style="margin-bottom: 10px;">
+						<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+						<h:outputText
+							value="Esta seguro de anular el cobro de la tarjeta #{pagoElectronicoView.pago.metodoDePago.marca} (#{pagoElectronicoView.pago.metodoDePago.tipoMedioDePago}), $#{pagoElectronicoView.pago.importeBase} en #{pagoElectronicoView.pago.cantidadCuotas} Pago/s?"
+							icon="ui-icon-alert" />
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton icon="ui-icon-check" value="Si"
+						actionListener="#{pagoElectronicoView.botonGPEANPT}"
+						process="@this" update="contenedorTabla"
+						oncomplete="PF('confirmaAnulacionDialogWV').hide()" style="margin-right: 10px;" />
+
+					<p:commandButton icon="ui-icon-close" value="No" actionListener="#{pagoElectronicoView.cancelarDialogoConfirmaAnulacion}"
+						oncomplete="PF('confirmaAnulacionDialogWV').hide()" />
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+		
+		<p:dialog header="Lector de tarjeta" id="lectorDeTarjetaDialog"
+			widgetVar="lectorDeTarjetaDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto" dynamic="true"
+			onHide="PF('lectorDeTarjetaDialogWV').content.empty()">
+
+			<p:outputPanel id="lectorTarjeta"
+				rendered="#{pagoElectronicoView.muestraDialogoLectorDeTarjeta}">
+				<h:form id="formLectorDeTarjeta" prependId="false" onkeypress="return event.keyCode != 13">
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+					<p:outputPanel style="margin-bottom: 10px;" class="ui-fluid">
+						<div class="p-field">
+							<h:outputText value="Deslice la tarjeta por el lector"/>
+							<p:password id="cardBandData" value="#{pagoElectronicoView.cardBandData}" onkeyup="if(event.keyCode == 13 || event.keyCode == 10){return true;}else{ return false;}">
+								<p:ajax event="keyup" oncomplete="PF('lectorDeTarjetaDialogWV').hide()" listener="#{pagoElectronicoView.parsearCardData}"/>										
+							</p:password>
+						</div>
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton icon="ui-icon-close" value="Cancelar" actionListener="#{pagoElectronicoView.cancelarDialogoLectorDeTarjeta}"
+					     oncomplete="PF('lectorDeTarjetaDialogWV').hide()" />
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+		
+		<h:outputScript library="js" name="pagoElectronico/pagoElectronico.js" />
+	</sec:authorize>
+</ui:composition>

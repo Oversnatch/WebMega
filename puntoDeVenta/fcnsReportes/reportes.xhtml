@@ -1,0 +1,231 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:fieldset id="fsRecargas" legend="Recargas" styleClass="reportes" 
+			rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclTransacciones'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclMovimientos'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclRepartoDeSaldos'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclResumenTRXs'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclComisiones'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclDepositosYAdelantos'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclCuentaCorriente'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclRentabilidad'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclclInfSeguros'] or  
+				usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclComisionesVigentes']}">
+				
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte" > 
+	
+				<p:commandLink id="clTransacciones"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(1)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclTransacciones'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Transacciones</div>
+				</p:commandLink>
+				
+	
+				<p:commandLink id="clMovimientos"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(2)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclMovimientos'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Movimientos</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clRepartoDeSaldos"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(3)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclRepartoDeSaldos'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Reparto de Saldos</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clResumenTRXs"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(4)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclResumenTRXs'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Resumen TRXs</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clComisiones"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(5)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclComisiones'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Comisiones</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clDepositosYAdelantos"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(6)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclDepositosYAdelantos'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Depositos y Adelantos</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clCuentaCorriente"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(7)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclCuentaCorriente'] and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Cuenta Corriente</div>
+					
+				</p:commandLink>
+	
+				<p:commandLink id="clRentabilidad"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(8)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclRentabilidad'] and usuarioHelper.usuarioSession().habilitarInformeRentabilidadPV == 1 and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Rentabilidad</div>
+					
+				</p:commandLink>
+	
+				<ui:remove>
+				<p:commandLink id="clInfSeguros"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(9)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclclInfSeguros'] and usuarioHelper.usuarioSession().habilitarSeguros}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Inf. Seguros</div>
+					
+				</p:commandLink>
+				</ui:remove>
+				<p:commandLink id="clComisionesVigentes"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(10)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsRecargasclComisionesVigentes'] and puntoVentaView.mostrarReporteComisionesVigentesPV}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Comisiones vigentes</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset id="fsSube" legend="SUBE" styleClass="reportes" rendered="#{(usuarioHelper.usuarioSession().permisosDeComponentes['3fsSubeclSubeTransacciones'] or usuarioHelper.usuarioSession().permisosDeComponentes['3fsSubeclSubeLotes']) and usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink id="clSubeTransacciones"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(11)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsSubeclSubeTransacciones'] and usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+					<div class="botonReporte ico-inf-sube"></div>
+					<div style="text-align: center;">SUBE Transacciones</div>
+					
+				</p:commandLink>
+				<p:commandLink id="clSubeLotes"
+					actionListener="#{puntoVentaView.navegarFcnsReportes(12)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsSubeclSubeLotes'] and usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+					<div class="botonReporte ico-inf-sube"></div>
+					<div style="text-align: center;">SUBE Lotes</div>
+					
+				</p:commandLink>
+	
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset id="fsPnet" legend="PNet" styleClass="reportes" rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsPNetclInformePNet'] and pNetView.mostrarPantallasDePNet == 1}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink id="clInformePNet" 
+					actionListener="#{puntoVentaView.navegarFcnsReportes(14)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsPNetclInformePNet'] and pNetView.mostrarPantallasDePNet == 1}">
+					<div class="botonReporte ico-inf-pnet"></div>
+					<div style="text-align: center;">Informe PNet</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset id="fsWU" legend="WU" styleClass="reportes" rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsWUclRepartoSaldosWU'] and usuarioHelper.usuarioSession().habilitarWU}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink id="clRepartoSaldosWU" 
+					actionListener="#{puntoVentaView.navegarFcnsReportes(13)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsWUclRepartoSaldosWU'] and usuarioHelper.usuarioSession().habilitarWU}">
+					<div class="botonReporte ico-inf-pf"></div>
+					<div style="text-align: center;">Reparto Saldos WU</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<p:fieldset id="fsPagosElectronicos" legend="Cobros Electrónicos" styleClass="reportes" rendered="#{(usuarioHelper.usuarioSession().permisosDeComponentes['3fsPagosElectronicosclListadoDePagos'] or usuarioHelper.usuarioSession().permisosDeComponentes['3fsPagosElectronicosclListadoAnulacionesPago'] )and pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink id="clListadoDePagos" 
+					actionListener="#{puntoVentaView.navegarFcnsReportes(15)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsPagosElectronicosclListadoDePagos'] and pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}">
+					<div class="botonReporte ico-inf-pago-online"></div>
+					<div style="text-align: center;">Listado de Cobros</div>
+					
+				</p:commandLink>
+				
+				<ui:remove>
+				<p:commandLink id="clListadoAnulacionesPago" 
+					actionListener="#{puntoVentaView.navegarFcnsReportes(16)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsPagosElectronicosclListadoAnulacionesPago'] and pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}">
+					<div class="botonReporte ico-inf-pago-online"></div>
+					<div style="text-align: center;">Listado de Anulaciones de un Pago</div>
+					
+				</p:commandLink>
+				</ui:remove>
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<p:fieldset id="fsGIRE" legend="GIRE" styleClass="reportes" rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsGIREclInformeGIRE']}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink id="clInformeGCSI" 
+					actionListener="#{puntoVentaView.navegarFcnsReportes(17)}"
+					rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3fsGIREclInformeGIRE']}">
+					<div class="botonReporte ico-inf-pf"></div>
+					<div style="text-align: center;">Informe Rapipago</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<script>
+			$('#panelProductos_content').css('overflow', 'auto');
+		</script>	 
+	</sec:authorize>		
+</ui:composition>

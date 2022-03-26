@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<style>
+.ui-multiselectlistbox-header {
+	font-weight: bold;
+	text-align: left !important;
+}
+
+.ui-multiselectlistbox-listcontainer {
+	border: none !important;
+	width: auto;
+}
+
+.ui-multiselectlistbox-list{
+	text-align: left;
+}
+
+.ui-multiselectlistbox-item{
+	min-width: 450px;
+}
+
+.ui-panelgrid-cell {
+	/* border-left: solid 5px red !important; */ 
+	vertical-align: top;
+    display: contents;
+}
+</style>
+
+		<div class="card">
+
+			<p:panelGrid columns="2" layout="grid" id="configuracion"
+				columnClasses="ui-g-12 ui-md-4 vertical-middle,ui-g-12 ui-md-4"
+				styleClass="ui-panelgrid-blank ui-fluid"
+				style="margin-bottom: 10px;">
+
+				<ui:remove>
+				<p:outputLabel value="Monedas"/>
+				<p:selectOneMenu value="#{superPagoView.seleccionIdMoneda}"
+					id="monedas" style="width:">
+					<f:selectItem itemLabel="--- Seleccione Moneda ---" itemValue="#{null}"/>
+					<f:selectItems value="#{superPagoView.monedas}" />
+					<p:ajax event="change" update="cuentas"/>
+				</p:selectOneMenu>
+				</ui:remove>
+
+				<p:outputLabel value="Cuenta de Acreditacion"/>
+				<p:selectOneMenu value="#{superPagoView.cuentaOrigen}"
+						id="cuentaOrigen"
+						disabled="#{superPagoView.operacion == 'DETALLE'}" 
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}" converter="#{cuentaConverter}">
+						<f:selectItem itemLabel="--- Seleccione Cuenta Origen ---"
+							itemValue="#{null}" />
+						<f:selectItems value="#{superPagoView.cuentasOrigen}"
+							var="cta"
+							itemLabel="#{cta.simboloMoneda} #{cta.numeroCuenta} - #{cta.simboloMoneda} #{cta.saldo}"
+							itemValue="#{cta}" />
+				</p:selectOneMenu>
+				
+				<p:divider />
+				<p:divider style="display:none;" />
+
+				<p:multiSelectListbox value="#{superPagoView.seleccionArancelDebito}"
+					effect="slide" header="Seleccion de Arancel Débito" showHeaders="true"
+					style="overflow: unset;border: none;width: auto;" id="arancelesDebito">
+					<f:selectItems value="#{superPagoView.arancelesDebito}" />
+				</p:multiSelectListbox>
+
+				<p:multiSelectListbox value="#{superPagoView.seleccionArancelCredito}"
+					effect="slide" header="Seleccion de Arancel Crédito" showHeaders="true"
+					style="overflow: unset;border: none;width: auto;" id="arancelesCredito">
+					<f:selectItems value="#{superPagoView.arancelesCredito}" />
+				</p:multiSelectListbox>
+				
+				<p:multiSelectListbox value="#{superPagoView.seleccionArancelDebito}"
+					effect="slide" 
+					style="overflow: unset;border: none;width: auto;" disabled="true">
+					<f:selectItems value="#{superPagoView.arancelesDebitoExtra}" />
+				</p:multiSelectListbox>
+
+				<p:multiSelectListbox value="#{superPagoView.seleccionArancelCredito}"
+					effect="slide" 
+					style="overflow: unset;border: none;width: auto;" disabled="true">
+					<f:selectItems value="#{superPagoView.arancelesCreditoExtra}" />
+				</p:multiSelectListbox>
+				
+				<p:divider />
+				<p:divider style="display:none;" />		
+				
+				<p:commandButton value="Actualizar" update="@form" actionListener="#{superPagoView.actualizarAranceles}" icon="pi pi-check" style="width: 150px;" />		
+				
+			</p:panelGrid>
+
+		</div>
+
+	</sec:authorize>
+
+</ui:composition>

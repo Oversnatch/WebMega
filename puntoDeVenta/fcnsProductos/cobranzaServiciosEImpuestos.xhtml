@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+			<p:row>
+				<p:column style="width:200px">
+					<p:outputPanel id="contenedorMenu" style="border: 1px solid lightgray;padding: 3px;">
+						<p:panelGrid style="width:100%" columns="1"
+							styleClass="panelNoBorder">
+	
+						
+							 <p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnManual" id="btnManual"
+								actionListener="#{cobranzaServImpView.invocarGCSI('cob','dlgmanual','','')}"
+								style="width: 180px;" value="PAGO SIN FACTURA (F7)"
+								rendered="#{cobranzaServImpView.showBtnManual and !cobranzaServImpView.loteTotalmenteAprobado}" update="facturaPanelGroup"
+								onclick="PF('blockPanelGral').show();"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();"/> 
+	
+						      <p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnBarra" id="btnBarra"
+								actionListener="#{cobranzaServImpView.invocarGCSI('cob','dlgbarra','','')}"
+								style="width: 180px;" value="PAGO BARRA (F8)"
+								rendered="#{cobranzaServImpView.showBtnBarra and !cobranzaServImpView.loteTotalmenteAprobado}" update="facturaPanelGroup"
+								onclick="PF('blockPanelGral').show();"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();"/> 
+					
+						
+							<p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnApertura" id="btnApertura"
+								actionListener="#{cobranzaServImpView.invocarGCSI((cobranzaServImpView.inicializadoGCSI ? 'ape' : 'est'),'','','')}"
+								style="width: 180px;" value="APERTURA"
+								rendered="#{cobranzaServImpView.showBtnApertura}"
+								onclick="PF('blockPanelGral').show();"
+								update="panelProductos"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();" />
+	
+							<p:commandButton
+								styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+								name="btnCierre" id="btnCierre"
+								actionListener="#{cobranzaServImpView.invocarGCSI('cie','','','')}"
+								style="width: 180px;" value="CIERRE"
+								rendered="#{cobranzaServImpView.showBtnCierre}"
+								onclick="PF('blockPanelGral').show();"
+								update="panelProductos"
+								oncomplete="ACGSiteScriptsFCNS.productoResize();" />
+						</p:panelGrid>
+					</p:outputPanel>
+					<p:outputPanel id="contenedorEstado"  style="margin-top: 5px;border: 1px solid lightgray;">
+						<p:panelGrid style="width:100%" columns="1"
+							styleClass="panelNoBorder">
+	
+							<h:outputText
+								value="Operaciones Activas: #{cobranzaServImpView.cantidadFacturas}"
+								id="operacionesActivas" name="operacionesActivas" />
+							<hr />
+							<h:outputText value="#{cobranzaServImpView.totalAPagar}" id="total"
+								name="total">
+								<f:convertNumber pattern="Total: $####.00" />
+							</h:outputText>
+	
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:column>
+				<p:column style="vertical-align:top !important">
+					<p:outputPanel id="contenedorTabla" style="border: 1px solid lightgray;padding: 3px;width:100%;">
+						<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+							<p:row>
+								<p:column>
+									<p:confirmDialog global="true">
+										<p:commandButton value="Si" type="button"
+											onclick="PF('blockPanelGral').show()"
+											styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+										<p:commandButton value="No" type="button"
+											styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+									</p:confirmDialog>
+									
+									<p:dataTable value="#{cobranzaServImpView.facturas}" var="fac"
+										id="facturas" style="width: 100%;" emptyMessage="No existen facturas para procesar"
+										tableStyle="table-layout: auto;">
+										<p:column headerText="Incluir" style="width: 50px;padding: 0;text-align: center;">
+											<p:selectBooleanCheckbox id="dep_incluir"
+												value="#{fac.incluir}"
+												disabled="#{fac.factura.estado.codMnemonico == 'RESPOPE' and fac.factura.resultado == '0'}">
+												<p:ajax event="change"
+													listener="#{cobranzaServImpView.recalcularTotales}"
+													update="operacionesActivas,total,contenedorBotonesInferiores,ConfirmarMontoACobrar">
+												</p:ajax>
+											</p:selectBooleanCheckbox>
+
+										  	<p:commandLink id="btnBorrarFactura" update="facturas, contenedorBotonesInferiores, contenedorEstado" actionListener="#{cobranzaServImpView.invocarGCSI('efg', '', '', '')}" rendered="#{fac.factura.estado.codMnemonico != 'ENVOPE' and fac.factura.estado.codMnemonico != 'RESPOPE' and fac.factura.estado.codMnemonico != 'TIMEOUTRW' and fac.factura.estado.codMnemonico != 'TIMEOUTCONN'}" >
+												<p:confirm header="Confirmacion" message="Esta seguro de borrar la factura?" icon="ui-icon-alert" />
+        										<i class="pi pi-trash" style="font-size: large;padding-top: 0px;" title="Borrar Factura"></i>
+												<f:setPropertyActionListener value="#{fac.factura}" target="#{cobranzaServImpView.facturaSeleccionada}" />
+    										</p:commandLink>
+										</p:column>
+
+										<p:column headerText="Descripcion">
+											<h:outputText value="#{fac.factura.descEmpresa}" />
+										</p:column>
+
+										<p:column style="text-align: right;width: 100px;" headerText="Importe">
+											<h:outputText value="#{fac.factura.importeAbonado}">
+												<f:convertNumber pattern="$####.00" />
+											</h:outputText>
+										</p:column>
+
+										<p:column style="text-align: center;width: 100px;padding: 0;" headerText="Estado">
+											<p:outputPanel id="iconosGrilla">
+												<i class="pi pi-circle-off" style="font-size: large;padding-top: 0px;display:#{(fac.factura.estado == null || fac.factura.estado.id == null) ? 'block' : 'none'}" title="Pendiente de Confirmación"></i>
+												<i class="pi pi-times" style="font-size: large;padding-top: 0px;color:red;display:#{fac.factura.estado.codMnemonico != 'RESPOPE' and 
+												                                                                                    fac.factura.estado.codMnemonico != 'TIMEOUTRW' and 
+												                                                                                    fac.factura.estado.codMnemonico != 'TIMEOUTCONN' and 
+												                                                                                    (fac.factura.estado.codMnemonico == 'RESPOPE' and fac.factura.resultado != '0') ? 'block' : 'none'}" title="Transaccion rechazada. Motivo: #{fac.factura.resultadoMsg}"></i>
+												<i class="pi pi-clock" style="font-size: large;padding-top: 0px;color:orange;display:#{fac.factura.estado.codMnemonico == 'TIMEOUTRW' ? 'block' : 'none'}" title="Transaccion en proceso. Motivo: #{fac.factura.resultadoMsg}"></i>
+												<i class="pi pi-replay" style="font-size: large;padding-top: 0px;color:orange;display:#{fac.factura.estado.codMnemonico == 'TIMEOUTCONN' ? 'block' : 'none'}" title="Transaccion NO procesada. Intente nuevamente."></i>
+												<i class="pi pi-check" style="font-size: large;padding-top: 0px;color:green;display:#{fac.factura.estado.codMnemonico == 'RESPOPE' and fac.factura.resultado == '0' ? 'block' : 'none'}" title="Transaccion aprobada"></i>
+											</p:outputPanel>
+										</p:column>
+
+										<p:column style="text-align: center;width: 50px;"
+											headerText="Ver">
+											<p:commandButton value="Descargar" id="bajarButtonPDF"
+												actionListener="#{cobranzaServImpView.invocarGCSI('exp','',fac.factura.id,'')}"
+												rendered="#{fac.factura.estado.codMnemonico == 'RESPOPE' and fac.factura.resultado == '0'}"
+												icon="pi pi-file-pdf" style="width:20;height:20;"
+												title="Exportar comprobante a PDF" ajax="false"
+												onclick="PF('blockPanelGral').show();"
+												oncomplete="PF('blockPanelGral').hide();">
+											</p:commandButton>
+
+										</p:column>
+
+										<p:column style="text-align: center;width: 50px;"
+											headerText="Imprimir">
+											<p:commandLink
+												actionListener="#{cobranzaServImpView.invocarGCSI('rei','',fac.factura.id,'')}"
+												rendered="#{fac.factura.estado.codMnemonico == 'RESPOPE' and fac.factura.resultado == '0'}">
+												<p:graphicImage name="images/iconfinder_printer_39263.png"
+													style="width:20px;height:20px;"
+													title="Imprimir comprobante" />
+											</p:commandLink>
+											<f:facet name="footer">
+												<p:commandLink
+													style=" #{cobranzaServImpView.imprimirTodos ? '' : 'display: none'}"
+													actionListener="#{cobranzaServImpView.invocarGCSI('rit','','','')}">
+													<p:graphicImage name="images/iconfinder_printer_39263.png"
+														style="width:20px;height:20px;"
+														title="Imprimir Todos los comprobantes" />
+												</p:commandLink>
+											</f:facet>
+
+										</p:column>
+
+									</p:dataTable>
+
+									<div class="btn-group"
+										style="padding: 16px; position: absolute; bottom: 0; padding-bottom: 16px; right: 0px;">
+
+										<p:outputPanel id="contenedorBotonesInferiores">
+											<p:commandButton actionListener="#{cobranzaServImpView.invocarGCSI('dlgcdp', '', '', '')}" 
+												rendered="#{cobranzaServImpView.confirmarHabilitado}"
+												style="width: 200px;" name="btnConfirmarPagos"
+												id="btnConfirmarPagos" value="CONFIRMAR PAGOS (F9)">
+											</p:commandButton>
+	
+											<p:commandButton
+												actionListener="#{cobranzaServImpView.invocarGCSI('cls', '', '', '')}"
+												rendered="#{cobranzaServImpView.borrarHabilitado}"
+												style="width: 200px;background-color: darkblue;margin-right: 7px;"
+												name="btnLimpiarLista" id="btnLimpiarLista"
+												value="NUEVA COBRANZA (F4)" update="panelProductos"
+												onclick="PF('blockPanelGral').show();"
+												oncomplete="ACGSiteScriptsFCNS.productoResize();">
+											</p:commandButton>
+										</p:outputPanel>	
+									</div>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+
+		<p:remoteCommand name="callPrintScript" 
+			actionListener="#{cobranzaServImpView.invocarGCSI()}" oncomplete="ACGSiteScriptsFCNS.productoResize();">
+			<f:param name="param_name1" assignTo="#{cobranzaServImpView.parametro}" />
+			<f:param name="param_name2" assignTo="#{cobranzaServImpView.tipo}" />
+			<f:param name="param_name3" assignTo="#{cobranzaServImpView.valor}" />
+		</p:remoteCommand>
+
+		<p:remoteCommand name="callScript" actionListener="#{cobranzaServImpView.invocarGCSI}"
+			onstart="PF('blockPanelGral').show();"  oncomplete="ACGSiteScriptsFCNS.productoResize();"
+			update="panelProductos,facturas,operacionesActivas,total,contenedorBotonesInferiores, facturaPanelGroup,ConfirmarMontoACobrar">
+		</p:remoteCommand>
+	</sec:authorize>
+
+</ui:composition>

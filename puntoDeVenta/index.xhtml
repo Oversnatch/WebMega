@@ -1,0 +1,16 @@
+<ui:composition template="/secure/templates/mainTemplate.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	    <!-- NOMBRE DE LA PAGINA WEB -->
+    	<ui:define name="title"> PUNTO DE VENTA</ui:define>
+	
+		<ui:define name="body" />
+	</sec:authorize>		
+</ui:composition>

@@ -1,0 +1,170 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:toolbar id="botoneraDepo">
+			<f:facet name="left">
+				<p:commandButton process="@this depositosDT" icon="pi pi-eye"
+					value="Detalle" id="btnDetdepo" action="#{superPagoView.detalleDeposito}" title="Detalle del deposito"/>
+
+				<p:spacer width="5"/>
+				
+				<p:commandButton process="@this" icon="pi pi-file"
+					value="Nuevo" id="btnAgregadepo" action="#{superPagoView.altaDeposito}" title="Realizar nuevo deposito"/>
+			</f:facet>
+
+			<f:facet name="right">
+				<p:commandButton icon="pi pi-refresh" update="depositosDT" title="Refrescar informacion"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+				
+				<p:spacer width="5"/>
+				
+				<p:commandButton value="Borrar Filtros"
+					onclick="PF('depositosDTWV').clearFilters()" update="depositosDT gridFiltroFecha" actionListener="#{superPagoView.borrarFiltrosFecha('DEPD')}" 
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+			</f:facet>
+		</p:toolbar>
+	
+		<p:panelGrid id="gridFiltroFecha" columns="4">
+			<p:column>
+				<p:outputLabel value="Fecha Desde" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfDde" pattern="yyyy-MM-dd" navigator="true" inputStyle="width:100%"
+					maxdate="#{superPagoView.fechaAhora}" validatorMessage="Fecha y hora invalida" value="#{superPagoView.fechaDesde}">
+				</p:datePicker>
+			</p:column>
+
+			<p:column>
+				<p:outputLabel value="Fecha Hasta" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfHta" pattern="yyyy-MM-dd"
+					navigator="true" inputStyle="width:100%"
+					value="#{superPagoView.fechaHasta}"
+					maxdate="#{superPagoView.fechaHoy}">
+				</p:datePicker>
+
+				<p:spacer width="5"/>
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarDepositosEnCuenta}"
+					icon="pi pi-filter" oncomplete="PF('depositosDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Depositos En Cuenta"/>
+			</p:column>
+		</p:panelGrid>
+	
+		<p:dataTable id="depositosDT" widgetVar="depositosDTWV"
+			value="#{superPagoView.listaDeTransferencias}"	var="depo" 
+			lazy="true" rowHover="true" filterEvent="enter" paginator="true"
+			rowIndexVar="desRowIndex" sortBy="#{depo.referencia}" sortOrder="ASCENDING"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+			sortMode="single" emptyMessage="No existen registros para mostrar."
+			style="margin-top:3px;table-layout: fixed; width:100%;margin-bottom:0px"
+			rows="150"
+			selectionMode="single"
+			selection="#{superPagoView.itemTransferencia}">
+			
+			<p:column headerText="Id. Dep."
+				style="border-right: 1px solid #c8c8c8 !important;width:80px"
+				filterBy="#{depo.idTransferencia}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{depo.idTransferencia}">
+				<h:outputText value="#{depo.idTransferencia}" style="float:right"/>
+			</p:column>
+
+			<p:column headerText="Usuario"
+				style="border-right: 1px solid #c8c8c8 !important;width:120px">
+				<h:outputText value="(#{depo.idUsuario}) #{depo.usuario}"/>
+			</p:column>
+
+			<p:column headerText="Fecha Dep."
+				style="border-right: 1px solid #c8c8c8 !important;width:100px;text-align:center"
+				sortBy="#{depo.fechaTransferencia}">
+
+				<h:outputText value="#{depo.fechaTransferencia}">
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputText>
+			</p:column>
+
+			<ui:remove>
+			<!-- Cuando se habiliten las depo automaticas -->
+			<p:column headerText="Clasificacion"
+				style="border-right: 1px solid #c8c8c8 !important;width:100px"
+				sortBy="#{depo.clasificacion}">
+				
+				<h:outputText value="#{depo.descClasificacion}" />
+			</p:column>
+			</ui:remove>
+
+			<p:column headerText="Entidad Origen"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{depo.idEntidadOrigen}"
+				filterStyle="width:100% !important;"
+				sortBy="#{depo.depo}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('depositosDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.entidadesFinancierasOrigen}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{depo.descEntidadOrigen}" />
+			</p:column>
+
+			<p:column headerText="Entidad Destino"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{depo.idEntidadDestino}"
+				filterStyle="width:100% !important;"
+				sortBy="#{depo.depo}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('depositosDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.entidadesFinancierasOrigen}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{depo.descEntidadDestino}" />
+			</p:column>
+
+			<p:column headerText="Moneda"
+				style="border-right: 1px solid #c8c8c8 !important;width:80px"
+				sortBy="#{depo.idMoneda}">
+				<h:outputText value="#{depo.simboloMoneda}" />
+			</p:column>
+
+			<p:column headerText="Importe"
+				style="border-right: 1px solid #c8c8c8 !important;width:100px"
+				sortBy="#{depo.importe}">
+				<h:outputText value="#{depo.importe}" style="float:right"/>
+			</p:column>
+
+			<p:column headerText="Estado"
+				style="border-right: 1px solid #c8c8c8 !important;width:170px"
+				filterBy="#{depo.idEstado}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{depo.descEstado}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('depositosDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.estadosTransferencia}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{depo.descEstado}" />
+			</p:column>
+		</p:dataTable>
+		
+	</sec:authorize>
+
+</ui:composition>

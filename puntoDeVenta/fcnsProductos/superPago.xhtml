@@ -1,0 +1,162 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	<style>
+		#panelProductos_content{
+			height: 100%;
+		}
+	</style>
+		<div class="card cuenta">
+			<p:megaMenu orientation="horizontal" autoDisplay="false"> 
+            	<p:menuitem icon="pi pi-fw pi-book" value="" title="Agenda de cuentas" rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"
+            	actionListener="#{puntoVentaView.navegarFcnsSuperPago(5, null)}" />
+
+            	<p:menuitem icon="pi pi-fw pi-wallet" value="" title="Verifica quien te solicito dinero"
+            	actionListener="#{puntoVentaView.navegarFcnsSuperPago(7, null)}"  rendered="#{puntoVentaView.usuario.permitirAprobacionesDeSolicitudesDeDinero}"/>
+
+            	<p:menuitem icon="pi pi-fw pi-cog" value="" title="Seleccion de Tazas y Plazos MEP"
+            	actionListener="#{puntoVentaView.navegarFcnsSuperPago(4, null)}" rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"/>
+            </p:megaMenu>
+            
+			<p:dataView var="cuenta" value="#{superPagoView.cuentas}"
+				gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+
+				<p:dataViewGridItem>
+					<div class="cuenta-grid-item card border-1">
+						<div class="cuenta-grid-item-top">
+							<div>
+								<i class="cuenta-category-icon" /> <span
+									class="cuenta-category">#{cuenta.numeroCuenta}</span>
+								
+							</div>
+							<ui:remove>
+							<span class="cuenta-badge status-#{cuenta.alias.toLowerCase()}">#{cuenta.alias}</span>
+							</ui:remove>
+							<SPAN class="cuenta-badge status-#{cuenta.estado.codMnemonico.toLowerCase()}">#{cuenta.estado.descripcion}</SPAN>
+						</div>
+						<div class="cuenta-grid-item-content">
+							<p:outputPanel id="cuentaLogoGrid">
+								<p:graphicImage name="#{cuenta.logo}" style="height: 100px;width: auto;" rendered="#{cuenta.logo != null}"/>
+							</p:outputPanel>
+							<div class="cuenta-name">#{cuenta.productoDescripcion} #{cuenta.simboloMoneda}</div>
+							<p:commandLink id="ajax" update="msgsProductos"
+								actionListener="#{superPagoView.transferir}"
+								style="margin-right:20px;">
+								<ui:remove>
+									<h:outputText value="Transferir" />
+								</ui:remove>
+							</p:commandLink>
+						</div>
+						<div class="cuenta-grid-item-bottom" style="text-align: right;">
+							<h:outputText value="#{cuenta.simboloMoneda} " styleClass="cuenta-price"  style="float: right;display: contents;font-weight: bold;#{cuenta.saldo > 0 ? 'color: green;' : 'color: red;'  }" 
+							   rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"/>
+							<h:outputText value="#{cuenta.saldo}" styleClass="cuenta-price" style="float: right;display: contents;font-weight: bold;#{cuenta.saldo > 0 ? 'color: green;' : 'color: red;'  }"
+							   rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+
+							<p:splitButton value="Movimientos"
+								actionListener="#{puntoVentaView.navegarFcnsSuperPago(1, cuenta)}"
+								update="msgsProductos" >
+								<ui:remove>
+									<p:menuitem value="Pagar"
+										actionListener="#{superPagoView.transferir}"
+										update="msgsProductos" />
+
+									<p:menuitem value="Consultas"
+										actionListener="#{superPagoView.transferir}" ajax="false" />
+									<p:divider />
+								</ui:remove>
+								
+								<p:menuitem value="Movimientos Pendientes"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(3, cuenta)}" />
+
+								<p:menuitem value="Transferencias"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(6, cuenta)}" rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"/>
+
+								<p:menuitem value="Solicitar dinero"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(8, cuenta)}" />
+
+								<p:menuitem value="Deposito de dinero"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(9, cuenta)}" />
+
+								<ui:remove>
+									<p:menuitem value="CVU y Alias"
+										actionListener="#{puntoVentaView.navegarFcnsSuperPago(2, cuenta)}" />
+								</ui:remove>	
+							</p:splitButton>
+						</div>
+					</div>
+				</p:dataViewGridItem>
+
+				<p:dataViewListItem>
+					<div class="cuenta-list-item">
+						<p:outputPanel id="cuentaLogoList">
+							<p:graphicImage name="#{cuenta.logo}" style="height: 100px;width: auto;" rendered="#{cuenta.logo != null}"/>
+						</p:outputPanel>
+
+						<div class="cuenta-list-detail">
+							<div class="cuenta-name">#{cuenta.productoDescripcion}<h:outputText value=" - (#{cuenta.descripcionTipoCuenta})" rendered="#{cuenta.codMnemonicoTipoCuenta == 'MADRE'}"/></div>
+							<div class="cuenta-description">#{cuenta.numeroCuenta}</div>
+							<div class="cuenta-estado-#{cuenta.codMnemonicoEstado.toLowerCase()}">(#{cuenta.descripcionEstado})</div>
+							<p:commandLink id="ajax1" update="msgsProductos"
+								actionListener="#{superPagoView.transferir}"
+								style="margin-right:20px;">
+								<ui:remove>
+									<h:outputText value="Transferir" />
+								</ui:remove>
+
+							</p:commandLink>
+						</div>
+						<div class="cuenta-list-action"  style="text-align: right;">
+							<h:outputText value="#{cuenta.simboloMoneda} " styleClass="cuenta-price"  style="float: right;display: contents;font-weight: bold;#{cuenta.saldo > 0 ? 'color: green;' : 'color: red;'  }" 
+							   rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"/>
+							<h:outputText value="#{cuenta.saldo}" styleClass="cuenta-price"  style="float: right;display: contents;font-weight: bold;#{cuenta.saldo > 0 ? 'color: green;' : 'color: red;'  }"
+							   rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+							<p:splitButton value="Movimientos"
+								actionListener="#{puntoVentaView.navegarFcnsSuperPago(1, cuenta)}"
+								update="msgsProductos" style="text-align: right;">
+								<ui:remove>
+									<p:menuitem value="Pagar"
+										actionListener="#{superPagoView.transferir}"
+										update="msgsProductos" />
+									<p:menuitem value="Consultas"
+										actionListener="#{superPagoView.transferir}" ajax="false" />
+									<p:divider />
+								</ui:remove>
+								
+								<p:menuitem value="Movimientos Pendientes"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(3, cuenta)}" />
+
+								<p:menuitem value="Transferencias"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(6, cuenta)}" rendered="#{!puntoVentaView.usuario.permisosReducidosEnModuloDeCuentas}"/>
+
+								<p:menuitem value="Solicitar dinero"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(8, cuenta)}" />
+
+								<p:menuitem value="Deposito de dinero"
+									actionListener="#{puntoVentaView.navegarFcnsSuperPago(9, cuenta)}" />
+
+								<ui:remove>
+									<p:menuitem value="CVU y Alias"
+										actionListener="#{puntoVentaView.navegarFcnsSuperPago(2, cuenta)}" />
+								</ui:remove>										
+							</p:splitButton>
+							<ui:remove>
+							<span class="cuenta-badge status-#{cuenta.alias.toLowerCase()}">#{cuenta.alias}</span>
+							</ui:remove>
+						</div>
+					</div>
+				</p:dataViewListItem>
+			</p:dataView>
+
+		</div>
+	</sec:authorize>
+</ui:composition>

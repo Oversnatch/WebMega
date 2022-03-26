@@ -1,0 +1,51 @@
+<ui:composition
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+		<p:panelGrid styleClass="panelNoBorder">
+			<p:row>
+				<p:column>
+					<p:outputLabel for="idTRXreimpRec" value="id Transaccion: " />
+				</p:column>
+				<p:column>
+					<p:inputNumber id="idTRXreimpRec"
+						value="#{puntoVentaView.idTRXreimpRec}" size="20"
+						maxlength="20" thousandSeparator="" maxValue="99999999999999999999"
+						decimalPlaces="0" inputStyle="width: 150px;" />
+				</p:column>
+			</p:row>
+		
+			<p:row>
+				<p:column colspan="2">
+					<p:divider />
+					<p:commandButton value="Mostrar Ticket"
+						actionListener="#{puntoVentaView.reimprimirTicketON}"
+						process="@form" update="msgsProductos :panelSaldoUsuario"
+						oncomplete="refreshBanner();setTimeout(function(){ACGSiteScriptsFCNS.productoResize();}, 500);"
+						style="margin-right: 10px;">
+						<p:confirm header="Confirmacion"
+							message="Esta seguro que desea reimprimir el Ticket?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+		
+					<p:commandButton value="Salir"
+						onclick="PF('panelProductosWV').close();" />
+					</p:column>
+				</p:row>
+			</p:panelGrid>
+		
+		
+		<p:confirmDialog global="true">
+			<p:commandButton value="Si" type="button"
+				onclick="PF('blockPanelGral').show()"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	</sec:authorize>
+</ui:composition>

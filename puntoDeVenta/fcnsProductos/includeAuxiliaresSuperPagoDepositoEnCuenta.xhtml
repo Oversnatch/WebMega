@@ -1,0 +1,144 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Administracion de Depositos" id="admDepoDialog"
+			widgetVar="admDepoDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="400" dynamic="true"
+			onHide="PF('admDepoDialogWV').content.empty()" responsive="true" position="left,top">
+
+			<p:outputPanel id="admTrf"
+				rendered="#{superPagoView.muestraCRUDTransferencia}">
+				<h:form id="formAdmDepEnCtaDialog" prependId="false">
+					<p:messages id="msgsGenDepEnCta" showDetail="false" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+					<p:outputPanel class="ui-fluid">
+						<div class="p-field">
+							<p:outputLabel value="Cuenta Deposito" />
+
+							<p:inputText value="#{superPagoView.entidadFinanciera.denominacion.value} - #{superPagoView.tipoIdentificacionCta.descripcion.value} - #{superPagoView.itemTransferencia.codigoIdentifOrigen}"
+								disabled="true" rendered="#{superPagoView.operacion == 'DETALLE'}"/>
+
+							<p:selectOneMenu value="#{superPagoView.itemAgendaDestinatario}"
+								id="cuentaOrigen" filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+								converter="#{itemAgDestConverter}" var="itmGen" rendered="#{superPagoView.operacion != 'DETALLE'}" style="max-width:370px">
+								<f:selectItem itemLabel="--- Seleccione Cuenta Deposito ---"
+									itemValue="#{null}" />
+								<f:selectItems
+									value="#{superPagoView.itemsAgendaDestinatariosPublicos}"
+									var="itm"
+									itemLabel="#{itm.descTipoIdentifCta} #{itm.codigoIdentifCta} - #{itm.titular}"
+									itemValue="#{itm}" />
+
+								<p:column>
+									<h:outputText value="#{itmGen.referencia}" /> - 
+												<h:outputText value="#{itmGen.titular}" /> -
+												<h:outputText
+										value="#{itmGen.descTipoIdentifCta} #{itmGen.codigoIdentifCta}" /> -
+												<h:outputText
+										value="#{stringHelper.cutOffStr(itmGen.descEntidadFinanciera,30)}" />
+								</p:column>
+							</p:selectOneMenu>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="cuentaDestino" value="Cuenta de acreditacion" />
+							<p:inputText id="cuentaDestino"
+								value="#{superPagoView.cuentaDestino.simboloMoneda} - #{superPagoView.cuentaDestino.numeroCuenta}"
+								disabled="true" />
+						</div>
+
+
+						<div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel value="Moneda"/>
+								<p:inputText id="msm" value="#{superPagoView.cuentaDestino.descripcionMoneda}" disabled="true"/>
+							</div>
+							
+							<div class="p-field p-col">
+								<p:outputLabel id="impLbl" for="imp"
+									value="Importe depositado" />
+								<p:inputNumber id="imp"
+									value="#{superPagoView.itemTransferencia.importe}"
+									decimalPlaces="2" decimalSeparator="." thousandSeparator=""
+									disabled="#{superPagoView.operacion == 'DETALLE'}" />
+							</div>
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="concepto" value="Concepto" />
+							<p:inputText id="concepto"
+								value="#{superPagoView.itemTransferencia.concepto}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="referencia" value="Referencia" />
+							<p:inputText id="referencia"
+								value="#{superPagoView.itemTransferencia.referencia}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="nroComprobanteOrigen"
+								value="Nro. Comprobante Deposito" />
+							<p:inputText id="nroComprobanteOrigen"
+								value="#{superPagoView.itemTransferencia.nroComprobanteOrigen}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+
+						<div class="p-field">
+							<p:outputLabel for="obs" value="Observacion" />
+							<p:inputTextarea id="obs"
+								value="#{superPagoView.itemTransferencia.obs}"
+								disabled="#{superPagoView.operacion == 'DETALLE'}" />
+						</div>
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton value="Grabar" update="@form"
+						actionListener="#{superPagoView.procesarDepositoEnCuenta}"
+						process="@this formAdmDepEnCtaDialog"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admDepoDialogWV').hide()"
+						rendered="#{superPagoView.operacion != 'DETALLE'}"
+						icon="pi pi-check">
+						
+						<p:confirm header="Confirmacion" escape="false"
+							message="Esta seguro de confirmar el deposito? &lt;br/&gt;&lt;br/&gt; RECUERDE QUE EL MOVIMIENTO TIENE ARANCEL VIGENTE" icon="ui-icon-alert">
+						</p:confirm>							
+						
+					</p:commandButton>
+
+					<p:spacer width="5"/>
+					
+					<p:commandButton icon="pi pi-times" value="Cancelar"
+						actionListener="#{superPagoView.cancelarDialogoDepositoEnCuenta}"
+						process="@this" update=":depositosDT" />
+						
+						
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+								onclick="PF('blockPanelGral').show()"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>	
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+
+		<h:outputScript library="js" name="superPagoDepositoEnCuenta.js?v1.2" />
+	</sec:authorize>
+</ui:composition>

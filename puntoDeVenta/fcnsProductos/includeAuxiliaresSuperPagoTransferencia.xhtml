@@ -1,0 +1,311 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Confirmación" id="confirmaDelTransferenciaDialog"
+			widgetVar="confirmaDelTransferenciaDialogWV" modal="true"
+			resizable="false" appendTo="@(body)" closable="false" width="auto">
+
+			<h:form id="formConfirmacionDelTransferencia" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de anular la transferencia?" />
+				</p:outputPanel>
+
+				<p:divider />
+
+				<p:commandButton icon="ui-icon-check" value="Si"
+					actionListener="#{superPagoView.configrmarAnulacionTransferencia}"
+					process="@this" update="panelProductos"
+					oncomplete="PF('confirmaDelTransferenciaDialogWV').hide()}"
+					style="margin-right: 10px;" />
+
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaDelTransferenciaDialogWV').hide()" />
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Administracion de Transferencias" id="admTrfDialog"
+			widgetVar="admTrfDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="500" dynamic="true"
+			onHide="PF('admTrfDialogWV').content.empty()" responsive="true"
+			position="left,top">
+
+			<p:outputPanel id="admTrf"
+				rendered="#{superPagoView.muestraCRUDTransferencia}">
+				<h:form id="formAdmTrfDialog" prependId="false">
+					<p:messages id="msgsAdminDest" showDetail="false" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+					<p:outputPanel class="ui-fluid">
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-formgrid p-grid">
+								<div class="p-field p-col">
+									<p:outputLabel value="Id. Transferencia" />
+									<p:inputText 
+										value="#{superPagoView.itemTransferencia.idTransferencia}"
+										disabled="true" />
+								</div>
+					
+								<div class="p-field p-col">
+									<p:outputLabel value="Fecha Transferencia" />
+									<p:datePicker 
+										value="#{superPagoView.itemTransferencia.fechaTransferencia}"
+										monthNavigator="true" yearNavigator="true" showWeek="true"
+										disabled="#{superPagoView.operacion == 'DETALLE'}" />
+								</div>
+							</div>
+						</p:outputPanel>
+						
+                    	<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-field">
+								<p:outputLabel for="entidadOrigen" value="Entidad origen" />
+								<p:inputText id="entidadOrigen" value="#{superPagoView.itemTransferencia.descEntidadOrigen}" disabled="true"/>
+							</div>
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{superPagoView.itemTransferencia.codMnemonicoEntOrigen == 'SUPERPAGO' || superPagoView.operacion == 'ALTA'}">
+							<div class="p-field">
+								<p:outputLabel for="@next" value="Cuenta origen" />
+								<p:inputText value="#{superPagoView.cuentaOrigen.simboloMoneda} #{superPagoView.cuentaOrigen.numeroCuenta} - #{superPagoView.cuentaOrigen.simboloMoneda} #{superPagoView.cuentaOrigen.saldo}"
+								  disabled="true"/>
+								
+								<ui:remove>
+								<p:selectOneMenu value="#{superPagoView.cuentaOrigen}"
+									id="cuentaOrigen"
+									disabled="true" filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}" converter="#{cuentaConverter}">
+									<f:selectItem itemLabel="--- Seleccione Cuenta Origen ---"
+										itemValue="#{null}" />
+									<f:selectItems value="#{superPagoView.cuentasOrigen}"
+										var="cta"
+										itemLabel="#{cta.simboloMoneda} #{cta.numeroCuenta} - #{cta.simboloMoneda} #{cta.saldo}"
+										itemValue="#{cta}" />
+									<p:ajax event="change" update="msm" listener="#{superPagoView.actualizarDatosCuentaOrigenSeleccionada}" process="@this cuentaOrigen"/>
+								</p:selectOneMenu>
+								</ui:remove>
+							</div>
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{superPagoView.itemTransferencia.codMnemonicoEntOrigen != 'SUPERPAGO' and superPagoView.operacion != 'ALTA'}">
+							 <div class="p-formgrid p-grid">
+		                        <div class="p-field p-col">
+									<p:outputLabel for="descTipoIdentifOrigen" value="Tipo iden. Origen" />
+									<p:inputText id="descTipoIdentifOrigen" value="#{superPagoView.itemTransferencia.descTipoIdentifOrigen}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+		                        </div>
+		                        <div class="p-field p-col">
+		                        	<p:outputLabel for="descTipoIdentifOrigen" value="Nro." />
+									<p:inputText id="codigoIdentifOrigen" value="#{superPagoView.itemTransferencia.codigoIdentifOrigen}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+		                        </div>
+		                    </div>
+						</p:outputPanel>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-field">
+								<p:outputLabel for="entidadDestino" value="Entidad destino" />
+								<p:inputText id="entidadDestino" value="#{superPagoView.itemTransferencia.descEntidadDestino}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+							</div>
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							 <div class="p-formgrid p-grid">
+		                        <div class="p-field p-col">
+									<p:outputLabel for="descTipoIdentifDestino" value="Tipo iden. Destino" />
+									<p:inputText id="descTipoIdentifDestino" value="#{superPagoView.itemTransferencia.descTipoIdentifDestino}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+		                        </div>
+		                        <div class="p-field p-col">
+		                        	<p:outputLabel for="descTipoIdentifDestino" value="Nro." />
+									<p:inputText id="codigoIdentifDestino" value="#{superPagoView.itemTransferencia.codigoIdentifDestino}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+		                        </div>
+		                    </div>
+						</p:outputPanel>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+	                        <div class="p-formgrid p-grid">
+		                        <div class="p-field p-col">
+									<p:outputLabel value="CUIT/CUIL Cli Dest" />
+									<p:inputText rendered="#{superPagoView.itemTransferencia.codMnemonicoEntDestino != 'SUPERPAGO'}" 
+											value="#{superPagoView.itemTransferencia.nroIdenTribDestino}" disabled="true"/>
+									<p:inputText rendered="#{superPagoView.itemTransferencia.codMnemonicoEntDestino == 'SUPERPAGO'}" 
+									        value="#{superPagoView.itemTransferencia.cuitClienteDestino}" disabled="true"/>
+		                        </div>
+		                        <div class="p-field p-col">
+									<p:outputLabel value="Cli/Tit Dest" />
+									<p:inputText rendered="#{superPagoView.itemTransferencia.codMnemonicoEntDestino != 'SUPERPAGO'}" 
+											value="#{stringHelper.cutOffStr(superPagoView.itemTransferencia.titularDestino, 30)}" title="#{superPagoView.itemTransferencia.titularDestino}" disabled="true"/>
+									<p:inputText rendered="#{superPagoView.itemTransferencia.codMnemonicoEntDestino == 'SUPERPAGO'}" 
+									        value="(#{superPagoView.itemTransferencia.idClienteDestino}) #{stringHelper.cutOffStr(superPagoView.itemTransferencia.razonSocialClienteDestino, 30)}" title="#{superPagoView.itemTransferencia.razonSocialClienteDestino}"
+									        disabled="true"/>
+		                        </div>
+	                        </div>
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{superPagoView.itemTransferencia.codMnemonicoEntOrigen != 'SUPERPAGO' and superPagoView.operacion != 'ALTA'}">
+							<div class="p-field">
+								<p:outputLabel for="nroCompOrigen" value="Nro. Comprobante Origen" />
+								<p:inputText id="nroCompOrigen" value="#{superPagoView.itemTransferencia.nroComprobanteOrigen}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>
+							</div>
+						</p:outputPanel>
+						
+					    <div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel for="concepto" value="Concepto" />
+								<p:inputText id="concepto" value="#{superPagoView.itemTransferencia.concepto}" disabled="#{superPagoView.operacion != 'ALTA'}"/>
+							</div>
+	
+							<div class="p-field p-col">
+								<p:outputLabel for="referencia" value="Referencia" />
+								<p:inputText id="referencia" value="#{superPagoView.itemTransferencia.referencia}" disabled="#{superPagoView.operacion != 'ALTA'}"/>
+							</div>
+	                    </div>
+
+						<p:outputPanel id="ctaDest" rendered="#{superPagoView.operacion == 'ALTA' or superPagoView.operacion == 'CONFIRMACION'}">	
+							<div class="p-field">
+								<p:outputLabel value="Destinatario" />
+								<p:inputText value="#{superPagoView.itemAgendaDestinatario.titular} - #{superPagoView.itemAgendaDestinatario.descripcionTipoIdenTrib} #{superPagoView.itemAgendaDestinatario.nroIdenTrib}" 
+								   rendered="#{superPagoView.operacion == 'CONFIRMACION'}" disabled="true"/>
+								
+								<p:selectOneMenu value="#{superPagoView.itemAgendaDestinatario}"
+									id="cuentaDestino"
+									rendered="#{superPagoView.operacion == 'ALTA'}" 
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}" converter="#{itemAgDestConverter}"
+									var="itmGen">
+									<f:selectItem itemLabel="--- Seleccione Destinatario ---"
+										itemValue="#{null}" />
+									<f:selectItems value="#{superPagoView.itemsAgendaDestinatarios}"
+										var="itm" itemLabel="#{itm.titular} - #{itm.descripcionTipoIdenTrib} #{itm.nroIdenTrib}" itemValue="#{itm}"/>
+										 
+											<p:column>
+												<h:outputText value="#{itmGen.referencia}"/> - 
+												<h:outputText value="#{itmGen.titular}"/> -
+												<h:outputText value="#{itmGen.descTipoIdentifCta} #{itmGen.codigoIdentifCta}"/> -
+												<h:outputText value="#{stringHelper.cutOffStr(itmGen.descEntidadFinanciera,30)}"/>
+											</p:column>
+											<p:ajax event="change" update="cuentaDestinoDatos entidadDestinoDatos" listener="#{superPagoView.actualizarDatosCuentaDestinoSeleccionada}" process="@this"/>
+								</p:selectOneMenu>
+							</div>
+
+							<div class="p-field">
+								<p:outputLabel value="Cta. Destino" />
+								<p:inputText id="cuentaDestinoDatos" value="#{superPagoView.itemAgendaDestinatario.descTipoIdentifCta} #{superPagoView.itemAgendaDestinatario.codigoIdentifCta}" 
+								  rendered="#{superPagoView.operacion == 'ALTA' or superPagoView.operacion == 'CONFIRMACION'}"
+								  disabled="true"/>
+							</div>
+							
+							<div class="p-field">
+								<p:outputLabel value="Entidad. Destino" />
+								<p:inputText id="entidadDestinoDatos" value="#{stringHelper.cutOffStr(superPagoView.itemAgendaDestinatario.descEntidadFinanciera,40)}" 
+									rendered="#{superPagoView.operacion == 'ALTA' or superPagoView.operacion == 'CONFIRMACION'}"
+								 disabled="true"/>
+							</div>
+						</p:outputPanel>
+						
+						<div class="p-formgrid p-grid">
+							<div class="p-field p-col">
+								<p:outputLabel value="Moneda"/>
+								<p:inputText id="msm" value="#{superPagoView.cuentaOrigen.descripcionMoneda}" disabled="true"/>
+							</div>
+							
+							<div class="p-field p-col">
+									<p:outputLabel id="impLbl" for="imp" value="Importe" />
+									<p:inputNumber id="imp"
+										value="#{superPagoView.itemTransferencia.importe}" 
+										decimalPlaces="2"
+										decimalSeparator="." thousandSeparator=""
+										disabled="#{superPagoView.operacion != 'ALTA'}"/>
+							</div>
+						</div>
+
+						<p:outputPanel id="aranceles">
+							<p:outputPanel rendered="#{superPagoView.muestraAplicacionAranceles}">
+								<div class="p-field p-col">
+									 <p:outputLabel value="Aranceles"/>
+									 <p:dataTable var="arancel" value="#{superPagoView.aranceles}">
+							            <p:column headerText="Arancel">
+							                <h:outputText value="#{arancel.concepto}" />
+							            </p:column>
+							            
+							            <p:column headerText="Importe" width="80">
+							                <h:outputText value="#{arancel.importe}" style="float:right">
+							                	<f:convertNumber pattern="#{superPagoView.cuentaOrigen.simboloMoneda}#0.00"/>
+							                </h:outputText>
+							            </p:column>
+							            
+							            <f:facet name="footer">
+							            	<h:outputText value="Total operacion y aranceles "/>
+							                <h:outputText value="#{superPagoView.importeTotalOperacion}" style="float:right">
+							                	<f:convertNumber pattern="#{superPagoView.cuentaOrigen.simboloMoneda}#0.00"/>
+							                </h:outputText>
+								        </f:facet>
+						            </p:dataTable>
+								</div>
+							</p:outputPanel>
+						</p:outputPanel>
+							
+						<p:outputPanel rendered="#{superPagoView.itemTransferencia.codMnemonicoClasificacion == 'TENT' or superPagoView.itemTransferencia.codMnemonicoClasificacion == 'SDIN'}">
+								<p:outputLabel for="fecAcre" value="Fecha acreditacion" />
+								<p:inputText id="fecAcre" value="#{superPagoView.itemTransferencia.fechaAcreditacionCuentaDestino}" disabled="#{superPagoView.operacion == 'DETALLE'}"/>					
+						</p:outputPanel>
+						
+						<div class="p-field">
+							<p:outputLabel for="obs" value="Observacion" />
+							<p:inputTextarea id="obs" value="#{superPagoView.itemTransferencia.obs}" disabled="#{superPagoView.operacion != 'ALTA'}"/>
+						</div>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-field">
+								<p:outputLabel for="estado" value="Estado" />
+								<p:inputText id="estado" value="#{superPagoView.itemTransferencia.descEstado}" disabled="true"/>
+							</div>
+						</p:outputPanel>
+
+						<p:outputPanel rendered="#{superPagoView.operacion == 'DETALLE'}">
+							<div class="p-field">
+								<p:outputLabel for="fecAcred" value="Fecha Acreditacion" />
+								<p:inputText id="fecAcred" value="#{superPagoView.itemTransferencia.fechaAcreditacionCuentaDestino}" disabled="true">
+									<f:convertDateTime pattern="yyyy-MM-dd" />
+								</p:inputText>
+							</div>
+						</p:outputPanel>
+					</p:outputPanel>
+
+					<p:divider />
+
+					<p:commandButton value="Procesar" update="@form"
+						actionListener="#{superPagoView.procesarItmTransferencia}"
+						process="@this formAdmTrfDialog"
+						rendered="#{superPagoView.operacion == 'ALTA'}"
+						icon="pi pi-check" styleClass="p-mr-2"/>
+
+					<p:commandButton value="Confirmar" update="@form"
+						actionListener="#{superPagoView.grabarItmTransferencia}"
+						process="@this"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('admTrfDialogWV').hide()"
+						rendered="#{superPagoView.operacion == 'CONFIRMACION'}"
+						icon="pi pi-check" styleClass="p-mr-2"/>
+					
+					<p:spacer width="5"/>
+					
+					<p:commandButton icon="pi pi-times" value="Cancelar"
+						actionListener="#{superPagoView.cancelarDialogoTransferencia}"
+						process="@this" update=":transfersDT" />
+				</h:form>
+			</p:outputPanel>
+		</p:dialog>
+
+		<h:outputScript library="js" name="superPagoTransferencias.js?v1.1" />
+	</sec:authorize>
+</ui:composition>

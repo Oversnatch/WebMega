@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:panelGrid columns="6">
+			<f:facet name="header">
+				<h:outputText value="Detalle de Movimiento de Cobro"/>
+			</f:facet>
+
+			<h:outputText value="Nro. de Comprobante:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.idPagoOperador}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Fecha y hora:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.fechaDeServidor}"
+				style="font-weight: bold;">
+				<f:convertDateTime type="date" pattern="dd/MM/yyyy"
+					timeZone="${usuarioHelper.usuarioSession().husoHorario}" />
+			</h:outputText>
+
+			<h:outputText value="Importe Neto:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.importeBase}"
+				styleClass="product-price" style="font-weight: bold;">
+				<f:convertNumber currencySymbol="$" type="currency" />
+			</h:outputText>
+
+			<h:outputText value="Importe Costo Financiero:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.importeCalculado.subtract(superPagoView.detallePagoMEP.importeBase)}"
+				style="font-weight: bold;">
+				<f:convertNumber pattern="#0.00"/>
+			</h:outputText>
+
+			<h:outputText value="Importe Total:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.importeCalculado}"
+				styleClass="product-price" style="font-weight: bold;">
+				<f:convertNumber currencySymbol="$" type="currency" />
+			</h:outputText>
+
+			<h:outputText value="Cuotas" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.cantidadCuotas}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Estado:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.estadoOperador.descripcionLargaACG}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Metodo de Pago:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.metodoDePago.marca}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Tipo:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.metodoDePago.tipoMedioDePago}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Concepto de Pago:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.conceptoDePago.descripcion}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Email Cliente:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.emailCliente}"
+				style="font-weight: bold;" />
+
+			<h:outputText value="Telefono Cliente:" />
+			<h:outputText value="#{superPagoView.detallePagoMEP.telefonoCliente}"
+				style="font-weight: bold;" />
+		</p:panelGrid>
+	</sec:authorize>
+</ui:composition>

@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	
+		<p:outputPanel id="tablaMonitorTRXSPV" rendered="#{not empty monitorTrxsView.listMonitor.resultadoMonitoreoTransacciones}" style="margin: auto;display: table;" >
+			<div class="bordemonitor">
+				<div class="monitor">
+					<div class="col-md-12 col-xs-12 titulo_monitor">#{monitorTrxsView.fechaMostrar} <p:commandButton id="buttonRefreshMonPV" icon="pi pi-refresh"
+						title="Actualizar estados" style="background-color: transparent;color: black;border: none;"
+						actionListener="#{monitorTrxsView.inicializarMonitoreo}"
+						update="panelGroupMonPV"
+						rendered="#{usuarioHelper.usuarioSession().mostrarMonitorTRXs == 1}"
+						oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.monitorPVResize();}, 500);" global="false" />
+						</div>
+					<div class="col-md-12 col-xs-12 monitor_scroll">
+						<ui:repeat var="varMonitor" value="#{monitorTrxsView.listMonitor.resultadoMonitoreoTransacciones}">
+								<div class="col-md-12 col-xs-12 items_monitor" title="#{((not monitorTrxsView.agruparProd) or monitorTrxsView.tipoFecha == 2) ? varMonitor.descProducto.value : varMonitor.tipoTRX.value}">#{((not monitorTrxsView.agruparProd) or monitorTrxsView.tipoFecha == 2) ? stringHelper.cutOffStr(varMonitor.descProducto.value,20) : stringHelper.cutOffStr(varMonitor.tipoTRX.value,20)}
+									<div class="col-md-5 col-xs-5 semaforo">
+										<div class="col-md-4 col-xs-4 #{varMonitor.color.value == 'red' ? 'rojo' : 'blanco'}"></div>
+										<div class="col-md-4 col-xs-4 #{varMonitor.color.value == 'yellow' ? 'amarillo' : 'blanco'}"></div>
+										<div class="col-md-4 col-xs-4 #{varMonitor.color.value == 'green' ? 'verde' : 'blanco'}"></div>
+									</div>
+								</div>
+						</ui:repeat>
+					</div>
+				</div>
+			</div>
+		</p:outputPanel>
+		
+	</sec:authorize>
+</ui:composition>

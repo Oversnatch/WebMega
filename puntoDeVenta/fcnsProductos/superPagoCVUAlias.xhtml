@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<div class="card">
+
+			<p:panelGrid columns="2" layout="grid" id="imprimir"
+				columnClasses="ui-g-12 ui-md-4 vertical-middle,ui-g-12 ui-md-8 vertical-middle"
+				styleClass="ui-panelgrid-blank ui-fluid"
+				style="margin-bottom: 10px;">
+
+				<div class="cuenta-name">ALIAS:</div>
+				<div class="cuenta-description" style="font-weight: bold;">#{superPagoView.cuentaSeleccionada.alias}</div>
+
+				<div class="cuenta-name" style="padding-top: 0.5em;">CVU:</div>
+				<div class="cuenta-description" style="font-weight: bold;padding-bottom: 0.5em;">#{superPagoView.cuentaSeleccionada.CVU}</div>
+
+			</p:panelGrid>
+
+			<p:commandButton value="Imprimir" type="button" icon="pi pi-print"
+				styleClass="p-d-block p-shadow-2 p-mb-3">
+				<p:printer target="imprimir" />
+			</p:commandButton>
+		</div>
+
+	</sec:authorize>
+
+</ui:composition>

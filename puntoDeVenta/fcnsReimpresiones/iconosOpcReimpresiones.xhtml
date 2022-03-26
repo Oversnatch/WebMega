@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:outputPanel id="mnuIconos">
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rei-onl" title="Recargas" actionListener="#{puntoVentaView.navegarFcnsReimpresiones(1)}"
+				id="cbReimpRecargas"
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbReimpRecargas']}" 
+			/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rei-off" title="Pines" actionListener="#{puntoVentaView.navegarFcnsReimpresiones(2)}"
+				id="cbReimpPines" 
+				rendered="#{usuarioHelper.usuarioSession().permisosDeComponentes['3mnuIconoscbReimpPines']}" 
+			/>
+		</p:outputPanel>
+	</sec:authorize>
+</ui:composition>

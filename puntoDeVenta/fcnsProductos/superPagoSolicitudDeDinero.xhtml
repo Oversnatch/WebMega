@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_PUNTOVENTA')">
+
+		<p:toolbar id="botoneraSolDin">
+			<f:facet name="left">
+				<p:commandButton process="@this solicitudesDeDineroDT" icon="pi pi-eye"
+					value="Detalle" id="btnDetSolDin" action="#{superPagoView.detalleSolicitudDeDinero}" title="Detalle de la solicitud de dinero"/>
+
+				<p:spacer width="5"/>
+
+				<p:commandButton process="@this solicitudesDeDineroDT" icon="pi pi-file"
+					value="Nueva" id="btnAltaSolDin" action="#{superPagoView.altaSolicitudDeDinero}" title="Nueva solicitud de dinero" rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+
+				<p:spacer width="5" rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+
+				<p:commandButton process="@this solicitudesDeDineroDT" icon="pi pi-times-circle"
+					value="Eliminar" id="btnElimSolDin" action="#{superPagoView.eliminarSolicitudDeDinero}" title="Eliminar solicitud de dinero" rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+
+				<p:spacer width="5" rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+				
+				<p:commandButton process="@this solicitudesDeDineroDT" icon="pi pi-check-circle"
+					value="Procesar" id="btnConfirmarSolDin" action="#{superPagoView.confirmarSolicitudDeDinero}" title="Aceptar o rechazar solicitud de dinero" rendered="#{!superPagoView.solicitudDeDineroPropia}"/>
+			</f:facet>
+
+			<f:facet name="right">
+				<p:commandButton icon="pi pi-refresh" update="solicitudesDeDineroDT" title="Refrescar informacion"
+				oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"/>
+				<p:spacer width="5"/>
+			
+				<p:commandButton value="Borrar Filtros"
+					onclick="PF('solicitudesDeDineroDTWV').clearFilters()" update="solicitudesDeDineroDT gridFiltroFecha" actionListener="#{superPagoView.borrarFiltrosFecha('SDIN')}" 
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"
+					rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+
+				<p:commandButton value="Borrar Filtros"
+					onclick="PF('solicitudesDeDineroDTWV').clearFilters()" update="solicitudesDeDineroDT gridFiltroFecha" actionListener="#{superPagoView.borrarFiltrosFecha('RDIN')}" 
+					oncomplete="setTimeout(function(){ACGSiteScriptsFCNS.resultadoResize();}, 500);"
+					rendered="#{!superPagoView.solicitudDeDineroPropia}"/>
+			</f:facet>
+		</p:toolbar>
+	
+		<p:panelGrid id="gridFiltroFecha" columns="4">
+			<p:column>
+				<p:outputLabel value="Fecha Desde" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfDde" pattern="yyyy-MM-dd" navigator="true" inputStyle="width:100%"
+					maxdate="#{superPagoView.fechaAhora}" validatorMessage="Fecha y hora invalida" value="#{superPagoView.fechaDesde}">
+				</p:datePicker>
+			</p:column>
+
+			<p:column>
+				<p:outputLabel value="Fecha Hasta" />
+			</p:column>
+			<p:column>
+				<p:datePicker id="fltFecTrfHta" pattern="yyyy-MM-dd"
+					navigator="true" inputStyle="width:100%"
+					value="#{superPagoView.fechaHasta}"
+					maxdate="#{superPagoView.fechaHoy}">
+				</p:datePicker>
+
+				<p:spacer width="5"/>
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarSolicitudesDeDinero}"
+					icon="pi pi-filter" oncomplete="PF('solicitudesDeDineroDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Solicitudes De Dinero" rendered="#{superPagoView.solicitudDeDineroPropia}"/>
+				<p:commandButton
+					actionListener="#{superPagoView.filtrarRequerimientosDeDinero}"
+					icon="pi pi-filter" oncomplete="PF('solicitudesDeDineroDTWV').filter()" process="@this fltFecTrfDde fltFecTrfHta" title="Filtrar Requerimientos De Dinero" rendered="#{!superPagoView.solicitudDeDineroPropia}"/>
+			</p:column>
+		</p:panelGrid>
+	
+		<p:dataTable id="solicitudesDeDineroDT" widgetVar="solicitudesDeDineroDTWV"
+			value="#{superPagoView.listaDeTransferencias}"	var="trf" 
+			lazy="true" rowHover="true" filterEvent="enter" paginator="true"
+			rowIndexVar="desRowIndex" sortBy="#{trf.referencia}" sortOrder="ASCENDING"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginatorPosition="bottom" scrollable="true" scrollHeight="100"
+			sortMode="single" emptyMessage="No existen registros para mostrar."
+			style="margin-top:3px;table-layout: fixed; width:100%;margin-bottom:0px"
+			rows="150"
+			selectionMode="single"
+			selection="#{superPagoView.itemTransferencia}">
+			
+			<p:column headerText="Id. Solicitud"
+				style="border-right: 1px solid #c8c8c8 !important;width:100px"
+				filterBy="#{trf.idTransferencia}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{trf.idTransferencia}">
+				<h:outputText value="#{trf.idTransferencia}" style="float:right"/>
+			</p:column>
+
+			<p:column headerText="Usr. Solicitante"
+				style="border-right: 1px solid #c8c8c8 !important;width:120px">
+				<h:outputText value="(#{trf.idUsuario}) #{trf.usuario}"/>
+			</p:column>
+
+			<p:column headerText="Fecha Solicitud"
+				style="border-right: 1px solid #c8c8c8 !important;width:110px;text-align:center"
+				sortBy="#{trf.fechaTransferencia}">
+
+				<h:outputText value="#{trf.fechaTransferencia}">
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="#{(!superPagoView.solicitudDeDineroPropia) ? 'Cliente Solicitante' : 'Cliente solicitado'}"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterStyle="width:100% !important;"
+				sortBy="#{trf.razonSocialClienteOrigen}">
+
+				<h:outputText value="(#{trf.idClienteDestino}) #{trf.razonSocialClienteDestino}" rendered="#{(!superPagoView.solicitudDeDineroPropia)}"/>
+				<h:outputText value="(#{trf.idClienteOrigen}) #{trf.razonSocialClienteOrigen}" rendered="#{(superPagoView.solicitudDeDineroPropia)}"/>
+			</p:column>
+
+			<p:column headerText="Moneda"
+				style="border-right: 1px solid #c8c8c8 !important;width:70px"
+				sortBy="#{trf.idMoneda}">
+				<h:outputText value="#{trf.simboloMoneda}" />
+			</p:column>
+
+			<p:column headerText="Importe"
+				style="border-right: 1px solid #c8c8c8 !important;width:100px"
+				sortBy="#{trf.importe}">
+				<h:outputText value="#{trf.importe}" style="float:right"/>
+			</p:column>
+
+			<p:column headerText="Estado"
+				style="border-right: 1px solid #c8c8c8 !important;width:170px"
+				filterBy="#{trf.idEstado}"
+				filterStyle="width:100% !important;" 
+				sortBy="#{trf.descEstado}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:100%"
+						onchange="PF('solicitudesDeDineroDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="-1" />
+						<f:selectItems value="#{superPagoView.estadosTransferencia}"/>
+					</p:selectOneMenu>
+				</f:facet>
+
+				<h:outputText value="#{trf.descEstado}" />
+			</p:column>
+		</p:dataTable>
+		
+	</sec:authorize>
+
+</ui:composition>
