@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<security:global-method-security
+		pre-post-annotations="enabled" />
+
+	<!-- Enable security annotations usage -->
+	<security:authentication-manager
+		alias="authenticationManager" erase-credentials="false">
+		<!-- create a custom AuthenticationProvider class to tune the login process -->
+		<security:authentication-provider
+			ref="acgAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<bean id="acgAuthenticationProvider"
+		class="com.americacg.cargavirtual.web.security.ACGAuthenticationProvider">
+	</bean>
+
+	<bean id="redirectSessionInformationExpiredStrategy"
+		class="org.springframework.security.web.session.SimpleRedirectSessionInformationExpiredStrategy">
+		<constructor-arg name="invalidSessionUrl"
+			value="/unsecure/expired.xhtml" />
+		<constructor-arg name="redirectStrategy"
+			ref="jsfRedirectStrategy" />
+	</bean> 
+	
+	<bean id="jsfRedirectStrategy" class="com.americacg.cargavirtual.web.security.JSFRedirectStrategy"/>
+	
+	<bean id="concurrencyFilter"
+		class="org.springframework.security.web.session.ConcurrentSessionFilter">
+		<constructor-arg ref="sessionRegistry" />
+		<constructor-arg ref="redirectSessionInformationExpiredStrategy" />
+	</bean>
+
+	<bean id="myAuthFilter"
+		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="sessionAuthenticationStrategy" ref="sas" />
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+	</bean>
+
+	<bean id="sas"
+		class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
+		<constructor-arg>
+			<list>
+				<bean
+					class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
+					<constructor-arg ref="sessionRegistry" />
+					<property name="maximumSessions" value="1" />
+					<property name="exceptionIfMaximumExceeded" value="false" />
+				</bean>
+				<bean
+					class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+					<property name="alwaysCreateSession" value="true"/>
+					<property name="migrateSessionAttributes" value="false"/>
+				</bean>
+				<bean
+					class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+					<constructor-arg ref="sessionRegistry" />
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="sessionRegistry"
+		class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+	<bean id="authenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<constructor-arg value="/unsecure/login.xhtml" />
+	</bean>
+
+	<bean id="exceptionTranslationFilter"
+		class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		<constructor-arg ref="authenticationEntryPoint" />
+		<property name="accessDeniedHandler"
+			ref="accessDeniedHandler" />
+	</bean>
+<!-- 
+	<bean id="accessDeniedHandler"
+		class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+		<property name="errorPage" value="/unsecure/error.xhtml" />
+	</bean>
+	 -->
+
+	<bean id="accessDeniedHandler"
+		class="com.americacg.cargavirtual.web.security.ACGAccessDeniedHandler">
+		<property name="errorPage" value="/unsecure/accessDenied.xhtml" />
+	</bean>
+
+	<security:http use-expressions="true" auto-config="false">
+		<security:custom-filter
+			position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
+		<security:custom-filter
+			position="FORM_LOGIN_FILTER" ref="myAuthFilter" />
+
+		<security:intercept-url
+			pattern="/secure/index.xhtml" access="authenticated" />
+
+		<!-- refers to http://docs.spring.io/spring-security/site/docs/3.0.x/reference/el-access.html -->
+		<security:intercept-url
+			pattern="/unsecure/login.xhtml" access="permitAll" />
+
+		<security:intercept-url pattern="/css/**"
+			access="permitAll" />
+
+		<!-- Page level Spring Security : Enable Primefaces -->
+		<security:intercept-url
+			pattern="/javax.faces.resource/**" access="permitAll" />
+
+		<security:intercept-url pattern="/resources/**"
+			access="permitAll" />
+
+		<security:intercept-url pattern="/secure/**"
+			access="hasAnyAuthority('ROLE_PLATAFORMA')" />
+
+		<!-- Define login page for Spring Security -->
+		<security:http-basic
+			entry-point-ref="authenticationEntryPoint" />
+
+		<security:logout invalidate-session="true"
+			delete-cookies="JSESSIONID"
+			logout-success-url="/unsecure/login.xhtml" />
+
+		<security:csrf disabled="false" />
+		
+		<security:access-denied-handler ref="accessDeniedHandler"/>
+		
+		<security:headers>
+			<security:frame-options policy="SAMEORIGIN" />
+		</security:headers>
+	</security:http>
+</beans>

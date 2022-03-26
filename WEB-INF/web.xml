@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+
+	<display-name>CargaVirtualWeb2</display-name>
+
+	<context-param>
+		<param-name>org.eclipse.jetty.servlet.Default.dirAllowed</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>primefaces.FONT_AWESOME</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<!-- Context Configuration locations for Spring XML files -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/applicationContext.xml
+			/WEB-INF/security-context.xml
+		</param-value>
+	</context-param>
+
+	<!-- Spring Security Facelets Tag Library -->
+	<context-param>
+		<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+		<param-value>/WEB-INF/springsecurity.taglib.xml</param-value>
+	</context-param>
+
+
+	<!-- JSF 2 (Facelets 2.x) -->
+	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+		<!-- produccion <param-value>Production</param-value> -->
+	</context-param>
+	<context-param>
+	    <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
+	    <!-- produccion <param-value>-1</param-value>  -->
+	    <param-value>0</param-value> <!-- test -->
+	</context-param>
+	
+	<context-param>
+	    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+	    <param-value>server</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>javax.faces.ENABLE_CDI_RESOLVER_CHAIN</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<param-value>acg</param-value>
+	</context-param>
+	
+	<!-- PrimeFaces -->
+	<!-- Enable partial submit in PrimeFaces - this reduces the network traffic -->
+	<context-param>
+	    <param-name>primefaces.SUBMIT</param-name>
+	    <param-value>partial</param-value>
+	</context-param>
+		
+	<!-- Move above the fold scripts to the bottom (end of body).
+	     This is a huge improvement of the visible rendering and removes flickering between navigations. -->
+	<context-param>
+	    <param-name>primefaces.MOVE_SCRIPTS_TO_BOTTOM</param-name>
+	    <param-value>true</param-value>
+	</context-param>
+	
+	<!-- Mojarra -->
+	<!-- reduce saved view states -->
+	<context-param>
+	    <param-name>com.sun.faces.numberOfViewsInSession</param-name>
+	    <param-value>15</param-value>
+	</context-param>
+	
+	<!-- Disable ViewState compression (better performance but more memory usage) -->
+	<context-param>
+	    <param-name>com.sun.faces.compressViewState</param-name>
+	    <param-value>false</param-value>
+	</context-param>
+	
+
+	<!-- JSF -->
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- Map these files with JSF -->
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.faces</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+	<!-- end JSF -->
+
+	<!-- Welcome page -->
+	<welcome-file-list>
+		<!-- <welcome-file>/secure/index.xhtml</welcome-file> -->
+		<welcome-file>unsecure/login.xhtml</welcome-file>
+	</welcome-file-list>
+	
+	<error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+		<location>/unsecure/expired.xhtml</location>
+	</error-page>	
+	 
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/unsecure/error.xhtml</location>
+	</error-page>
+	
+	<error-page>
+    	<error-code>500</error-code>
+    	<location>/unsecure/error.xhtml</location>
+	</error-page>
+	
+	<error-page>
+    	<error-code>404</error-code>
+    	<location>/unsecure/error.xhtml</location>
+	</error-page>
+	
+	<!-- Spring Security -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+	</listener>	
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<listener>
+	    <listener-class>
+	      org.springframework.security.web.session.HttpSessionEventPublisher
+	    </listener-class>
+	</listener>
+	
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+		<!-- <dispatcher>FORWARD</dispatcher> <dispatcher>REQUEST</dispatcher> -->
+	</filter-mapping>
+
+	<session-config>
+		<session-timeout>240</session-timeout>
+		<tracking-mode>COOKIE</tracking-mode>
+	</session-config>
+	<!-- end Spring Security -->
+
+	<mime-mapping>
+		<extension>ttf</extension>
+		<mime-type>application/x-font-ttf</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>woff</extension>
+		<mime-type>application/x-font-woff</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>woff2</extension>
+		<mime-type>application/x-font-woff2</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>eot</extension>
+		<mime-type>application/x-font-eot</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>svg</extension>
+		<mime-type>image/svg+xml</mime-type>
+	</mime-mapping>
+	
+</web-app>
