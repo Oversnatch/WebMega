@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog header="Recuperar Clave" widgetVar="dlgRecuperar"
+			modal="true" width="420">
+			<h:form name="recuperarForm" id="recuperarForm" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<table border="0" align="center" cellpadding="0" cellspacing="0">
+					<tr>
+						<td align="right" class="textoE"
+							style="padding-right: 10px; font-weight: bold;">Usuario</td>
+						<td height="18" align="left"><p:inputText
+								id="usernameRecuperar" required="true"
+								value="#{loginView.usuario}" style="width: 130px;"
+								requiredMessage="El usuario es obligatorio" maxlength="15"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;if (keycode == 13){document.getElementById('login').click();return false;}" />
+							<p:watermark value="Ingrese su Usuario del sistema"
+								for="usernameRecuperar" /></td>
+						<td height="20" align="left" valign="bottom"
+							style="padding-left: 5px;"><p:commandButton id="recuperar"
+								value="Recuperar" action="#{loginView.recuperar}"
+								update="mensajesRecuperar, dlgRecuperarClaveId msgRecuperarClave"
+								styleClass="btform"
+								style="width: auto;height: auto;" /></td>
+					</tr>
+				</table>
+				<p:messages id="mensajesRecuperar"/>
+			</h:form>
+	</p:dialog>
+	
+	<p:dialog header="Recuperar Clave" id="dlgRecuperarClaveId" widgetVar="dlgRecuperarClave" minHeight="40" modal="true">
+		<h:form  prependId="false" >
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<h:outputText id="msgRecuperarClave" value="#{loginView.msgCambioPassword}" />
+			<br />
+			<p:commandButton value="Aceptar" id="btnAceptarRecuperarClave" action="#{loginView.logout}" process="@this"/>
+		</h:form>
+		<p:ajax event="close" onstart="$(document.getElementById('btnAceptarRecuperarClave')).click();" />	
+	</p:dialog>			
+</ui:composition>

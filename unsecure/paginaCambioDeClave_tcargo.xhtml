@@ -1,0 +1,176 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+		<title>STR :: Recargas de Celulares</title>
+		<h:outputStylesheet name="login/tcargo/estilos_12cols.css"
+			library="css" />
+		<h:outputStylesheet name="login/tcargo/estilos.css"
+			library="css" />
+		<style>
+			.coordenada_tabla {
+				width: 240px;
+				left: 100px;
+			}
+			
+			.coordenada_input {
+				width: 30px;
+			}
+			
+			.coordenada_columna0 {
+				width: 50px;
+				text-align: center;
+			}
+			
+			.coordenada_columna1 {
+				width: 20px;
+				text-align: center;
+			}
+			
+			.coordenada_columna2 {
+				width: 25px;
+				text-align: left;
+			}
+		</style>
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>
+	</h:head>
+
+	<h:body id="panelGeneral" style="margin: 0 !important;">
+		<sec:authorize access="hasAnyAuthority('ROLE_PLATAFORMA')">
+		<div class="container">
+
+			<div class="a7col logo">
+				<img src="${loginView.configuracionMayorista.logo}" width="480"
+							height="155" />
+			</div>
+
+			<div class="a7col">
+				<h:form id="loginFormId" prependId="false">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					
+					<f:passThroughAttribute name="autocomplete" value="off"/>
+
+					<table class="login" border="0" align="center" cellpadding="8"
+						cellspacing="0">
+						<tr>
+							<td colspan="2" align="center"><h2>Cambio de Clave</h2></td>
+						</tr>	
+						<tr>
+							<td width="100" align="right">Clave actual:</td>
+							<td width="270">
+								<p:keyboard id="password_a" required="true"
+									value="#{loginView.password}" style="box-shadow: unset;border-radius: unset;width:221px;"
+									 password="true" preventPaste="true"
+									requiredMessage="La Clave actual es obligatoria"
+									onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordA(keycode);"
+									showMode="button" buttonImageOnly="true"
+									buttonImage="/resources/images/login/keyboard.png"
+									autocomplete="false" styleClass="campo">
+								</p:keyboard>
+								<p:watermark value="Clave actual" for="password_a"  /></td>
+						</tr>
+						<tr>
+							<td align="right">Clave Nueva:</td>
+							<td>
+								<p:keyboard id="password_n" password="true" required="true"
+									value="#{loginView.passwordNew}" preventPaste="true"
+									requiredMessage="La Clave Nueva es obligatoria" validatorMessage="La Clave Nueva es obligatoria validator"
+									onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN(keycode);"
+									showMode="button" buttonImageOnly="true"
+									buttonImage="/resources/images/login/keyboard.png"
+									autocomplete="false" styleClass="campo" style="box-shadow: unset;border-radius: unset;width:221px;"/>
+								<p:watermark value="Clave Nueva" for="password_n" /></td>
+						</tr>
+						<tr>
+							<td align="right">Repetir Clave:</td>
+							<td>
+								<p:keyboard id="password_n2" password="true" required="true"
+									value="#{loginView.passwordNewCheck}" preventPaste="true"
+									requiredMessage="Debe Repetir la Clave es obligatorio"
+									onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN2(keycode);"
+									showMode="button" buttonImageOnly="true"
+									buttonImage="/resources/images/login/keyboard.png"
+									autocomplete="false" styleClass="campo" style="box-shadow: unset;border-radius: unset;width:221px;"/>
+								<p:watermark value="Repetir Clave" for="password_n2" /></td>
+						</tr>						
+						<tr>
+							<td>&#160;</td>
+							<td colspan="2">
+								<p:commandButton id="login" value="Modificar"
+									action="#{loginView.cambiarPassword}"
+									process="@form" update="msgsChgPwd, dlgCambioPasswordId, msgCambioPassword"
+									style="padding: 0.5em 0.5em 0.5em 0.5em;border-radius: unset;border: none;font-weight: initial;font-size: small;"
+									styleClass="btform entrar">
+									<p:confirm header="Confirmacion"
+										message="Esta seguro que desea cambiar la clave?"
+										icon="ui-icon-alert" />
+								</p:commandButton>
+								<p:commandButton id="cancelar" value="Cancelar"
+									action="#{loginView.logout}" process="@this"
+									style="padding: 0.5em 0.5em 0.5em 0.5em;border-radius: unset;border: none;font-weight: initial;font-size: small;"
+									styleClass="btform entrar" />		
+
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+
+								<div id="divMsgError" class="clear">
+									<p style="text-align: center">
+										<p:messages id="msgsChgPwd" globalsOnly="true" showDetail="true" showSummary="false" />
+									</p>
+								</div>
+							</td>
+						</tr>
+					</table>
+					
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+							onclick="PF('blockPanelGral').show()"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" >
+						</p:commandButton>															
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<!-- styleClass="blockSitio" -->
+					<p:blockUI id="blkPageLogin" block="panelGeneral"
+						widgetVar="blockPanelGral" styleClass="position_fixed">
+							Procesando...<br />
+						<p:graphicImage name="images/loadingbar.gif" />
+					</p:blockUI>
+
+				</h:form>
+			</div>
+			<div class="a7col copy">Copyright (2007 -
+				${loginView.anioActual}) STR :: Todos los derechos reservados</div>
+			<div class="clear"></div>
+		</div>
+
+		<h:form  prependId="false" >
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+			<p:dialog header="Cambio de Clave" id="dlgCambioPasswordId" widgetVar="dlgCambioPassword" minHeight="40" modal="true" closable="false">
+   				<h:outputText id="msgCambioPassword" value="#{loginView.msgCambioPassword}" />
+   				<br />
+   				<p:commandButton value="Aceptar" action="#{loginView.logout}" process="@this"/>
+			</p:dialog>
+		</h:form>
+	
+		<h:outputScript library="js" name="login/login.js" />
+		
+		<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPanelGral').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPanelGral').hide();}" onerror="PF('blockPanelGral').hide();" />
+		</sec:authorize>		
+	</h:body>
+</ui:composition>

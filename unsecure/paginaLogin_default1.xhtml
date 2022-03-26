@@ -1,0 +1,178 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+		<title>STR :: Recargas de Celulares</title>
+		<h:outputStylesheet name="login/default1/bootstrap.min.css" library="css" />
+		<h:outputStylesheet name="login/default1/util.css" library="css" />
+		<h:outputStylesheet name="login/default1/main.css" library="css" />
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>		
+		
+	</h:head>
+
+	<h:body id="panelGeneral" style="margin: 0 !important;">
+		<div class="limiter">
+			<div class="container-login100">
+				<div class="wrap-login100">
+					<div class="login100-form-title">
+						<img src="${loginView.configuracionMayorista.logo}" width="330"
+							height="120" />
+					</div>
+
+
+					<h:form id="loginFormId" prependId="false"
+						styleClass="login100-form validate-form">
+						
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+						
+						<f:passThroughAttribute name="autocomplete" value="off" />
+
+						<p:focus for="usuario" />						
+
+						<div class="wrap-input100 validate-input m-b-18"
+							data-validate="El Usuario es requerido">
+							<span class="label-input100">Usuario</span>
+
+							<p:keyboard id="usuario" required="true"
+								value="#{loginView.usuario}" preventPaste="true"
+								requiredMessage="El usuario es obligatorio"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+								showMode="button" buttonImageOnly="true"
+								buttonImage="/resources/images/login/keyboard.png"
+								autocomplete="false" styleClass="input100" maxlength="15" style="border: none;"
+								closeLabel="Cerrar" clearLabel="Borrar" >
+								<p:ajax event="blur" update="mensajes, opTarjetaCoordenadas"
+									listener="#{loginView.validarCoordenadas}" global="false" />
+
+							</p:keyboard>
+							<p:watermark value="Ingrese su Usuario" for="usuario" />
+							<span class="focus-input100"></span>
+						</div>
+
+						<div class="wrap-input100 validate-input m-b-18"
+							data-validate="La Contraseña es requerida">
+							<span class="label-input100">Contraseña</span>
+							<p:keyboard id="password" password="true" required="true"
+								value="#{loginView.password}" preventPaste="true"
+								requiredMessage="La contraseña es obligatoria"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPassword(keycode);"
+								showMode="button" buttonImageOnly="true"
+								buttonImage="/resources/images/login/keyboard.png"
+								autocomplete="false" maxlength="15" styleClass="input100"  style="border: none;"
+								closeLabel="Cerrar" clearLabel="Borrar" />
+							<p:watermark value="Ingrese su Contraseña" for="password" />
+							<span class="focus-input100"></span>
+						</div>
+
+						<div class="wrap-input100 validate-input m-b-18"
+							data-validate="El Captcha es requerido">
+							<span class="label-input100">Captcha</span>
+							<p:inputText id="captcha" name="captcha" required="true"
+								requiredMessage="El captcha es obligatorio" maxlength="6"
+								autocomplete="off"
+								style="width: 130px;width: 50%;display: initial; border: none;"
+								styleClass="input100 input100Captcha"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCaptcha(keycode);" />
+								
+								<p:watermark value="Ingrese captcha" for="captcha" />
+
+								<h:graphicImage value="${loginView.captcha}" id="capimg" styleClass="imgCaptcha"
+															alt="Captcha" cache="false"
+															stream="false" />
+															
+								<p:commandLink update="capimg"
+									action="${loginView.captchaUpdate}" immediate="true">
+									<i class="fa fa-refresh fa-lg" aria-hidden="true"></i>
+								</p:commandLink>
+							
+							<span class="focus-input100"></span>
+						</div>
+
+						<p:panel id="opTarjetaCoordenadas"
+							visible="#{loginView.usarTarjetaCoordenadas}"
+							style="background-color:transparent;border:none;padding:0;">
+							<div class="wrap-input100 validate-input m-b-18"
+								data-validate="Las Coordenadas son requeridas">
+								<span class="label-input100">Coordenadas</span>
+
+								<p:inputText id="coordenada1" name="coordenada1" maxlength="2"
+									style="width: 25% !important;display: initial;border: none;"
+									requiredMessage="La coordenada 1 es obligatoria"
+									styleClass="coordenada_input input100"
+									onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada1(keycode);" />
+								<p:watermark value="${loginView.coord1proxlogin}"
+									for="coordenada1" />
+
+								<p:inputText id="coordenada2" name="coordenada2" maxlength="2"
+									style="width: 25% !important;display: initial;border: none;"
+									requiredMessage="La coordenada 2 es obligatoria"
+									styleClass="coordenada_input input100"
+									onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada2(keycode);" />
+								<p:watermark value="${loginView.coord2proxlogin}"
+									for="coordenada2" />
+
+								<span class="focus-input100"></span>
+							</div>
+						</p:panel>
+
+						<div class="container-login100-form-btn"
+							style="padding-left: 75px;">
+							<p:commandButton id="login" value="Entrar"
+								action="#{loginView.login}" update="password mensajes"
+								styleClass="login100-form-btn"
+								style="font-weight: normal;border: none;box-shadow: none;text-shadow: none;background-blend-mode: color-burn;"/>
+						</div>
+
+						<div class="wrap-input100 validate-input m-b-18"
+							style="border-bottom: none !important;">
+							<p:messages id="mensajes" globalsOnly="true" />
+						</div>
+
+
+						<div class="flex-sb-m w-full p-b-30">
+							<div class="contact100-form-checkbox"></div>
+
+							<div>
+								<h:commandLink value="¿Se te olvidó tu contraseña?"
+									styleClass="txt1"
+									onclick="$(document.getElementById('mensajesRecuperar')).css('display','none');PF('dlgRecuperar').show();return false;" />
+							</div>
+						</div>
+					</h:form>
+
+
+					<p style="text-align: center;" class="txt1">Copyright
+						(2007-${loginView.anioActual}) STR Todos los derechos reservados</p>
+				</div>
+			</div>
+		</div>
+
+		<ui:include src="recuperar.xhtml"></ui:include>
+
+		<p:blockUI id="blkPageLogin" block="panelGeneral"
+			widgetVar="blockPageLogin" styleClass="position_fixed">
+				Procesando...<br />
+			<p:graphicImage name="images/loadingbar.gif" />
+		</p:blockUI>
+
+		<h:outputScript library="js" name="login/default1/popper.js" />
+		<h:outputScript library="js" name="login/default1/bootstrap.min.js" />
+		<h:outputScript library="js" name="login/default1/main.js" />
+		<h:outputScript library="js" name="login/login.js" />
+		
+		<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPageLogin').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPageLogin').hide();}" onerror="PF('blockPageLogin').hide();" />
+	</h:body>
+</ui:composition>

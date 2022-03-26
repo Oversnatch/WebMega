@@ -1,0 +1,295 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_ACTUALIZARDATOS')">
+
+		<h:head>
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			<meta name="_csrf" content="${_csrf.token}" />
+			<meta name="_csrf_header" content="${_csrf.headerName}" />
+
+			<title>STR :: Recargas de Celulares</title>
+			<h:outputStylesheet name="login/tcargo/estilos_12cols.css"
+				library="css" />
+			<h:outputStylesheet name="login/tcargo/estilos.css" library="css" />
+			<style>
+.coordenada_tabla {
+	width: 240px;
+	left: 100px;
+}
+
+.coordenada_input {
+	width: 30px;
+}
+
+.coordenada_columna0 {
+	width: 50px;
+	text-align: center;
+}
+
+.coordenada_columna1 {
+	width: 20px;
+	text-align: center;
+}
+
+.coordenada_columna2 {
+	width: 25px;
+	text-align: left;
+}
+</style>
+			<h:outputScript library="js" name="ajaxCSRFCfg.js" />
+			<script>
+				var ocultarBlockPageLogin = true;
+			</script>
+		</h:head>
+
+		<h:body id="panelGeneral" style="margin: 0 !important;">
+			<sec:authorize access="hasAnyAuthority('ROLE_PLATAFORMA')">
+				<div class="container">
+
+					<div class="a7col logo">
+						<img src="${loginView.configuracionMayorista.logo}" width="480"
+							height="155" />
+					</div>
+
+					<div class="a7col">
+						<h:form id="loginFormId" prependId="false">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
+
+							<f:passThroughAttribute name="autocomplete" value="off" />
+
+							<table class="login" border="0" align="center" cellpadding="8"
+								cellspacing="0">
+								<tr>
+									<td colspan="2" align="center"><h6>Por favor Ingrese
+											los Datos del Comercio</h6></td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<fieldset>
+											<legend>Datos Generales</legend>
+											<h:outputLabel for="razsoc" value="Nombre / R. Social" style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="razsoc" required="true"
+												value="#{loginView.usuarioActualizarRazonSocial}"
+												preventPaste="true"
+												requiredMessage="El Nombre / RazonSocial es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="50" maxlength="50"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Nombre / R. Social"
+												for="razsoc" />
+		
+											<h:outputLabel for="cuit" value="DNI / CUIT /CUIL"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="cuit" required="true"
+												value="#{loginView.usuarioActualizarCuit}"
+												preventPaste="true"
+												requiredMessage="El DNI / CUIT /CUIL es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="50" maxlength="50"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su DNI / CUIT /CUIL" for="cuit"  style="min-width: 145px;display: inline-block;" />
+		
+											<h:outputLabel for="rubro" value="Rubro"  style="min-width: 145px;display: inline-block;" />
+											<p:selectOneMenu id="rubro"
+												value="#{loginView.usuarioActualizarIdRubro}"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;"
+												filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+												onkeydown="setNext(event.keyCode, 'valorIn1');">
+												<f:selectItem itemValue="0" itemLabel="No Asignado" />
+												<f:selectItems value="#{loginView.rubros}" />
+											</p:selectOneMenu>
+											<p:watermark value="Ingrese su Rubro" for="rubro" />
+										</fieldset>
+		
+		
+										<fieldset>
+											<legend>Contacto</legend>
+		
+											<h:outputLabel for="telefono1" value="Telefono"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="telefono1" required="true"
+												value="#{loginView.usuarioActualizarTelefono1}"
+												preventPaste="true"
+												requiredMessage="El Telefono es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="30" maxlength="20"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Telefono" for="telefono1" />
+		
+											<h:outputLabel for="celular" value="Celular"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="celular" required="true"
+												value="#{loginView.usuarioActualizarCelular}"
+												preventPaste="true" requiredMessage="El Celular es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="30" maxlength="20"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Celular" for="celular" />
+		
+											<h:outputLabel for="mail" value="Mail"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="mail" required="true"
+												value="#{loginView.usuarioActualizarMail}"
+												preventPaste="true" requiredMessage="El Mail es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="30" maxlength="50"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Mail" for="mail" />
+										</fieldset>
+		
+		
+										<fieldset>
+											<legend>Ubicacion</legend>
+		
+											<h:outputLabel for="pais" value="País"  style="min-width: 145px;display: inline-block;" />
+											<p:selectOneMenu id="pais"
+												value="#{loginView.usuarioActualizarIdPais}"
+												style="box-shadow: unset;border-radius: 0 0 0 0 !important;width:221px;margin-bottom: 3px;" 
+												filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+												onkeydown="setNext(event.keyCode, 'valorIn1');">
+												<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+												<f:selectItems value="#{loginView.paises}" />
+												<p:ajax event="change" ajaxSingle="true"
+													actionListener="#{loginView.onChangePais}"
+													update="provincia,localidad" />
+											</p:selectOneMenu>
+											<p:watermark value="Ingrese su Pais" for="pais" />
+		
+		
+											<h:outputLabel for="provincia" value="Provincia"  style="min-width: 145px;display: inline-block;" />
+											<p:selectOneMenu id="provincia"
+													value="#{loginView.usuarioActualizarIdProvincia}"
+													style="box-shadow: unset;    border-radius: 0 0 0 0 !important;width:221px;margin-bottom: 3px;" 
+													filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+													onkeydown="setNext(event.keyCode, 'valorIn1');">
+												<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+												<f:selectItems value="#{loginView.provincias}" />
+												<p:ajax event="change" ajaxSingle="true"
+													actionListener="#{loginView.onChangeProvincia}"
+													update="localidad" />
+											</p:selectOneMenu>
+											<p:watermark value="Ingrese su Provincia" for="provincia" />
+		
+											<h:outputLabel for="localidad" value="Localidad"  style="min-width: 145px;display: inline-block;" />
+											<p:selectOneMenu id="localidad"
+													value="#{loginView.usuarioActualizarIdLocalidad}"
+													style="box-shadow: unset;border-radius: 0 0 0 0 !important;width:221px;margin-bottom: 3px;" 
+													filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}"
+													onkeydown="setNext(event.keyCode, 'valorIn1');">
+												<f:selectItem itemValue="0" itemLabel="Seleccionar" />
+												<f:selectItems value="#{loginView.localidades}" />
+											</p:selectOneMenu>
+											<p:watermark value="Ingrese su Localidad" for="localidad" />
+		
+											<h:outputLabel for="calle" value="Calle"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="calle" required="true"
+												value="#{loginView.usuarioActualizarCalle}"
+												preventPaste="true" requiredMessage="La Calle es requerida"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												size="30" maxlength="50"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Calle" for="calle" />
+		
+											<h:outputLabel for="numero" value="Numero"  style="min-width: 145px;display: inline-block;" />
+											<p:inputText id="numero" required="true"
+												value="#{loginView.usuarioActualizarAltura}"
+												preventPaste="true"
+												requiredMessage="El DNI / CUIT /CUIL es requerido"
+												onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+												showMode="button" buttonImageOnly="true" autocomplete="false"
+												styleClass="campo" size="30" maxlength="20"
+												style="box-shadow: unset;border-radius: unset;width:221px;margin-bottom: 3px;">
+											</p:inputText>
+											<p:watermark value="Ingrese su Numero" for="numero" />
+										</fieldset>
+									</td>
+								</tr>
+								<tr>
+									<td style="text-align: center;">
+										<p:commandButton value="Modificar"
+											action="#{loginView.guardarDatosCliente}" process="@form"
+											update="msgsUpdate"
+											styleClass="btform entrar"
+											style="padding: 0.5em 0.5em 0.5em 0.5em;border-radius: unset;border: none;font-weight: initial;font-size: small;">
+											<p:confirm header="Confirmacion"
+												message="Los datos son correctos?" icon="ui-icon-alert" />
+										</p:commandButton>
+									</td>
+									<td style="text-align: center;">
+										<p:commandButton value="Cancelar"
+											action="#{loginView.salirSinActualizarDatos}"
+											process="@this" 
+											styleClass="btform entrar"
+											style="padding: 0.5em 0.5em 0.5em 0.5em;border-radius: unset;border: none;font-weight: initial;font-size: small;">
+											<p:confirm header="Importante!"
+												message="Si no completa los datos no podra seguir operando. Desea continuar de todas formas?"
+												icon="ui-icon-alert" />
+											<div id="canvasloader-container"
+												class="display-initial-canvasloader-container">
+												<div id="canvasLoader" style="display: none;">
+													<canvas width="20" height="20"></canvas>
+													<canvas width="20" height="20" style="display: none;"></canvas>
+												</div>
+											</div>
+										</p:commandButton>									
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+
+										<div id="divMsgError" class="clear">
+											<p style="text-align: center">
+												<p:messages id="msgsUpdate" globalsOnly="true"
+													showDetail="true" showSummary="false" />
+											</p>
+										</div>
+									</td>
+								</tr>
+							</table>
+
+							<p:confirmDialog global="true">
+								<p:commandButton value="Si" type="button"
+									onclick="PF('blockPanelGral').show()"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+								</p:commandButton>
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+
+							<!-- styleClass="blockSitio" -->
+							<p:blockUI id="blkPageLogin" block=":panelGeneral"
+								widgetVar="blockPanelGral" styleClass="position_fixed">
+							Procesando...<br />
+								<p:graphicImage name="images/loadingbar.gif" />
+							</p:blockUI>
+
+						</h:form>
+					</div>
+					<div class="a7col copy">Copyright (2007 -
+						${loginView.anioActual}) STR :: Todos los derechos reservados</div>
+					<div class="clear"></div>
+				</div>
+				<h:outputScript library="js" name="login/login.js" />
+
+				<p:ajaxStatus
+					onstart="ocultarBlockPageLogin = true;PF('blockPanelGral').show();"
+					oncomplete="if(ocultarBlockPageLogin){PF('blockPanelGral').hide();}"
+					onerror="PF('blockPanelGral').hide();" />
+			</sec:authorize>
+		</h:body>
+	</sec:authorize>
+</ui:composition>

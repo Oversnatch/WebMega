@@ -1,0 +1,210 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+		
+		<title>STR :: Recargas de Celulares</title>
+
+		<link rel="icon" type="image/png" href="images/login/e-carga/icons/favicon.ico"/>
+		<h:outputStylesheet name="bootstrap/4.0.0-beta/css/bootstrap.min.css" library="vendor" />
+		<h:outputStylesheet name="animate/3.5.2/animate.css" library="vendor" />
+		<h:outputStylesheet name="css-hamburgers/hamburgers.min.css" library="vendor" />
+		<h:outputStylesheet name="login/e-carga/util.css" library="css" />
+		<h:outputStylesheet name="login/e-carga/main.css" library="css" />
+			
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>	
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+				
+		<style>
+		img.keypad-trigger {
+		    display: flex;
+		    float: right;
+		    margin-top: -35px;
+		    margin-right: 10px;
+		}
+		#opTarjetaCoordenadas_content{
+			border:none;
+		}
+		
+		.ui-shadow {
+ 		    -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important;
+    		-webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important;
+    		box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important;
+    		height: auto !important;
+    		background-color: #fff !important;
+		}
+		</style>
+			
+	</h:head>
+
+<h:body id="panelGeneral" style="margin: 0 !important;">
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="divLogo">
+				
+					<div class="text-center imgLogo"  >
+						<p:graphicImage name="images/login/e-carga/logo.png" alt="e-carga" />												
+					</div>
+					
+					<p:graphicImage name="images/login/e-carga/img-01.png" class="img-fluid" alt="e-carga" width="440vh"/>
+
+				</div>
+									
+				<h:form id="loginForm" name="contact" prependId="false" styleClass="login100-form validate-form" >
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					
+					<f:passThroughAttribute name="autocomplete" value="off" />	
+
+					<p:focus for="usuario" />					
+						
+					<h1>Bienvenido</h1>
+					<span>Hacelo simple, sumate a e-carga.</span>
+					<br /><br />
+
+					<div class="wrap-input100 validate-input" data-validate="Ingrese usuario">
+						<p:keyboard id="usuario" required="true"
+							value="#{loginView.usuario}" preventPaste="true"
+							requiredMessage="El usuario es obligatorio"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+							showMode="button" buttonImageOnly="true"
+							buttonImage="/resources/images/login/default2/keyboard.jpg"
+							autocomplete="false" styleClass="keyboardInput input100" maxlength="15" style="border: none;" placeholder="Usuario"
+							closeLabel="Cerrar" clearLabel="Borrar" >
+							<p:ajax event="blur" update="mensajes, opTarjetaCoordenadas"
+								listener="#{loginView.validarCoordenadas}" global="false" />
+
+						</p:keyboard>
+						<p:watermark value="Ingrese su Usuario" for="usuario" />					
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Contraseña requerida">
+						<p:keyboard id="password" password="true" required="true"
+							value="#{loginView.password}" preventPaste="true"
+							requiredMessage="La contraseña es obligatoria"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPassword(keycode);"
+							showMode="button" buttonImageOnly="true"
+							buttonImage="/resources/images/login/default2/keyboard.jpg"
+							autocomplete="false" maxlength="15" styleClass="keyboardInput input100"  style="border: none;" placeholder="Contraseña"
+							closeLabel="Cerrar" clearLabel="Borrar" />
+						<p:watermark value="Ingrese su Contraseña" for="password" />
+					
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					<div class="wrap-input100 validate-input" data-validate="Captcha requerido">
+						
+						<p:inputText id="captcha" name="captcha" required="true"
+							requiredMessage="El captcha es obligatorio" maxlength="6"
+							autocomplete="off"  styleClass="form input100" style="border: none;"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCaptcha(keycode);" />
+							
+						<p:watermark value="Captcha" for="captcha" />									
+						
+						<p:commandLink update="capimg" style="display: inline-block; position: absolute;top: 18px; left: 35px; border-radius: 5px;"><i class="fa fa-refresh" aria-hidden="true" ></i></p:commandLink>
+						
+						<h:graphicImage value="${loginView.captcha}" id="capimg" styleClass="captcha"
+								alt="Captcha" cache="false" stream="false" style="width: 130px; height: 25px; display: inline-block; position: absolute;top: 12px; right: 10px; border-radius: 5px;"/>
+						
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+	
+						</span>
+					</div>
+								
+					<p:panel id="opTarjetaCoordenadas"
+						visible="#{loginView.usarTarjetaCoordenadas}"
+						style="background-color:transparent;border:none;padding:0;"
+						styleClass="wrap-input100 validate-input">
+						
+						<div class="row">
+							<div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+
+							<span class="txt2" style="padding-left: 24px;padding-right: 5px;">${loginView.coord1proxlogin}</span>
+							<p:inputText id="coordenada1" name="coordenada1" maxlength="2"
+								requiredMessage="La coordenada 1 es obligatoria" styleClass="input100" style="width:25px;border:none;display: inline-block;"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada1(keycode);" />
+							<p:watermark value="${loginView.coord1proxlogin}"
+								for="coordenada1" />
+
+							<span class="txt2" style="padding-left: 25px;padding-right: 5px;">${loginView.coord2proxlogin}</span>
+							<p:inputText id="coordenada2" name="coordenada2" maxlength="2"
+								requiredMessage="La coordenada 2 es obligatoria" styleClass="input100" style="width:25px;border:none;display: inline-block;"
+								onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada2(keycode);" />
+							<p:watermark value="${loginView.coord2proxlogin}"
+								for="coordenada2" />	
+
+
+				
+									<br/>
+							</div>
+						</div>
+
+					</p:panel>					
+					
+					<div class="container-login100-form-btn">
+						<p:commandButton name="login" id="login" value="Ingresar"
+									action="#{loginView.login}" update="password mensajes"
+									styleClass="login100-form-btn" />
+					</div>
+
+					
+
+					<div class="text-center p-t-12">
+						<span class="txt1">
+							Olvidaste la
+						</span>
+						<h:commandLink value="Contraseña" id="myBtn" class="txt2" 
+									onclick="$(document.getElementById('mensajesRecuperar')).css('display','none');PF('dlgRecuperar').show();return false;" />
+					</div>
+					
+					<p:messages id="mensajes" globalsOnly="true" class="text-center" />
+					
+					<br />
+
+					<div class="text-center contacto">
+						<a class="txt2" href="tel:08008886070">0800-888-6070</a>
+						<a href="https://www.facebook.com/pg/ecargasaldovirtual" class="fa fa-facebook"></a>
+						<a href="https://www.instagram.com/ecarga_ok" class="fa fa-instagram"></a>
+						<br />
+						<a class="txt2" href="http://www.e-carga.com">www.e-carga.com</a>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+	
+	<ui:include src="recuperar.xhtml"></ui:include>
+
+	<p:blockUI id="blkPageLogin" block="panelGeneral"
+		widgetVar="blockPageLogin" styleClass="position_fixed">
+			Procesando...<br />
+		<p:graphicImage name="images/loadingbar.gif" />
+	</p:blockUI>
+
+	<h:outputScript library="vendor" name="bootstrap/4.0.0-beta/js/popper.js" />
+	<h:outputScript library="vendor" name="bootstrap/4.0.0-beta/js/bootstrap.min.js" />
+	<h:outputScript library="js" name="login/login.js" />
+	
+	<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPageLogin').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPageLogin').hide();}" onerror="PF('blockPageLogin').hide();" />
+
+</h:body>
+
+</ui:composition>

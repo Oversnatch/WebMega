@@ -1,0 +1,175 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+		<meta name="viewport" content="initial-scale=1" />	
+
+		<title>STR :: PUNTO DE VENTA</title>
+		<h:outputStylesheet name="login/default2/bootstrap.css" library="css" />
+		<h:outputStylesheet name="login/default2/estilos.css" library="css" />
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+		
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>		
+	</h:head>
+
+	<h:body id="panelGeneral">
+		<div class="container">
+			<div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 espacioLogin">
+				<div class="col-sm-12 col-md-12 sombra">
+					<div class="col-sm-12 col-md-12 recuadro">
+						<div class="LogoLogin  col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
+							<img src="${loginView.configuracionMayorista.logo}"
+								align="absmiddle" />
+						</div>
+					</div>
+					<div class="col-sm-12 col-md-12 centroLogin">
+					<h:form id="form1" name="form1" prependId="false">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+						
+						<f:passThroughAttribute name="autocomplete" value="off" />					
+
+						<p:focus for="usuario" />
+
+							<div class="form-group">
+								<div class="row">
+									<div class="col-sm-12 col-md-12">
+										<p:keyboard id="usuario" required="true"
+											value="#{loginView.usuario}" preventPaste="true"
+											requiredMessage="El usuario es obligatorio"
+											onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+											showMode="button" buttonImageOnly="true"
+											buttonImage="/resources/images/login/default2/keyboard.jpg"
+											autocomplete="false" styleClass="form" maxlength="15" style="border: none;"
+											closeLabel="Cerrar" clearLabel="Borrar" >
+											<p:ajax event="blur" update="mensajes, opTarjetaCoordenadas"
+												listener="#{loginView.validarCoordenadas}" global="false" />
+			
+										</p:keyboard>
+										<p:watermark value="Ingrese su Usuario" for="usuario" />									
+											<br/>
+									</div>
+
+
+								</div>
+								<div class="col-sm-12 col-md-12 linea"></div>
+								<br/>
+
+								<div class="row">
+									<div class="col-sm-12 col-md-12">
+										<p:keyboard id="password" password="true" required="true"
+											value="#{loginView.password}" preventPaste="true"
+											requiredMessage="La contraseña es obligatoria"
+											onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPassword(keycode);"
+											showMode="button" buttonImageOnly="true"
+											buttonImage="/resources/images/login/default2/keyboard.jpg"
+											autocomplete="false" maxlength="15" styleClass="form"  style="border: none;"
+											closeLabel="Cerrar" clearLabel="Borrar" />
+										<p:watermark value="Ingrese su Contraseña" for="password" />									
+											<br/>
+									</div>
+
+
+								</div>
+								<div class="col-sm-12 col-md-12 linea"></div>
+								<br/>
+
+								<div class="row">
+									<div class="col-sm-12 col-md-12">
+										<p:inputText id="captcha" name="captcha" required="true"
+											requiredMessage="El captcha es obligatorio" maxlength="6"
+											autocomplete="off"
+											styleClass="form"
+											onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCaptcha(keycode);" />
+											
+										<p:watermark value="Captcha" for="captcha" />									
+
+										<p:commandLink update="capimg" style="float:right;margin-right: 14px;padding-top: 8px;"
+											action="${loginView.captchaUpdate}" immediate="true"><p:graphicImage name="images/login/default2/actualizar.jpg" /></p:commandLink>
+
+										<h:graphicImage value="${loginView.captcha}" id="capimg" styleClass="captcha"
+												alt="Captcha" cache="false" stream="false" style="float:right"/>
+
+									</div>
+
+								</div>
+								
+								<div class="col-sm-12 col-md-12 linea"></div>
+								<br/>
+								
+								<p:panel id="opTarjetaCoordenadas"
+									visible="#{loginView.usarTarjetaCoordenadas}"
+									style="background-color:transparent;border:none;padding:0;">
+									
+									<div class="row" style="padding-right: 30px;">
+										<div class="col-sm-4 col-md-4">
+											<span style="padding-left: 0;">Coordenadas</span>
+										</div>
+										<div class="col-sm-2 col-md-2">
+											<span style="float: right;">${loginView.coord1proxlogin}</span>
+										</div>
+										<div class="col-sm-2 col-md-2">
+											<p:inputText id="coordenada1" name="coordenada1" maxlength="2" style="border-bottom: red 1px solid; padding-top: 0px;"
+													requiredMessage="La coordenada 1 es obligatoria"
+													onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada1(keycode);" />
+										</div>
+										<div class="col-sm-2 col-md-2">
+											<span style="float: right;">${loginView.coord2proxlogin}</span>
+										</div>										
+										<div class="col-sm-2 col-md-2">
+											<p:inputText id="coordenada2" name="coordenada2" maxlength="2" style="border-bottom: red 1px solid; padding-top: 0px;"
+													requiredMessage="La coordenada 2 es obligatoria"
+													onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada2(keycode);" />
+										</div>
+									</div>
+									<div class="col-sm-12 col-md-12 linea"></div>
+									<br/>
+								</p:panel>
+								
+								<br/>
+
+								<div class="col-sm-12 col-md-12 btlogin">
+									<p:commandButton id="login" value="Entrar"
+									action="#{loginView.login}" update="password mensajes"
+									styleClass="btn-login" />
+								</div>
+
+								<br />
+								<br />
+								<p:messages id="mensajes" globalsOnly="true" />
+
+								<div class="col-sm-12 col-md-12 pass"><h:commandLink value="¿Se te olvidó tu contraseña?"
+									onclick="$(document.getElementById('mensajesRecuperar')).css('display','none');PF('dlgRecuperar').show();return false;" /></div>
+							</div>
+						</h:form>
+					</div>
+
+					<div class="col-sm-12 col-md-12 recuadrofooter">Copyright (2007-${loginView.anioActual})
+						STR Todos los derechos reservados</div>
+
+
+				</div>
+			</div>
+		</div>
+
+		<ui:include src="recuperar.xhtml"></ui:include>
+
+		<p:blockUI id="blkPageLogin" block="panelGeneral"
+			widgetVar="blockPageLogin" styleClass="position_fixed">
+				Procesando...<br />
+			<p:graphicImage name="images/loadingbar.gif" />
+		</p:blockUI>
+
+		<h:outputScript library="js" name="login/login.js" />
+		
+		<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPageLogin').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPageLogin').hide();}" onerror="PF('blockPageLogin').hide();" />
+
+	</h:body>
+</ui:composition>

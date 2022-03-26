@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+		
+		<title>STR :: Recargas de Celulares</title>
+
+		<link rel="icon" type="image/png" href="images/login/e-carga/icons/favicon.ico"/>
+		<h:outputStylesheet name="bootstrap/4.0.0-beta/css/bootstrap.min.css" library="vendor" />
+		<h:outputStylesheet name="animate/3.5.2/animate.css" library="vendor" />
+		<h:outputStylesheet name="css-hamburgers/hamburgers.min.css" library="vendor" />
+		<h:outputStylesheet name="login/e-carga/util.css" library="css" />
+		<h:outputStylesheet name="login/e-carga/main.css" library="css" />
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>			
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>	
+		
+		<style>
+		img.keypad-trigger {
+		    display: flex;
+		    float: right;
+		    margin-top: -35px;
+		    margin-right: 10px;
+		}
+		</style>
+			
+	</h:head>
+
+<h:body id="panelGeneral" style="margin: 0 !important;">
+		<sec:authorize access="hasAnyAuthority('ROLE_PLATAFORMA')">
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="divLogo">
+				
+					<div class="text-center imgLogo"  >
+						<p:graphicImage name="images/login/e-carga/logo.png" alt="e-carga" />												
+					</div>
+					
+					<p:graphicImage name="images/login/e-carga/img-01.png" class="img-fluid" alt="e-carga" width="440vh"/>
+
+				</div>
+									
+				<h:form id="loginForm" name="contact" prependId="false" styleClass="login100-form validate-form" >
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					
+					<f:passThroughAttribute name="autocomplete" value="off" />	
+						
+					<h1>Cambio de Clave</h1>
+					<br /><br />
+					<div class="wrap-input100 validate-input" data-validate = "La Clave actual es obligatoria0.52">
+						<p:keyboard id="password_a" required="true"
+							value="#{loginView.password}" password="true" preventPaste="true"
+							requiredMessage="La Clave actual es obligatoria"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordA(keycode);"
+							showMode="button" buttonImageOnly="true"
+							buttonImage="/resources/images/login/default2/keyboard.jpg"
+							autocomplete="false" styleClass="keyboardInput input100" maxlength="15" style="border: none;" placeholder="Clave actual">
+						</p:keyboard>
+						<p:watermark value="Clave actual" for="password_a" />					
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "La Clave Nueva es obligatoria">
+						<p:keyboard id="password_n" password="true" required="true"
+							value="#{loginView.passwordNew}" preventPaste="true"
+							requiredMessage="La Clave Nueva es obligatoria"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN(keycode);"
+							showMode="button" buttonImageOnly="true"
+							buttonImage="/resources/images/login/default2/keyboard.jpg"
+							autocomplete="false" maxlength="15" styleClass="keyboardInput input100"  style="border: none;" placeholder="Clave Nueva" />
+						<p:watermark value="Clave Nueva" for="password_n" />
+					
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					<div class="wrap-input100 validate-input" data-validate = "Debe Repetir la Clave es obligatorio">
+						<p:keyboard id="password_n2" password="true" required="true"
+							value="#{loginView.passwordNewCheck}" preventPaste="true"
+							requiredMessage="Debe Repetir la Clave es obligatorio"
+							onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN2(keycode);"
+							showMode="button" buttonImageOnly="true"
+							buttonImage="/resources/images/login/default2/keyboard.jpg"
+							autocomplete="false" maxlength="15" styleClass="keyboardInput input100"  style="border: none;" placeholder="Repetir Clave" />
+						<p:watermark value="Repetir Clave" for="password_n2" />
+					
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<div class="container-login100-form-btn">
+						<p:commandButton name="login" id="login" value="Modificar"
+							action="#{loginView.cambiarPassword}" 
+							process="@form" update="msgsChgPwd, dlgCambioPasswordId, msgCambioPassword"
+							styleClass="login100-form-btn"
+							style="width: 40%;">
+								<p:confirm header="Confirmacion"
+									message="Esta seguro que desea cambiar la clave?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						<p:commandButton value="Cancelar"
+							action="#{loginView.logout}" process="@this"
+							styleClass="login100-form-btn"
+							style="width: 40%;"/>								
+									
+					</div>
+
+					
+					<p:messages id="msgsChgPwd" globalsOnly="true" showDetail="true" showSummary="false" />
+					
+					<br />
+					<p:confirmDialog global="true">
+						<p:commandButton value="Si" type="button"
+							onclick="PF('blockPanelGral').show()"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" >
+						</p:commandButton>															
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<!-- styleClass="blockSitio" -->
+					<p:blockUI id="blkPageLogin" block="panelGeneral"
+						widgetVar="blockPanelGral" styleClass="position_fixed">
+							Procesando...<br />
+						<p:graphicImage name="images/loadingbar.gif" />
+					</p:blockUI>
+
+					<div class="text-center contacto">
+						<a class="txt2" href="tel:08008886070">0800-888-6070</a>
+						<a href="https://www.facebook.com/pg/ecargasaldovirtual" class="fa fa-facebook"></a>
+						<a href="https://www.instagram.com/ecarga_ok" class="fa fa-instagram"></a>
+						<br />
+						<a class="txt2" href="http://www.e-carga.com">www.e-carga.com</a>
+					</div>
+
+
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+	
+	<h:form  prependId="false" >
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		
+		<p:dialog header="Cambio de Clave" id="dlgCambioPasswordId" widgetVar="dlgCambioPassword" minHeight="40" modal="true" closable="false">
+			<h:outputText id="msgCambioPassword" value="#{loginView.msgCambioPassword}" />
+			<br />
+			<p:commandButton value="Aceptar" action="#{loginView.logout}" process="@this"/>
+		</p:dialog>
+	</h:form>
+
+
+
+
+	<h:outputScript library="vendor" name="bootstrap/4.0.0-beta/js/popper.js" />
+	<h:outputScript library="vendor" name="bootstrap/4.0.0-beta/js/bootstrap.min.js" />
+	<h:outputScript library="js" name="login/login.js" />
+	
+	<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPanelGral').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPanelGral').hide();}" onerror="PF('blockPanelGral').hide();" />
+		</sec:authorize>
+</h:body>
+
+</ui:composition>

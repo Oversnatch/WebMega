@@ -1,0 +1,179 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+		
+		<title>STR :: Recargas de Celulares</title>
+
+		<h:outputStylesheet name="login/mirecarga/estilos.css"
+			library="css" />
+
+		<style>
+			.coordenada_tabla {
+				width: 240px;
+				left: 100px;
+			}
+			
+			.coordenada_input {
+				width: 30px;
+			}
+			
+			.coordenada_columna0 {
+				width: 50px;
+				text-align: center;
+			}
+			
+			.coordenada_columna1 {
+				width: 20px;
+				text-align: center;
+			}
+			
+			.coordenada_columna2 {
+				width: 25px;
+				text-align: left;
+			}
+		</style>
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+		
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>
+	</h:head>
+	<h:body id="panelGeneral"
+		style="margin: 0 !important;position: inherit !important;">
+		<sec:authorize access="hasAnyAuthority('ROLE_PLATAFORMA')">
+		<div class="logotipo">
+			<p:graphicImage name="images/login/mirecarga/logotipo.png" />
+		</div>
+		<div class="formulario">
+			<h:form id="loginFormId" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<f:passThroughAttribute name="autocomplete" value="off"/>
+				
+				<h2 style="margin-left: 120px;padding: 0;margin-top: 0px;margin-bottom: 0px;">Cambio de Clave</h2>
+				
+				<div style="margin-top: 15px;">
+					Clave actual
+					<p:keyboard id="password_a" required="true"
+						value="#{loginView.password}" password="true" style="width:260px;"
+						preventPaste="true"
+						requiredMessage="La Clave actual es obligatoria"
+						onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordA(keycode);"
+						showMode="button" buttonImageOnly="true"
+						buttonImage="/resources/images/login/mirecarga/keyboard.jpg"  
+						autocomplete="false" >
+
+					</p:keyboard>
+					<p:watermark value="Clave actual" for="password_a" />
+				</div>
+				<div>
+					Clave Nueva
+					<p:keyboard id="password_n" password="true" required="true"
+						value="#{loginView.passwordNew}" style="width:260px;"
+						preventPaste="true"
+						requiredMessage="La Clave Nueva es obligatoria" 
+						onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN(keycode);"
+						showMode="button" buttonImageOnly="true"
+						buttonImage="/resources/images/login/mirecarga/keyboard.jpg"  
+						autocomplete="false"/>
+					<p:watermark value="Clave Nueva" for="password_n" />
+				</div>
+				<div>
+					Clave Nueva
+					<p:keyboard id="password_n2" password="true" required="true"
+						value="#{loginView.passwordNewCheck}" style="width:260px;"
+						preventPaste="true"
+						requiredMessage="Debe Repetir la Clave es obligatorio" 
+						onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPasswordN2(keycode);"
+						showMode="button" buttonImageOnly="true"
+						buttonImage="/resources/images/login/mirecarga/keyboard.jpg"  
+						autocomplete="false"/>
+					<p:watermark value="Repetir Clave" for="password_n2" />
+				</div>
+
+				<div id="divMsgError" class="clear">
+					<p:messages id="msgsChgPwd" globalsOnly="true" showDetail="true" showSummary="false" />
+				</div>
+
+				<p:commandButton id="login" value="Modificar"
+					style="margin-right:0px;float: left;font-weight:initial;width: 150px;height: 47px;border: 3px solid #db7504;background-color: #f17e01;border-radius: 25px;color: white;"
+					action="#{loginView.cambiarPassword}"
+					process="@form" update="msgsChgPwd, dlgCambioPasswordId, msgCambioPassword"
+					styleClass="btform">
+					<p:confirm header="Confirmacion"
+						message="Esta seguro que desea cambiar la clave?"
+						icon="ui-icon-alert" />
+				</p:commandButton>
+					
+				<p:commandButton value="Cancelar"
+					action="#{loginView.logout}" process="@this"
+					styleClass="btform"
+					style="margin-right:100px;font-weight:initial;width: 150px;height: 47px;height: 47px;border: 3px solid #db7504;background-color: #f17e01;border-radius: 25px;color: white;" />								
+	
+					
+				<p:confirmDialog global="true">
+					<p:commandButton value="Si" type="button"
+						onclick="PF('blockPanelGral').show()"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" >
+					</p:commandButton>															
+					<p:commandButton value="No" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+
+				<!-- styleClass="blockSitio" -->
+				<p:blockUI id="blkPageLogin" block="panelGeneral"
+					widgetVar="blockPanelGral" styleClass="position_fixed">
+						Procesando...<br />
+					<p:graphicImage name="images/loadingbar.gif" />
+				</p:blockUI>					
+					
+			</h:form>
+		</div>
+
+		<div id="footer">
+			Copyright (2007- ${loginView.anioActual}) STR :: Todos los derechos reservados
+		</div>
+
+		<br />
+		<div class="empresas">
+			<div class="cols">
+				<div class="col">
+					<p:graphicImage name="images/login/mirecarga/claro.jpg" />
+				</div>
+				<div class="col">
+					<p:graphicImage name="images/login/mirecarga/movistar.jpg" />
+				</div>
+				<div class="col">
+					<p:graphicImage name="images/login/mirecarga/nextel.jpg" />
+				</div>
+				<div class="col">
+					<p:graphicImage name="images/login/mirecarga/personal.jpg" />
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		<h:form  prependId="false" >
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+			<p:dialog header="Cambio de Clave" id="dlgCambioPasswordId" widgetVar="dlgCambioPassword" minHeight="40" modal="true" closable="false">
+   				<h:outputText id="msgCambioPassword" value="#{loginView.msgCambioPassword}" />
+   				<br />
+   				<p:commandButton value="Aceptar" action="#{loginView.logout}" process="@this"/>
+			</p:dialog>
+		</h:form>
+		
+		<h:outputScript library="js" name="login/login.js" />
+		
+		<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPanelGral').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPanelGral').hide();}" onerror="PF('blockPanelGral').hide();" />
+		</sec:authorize>
+	</h:body>
+</ui:composition>

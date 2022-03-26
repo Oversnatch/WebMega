@@ -1,0 +1,231 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="_csrf" content="${_csrf.token}"/>
+		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+		<meta name="description"
+			content="Administración de Terminales - Claro" />
+		<meta name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1" />
+
+		<title>Administración de Terminales - Claro</title>
+
+		<link rel="Shortcut Icon" href="login/admClaro/favicon.ico" />
+		<h:outputStylesheet name="login/admClaro/bootstrap.min.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/waves.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/placeholders2.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/font.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/animate.min.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/tooltip-classic.css" library="css" />
+		<h:outputStylesheet name="login/admClaro/style.css" library="css" media="screen" />
+		<h:outputScript library="js" name="ajaxCSRFCfg.js"/>
+		<script>
+			var ocultarBlockPageLogin = true;
+		</script>			
+	</h:head>
+
+	<h:body id="panelGeneral" style="margin: 0 !important;">
+		<section class="main-content">
+			<div class="content-wrap">
+				<div class="columns-1" id="main-content" role="main">
+					<div class="row-fluid">
+						<div class="span12" id="column-1">
+							<div class="container">
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-1">&#160;</div>
+								<div
+									class="col-lg-4 col-md-4 col-sm-4 col-xs-10 height-container-login">
+									<div id="login-container" class="form aniamted bounceIn">
+										<p:graphicImage name="images/logosLogin/ClaroLogo.svg"
+											alt="Logo Claro" height="75" width="212"
+											class="img-responsive img-center logo-Login-Style" />
+
+										<div class="titleLogoClaro">Administración de Terminales</div>
+
+										<div class="login" id="loginDiv">
+											<h:form id="loginFormId" prependId="false">
+												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+												
+												<f:passThroughAttribute name="autocomplete" value="off"/>
+												
+												<p:focus for="usuario" />												
+												
+												<div class="padding-top-imputs-login-container">
+													<div class="input-group input-group-sm input-sm"
+														style="margin: 5px;padding: 0px 2px !important;">
+														<p:keyboard id="usuario" required="true"
+															value="#{loginView.usuario}" style="width:227px;"
+															aria-describedby="basic-addon2"
+															title="Ingrese el Usuario"
+															requiredMessage="El usuario es obligatorio"
+															onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressUsuario(keycode);"
+															showMode="button" buttonImageOnly="true" 
+															buttonImage="/resources/images/login/keyboard.png" 
+															autocomplete="false" closeLabel="Cerrar" clearLabel="Borrar" >
+															<p:ajax event="blur" update="mensajes, opTarjetaCoordenadas"
+																listener="#{loginView.validarCoordenadas}" global="false" />
+														</p:keyboard>
+														<p:watermark value="Ingrese su Usuario"
+															for="usuario" />
+													</div>
+												</div>
+												<div class="padding-top-imputs-login-container">
+													<div class="input-group input-group-sm  input-sm"
+														style="margin: 5px;padding: 0px 2px !important; ">
+
+														<p:keyboard id="password" password="true" required="true"
+															value="#{loginView.password}" style="width:227px;"
+															preventPaste="true"
+															requiredMessage="La contraseña es obligatoria"
+															onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressPassword(keycode);"
+															showMode="button" buttonImageOnly="true"
+															buttonImage="/resources/images/login/keyboard.png"  
+															autocomplete="false" closeLabel="Cerrar" clearLabel="Borrar" />
+														<p:watermark value="Ingrese su Contraseña" for="password" />
+													</div>
+												</div>
+												<div class="padding-top-imputs-login-container">
+													<div class="col-xs-6"
+														style="padding-top: 7px; text-align: right;">
+														<h:graphicImage value="${loginView.captcha}" id="capimg"
+															alt="Captcha" width="137" height="32" cache="false"
+															stream="false" />
+													</div>
+													<div class="col-xs-1"
+														style="padding-top: 10px; padding-left: 10px;">
+														<p:commandLink update="capimg"
+										action="${loginView.captchaUpdate}" immediate="true">
+															<p:graphicImage name="images/login/refresh.png" id="idRefresh"
+																width="25" height="25" />
+														</p:commandLink>
+													</div>
+													<div class="col-xs-5"
+														style="padding-top: 7px; text-align: left;">
+														<div class="placeholder">
+															<div class="ac-placeholder">
+																<p:inputText id="captcha" name="captcha" required="true"
+																	requiredMessage="El captcha es obligatorio" maxlength="6"
+																	autocomplete="off" style="width: 110px;border-radius: 3px;"
+																	onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCaptcha(keycode);" />
+																<label>Ingrese texto</label>
+															</div>
+														</div>
+													</div>
+
+												</div>
+												<div class="padding-top-imputs-login-container"
+													style="margin-top: 45px; margin-bottom: 20px; display: table;">
+													<p:panel id="opTarjetaCoordenadas"
+									visible="#{loginView.usarTarjetaCoordenadas}"
+									style="background-color:transparent;border:none;">
+														<table
+															style="border: none; text-align: left; cellpadding: 0; cellspacing: 0;"
+															class="coordenada_tabla">
+															<tr>
+																<td height="20" class="coordenada coordenada_columna0"></td>
+																<td height="20" class="coordenada coordenada_columna1">${loginView.coord1proxlogin}</td>
+																<td height="18" class="coordenada_columna2"><p:inputText
+																		id="coordenada1" name="coordenada1" maxlength="2"
+																		class="coordenada_input"
+																		requiredMessage="La coordenada 1 es obligatoria"
+																		onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada1(keycode);" /></td>
+																<td height="20" align="left"
+																	class="coordenada coordenada_columna1">${loginView.coord2proxlogin}</td>
+																<td height="18" class="coordenada_columna2"><p:inputText
+																		id="coordenada2" name="coordenada2" maxlength="2"
+																		class="coordenada_input"
+																		requiredMessage="La coordenada 2 es obligatoria"
+																		onkeypress="var keycode;if (window.event) keycode = window.event.keyCode;else if (e) keycode = e.which;else return true;onKeyPressCoordenada2(keycode);" /></td>
+
+
+															</tr>
+														</table>
+													</p:panel>
+												</div>
+												<div class="padding-top-imputs-login-container"
+													style="padding: 0px 10px; text-align: center;">
+													<div id="divMsgError">
+														<p:messages id="mensajes" globalsOnly="true" />
+
+													</div>
+												</div>
+
+
+
+
+
+
+												<div class="login-message-error-container"
+													id="login-message-error-container"></div>
+
+												<p:commandButton name="login" id="login" value="Ingresar"
+													action="#{loginView.login}" update="password mensajes"
+													style="text-shadow: none;"
+													styleClass="waves-effect waves-button waves-float wave-Button-Login">
+													<div id="canvasloader-container"
+														class="display-initial-canvasloader-container">
+														<div id="canvasLoader" style="display: none;">
+															<canvas width="20" height="20"></canvas>
+															<canvas width="20" height="20" style="display: none;"></canvas>
+														</div>
+													</div>
+												</p:commandButton><!-- /waves-button -->
+
+												<p>
+													Para recuperar su contraseña, haga click
+													<h:commandLink value="aquí"
+														onclick="$(document.getElementById('mensajesRecuperar')).css('display','none');PF('dlgRecuperar').show();return false;" />
+												</p>
+
+											</h:form>
+										</div>
+										<footer>
+											<!-- footer -->
+											<span class="tooltip tooltip-effect-4" style="z-index: 0;">
+												<!-- Classic Tooltip --> <span id="tooltip-item"
+												class="tooltip-item">Copyright (2007-
+													${loginView.anioActual}) STR</span> <span id="tooltip-item"
+												class="tooltip-item">Todos los derechos reservados </span>
+											</span>
+											<!-- /Classic Tooltip -->
+										</footer>
+										<!-- /footer -->
+
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+
+		<ui:include src="recuperar.xhtml"></ui:include>
+
+		<p:blockUI id="blkPageLogin" block="panelGeneral"
+			widgetVar="blockPageLogin" styleClass="position_fixed">
+				Procesando...<br />
+			<p:graphicImage name="images/loadingbar.gif" />
+		</p:blockUI>
+
+		<!-- Template Scripts -->
+		<h:outputScript library="js" name="login/admClaro/bootstrap.min.js" />
+		<h:outputScript library="js" name="login/admClaro/waves.min.js" />
+		<h:outputScript library="js" name="login/admClaro/placeholders2.js" />
+
+		<!-- /Template Scripts -->
+		<script>
+			//Se inicia el javascritp de Placeholder2
+			placeholders2();
+		</script>
+		<h:outputScript library="js" name="login/login.js" />
+		<p:ajaxStatus onstart="ocultarBlockPageLogin = true;PF('blockPageLogin').show();" oncomplete="if(ocultarBlockPageLogin){PF('blockPageLogin').hide();}" onerror="PF('blockPageLogin').hide();" />
+	</h:body>
+</ui:composition>
