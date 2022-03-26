@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<h:form id="formArbol" prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	
+			<p:panel id="panelSelUsr" header="Toggleable" toggleable="true"
+				closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panelSelUsrWV" style="margin-bottom:5px">
+				<p:outputPanel id="contSelUsr">
+					<p:scrollPanel id="contenedorDataArbol" mode="native" rendered="#{administracionView.muestraArbol}">
+						<p:panelGrid id="gridContArbol" columns="5"
+							styleClass="vaTopOutputGrid padding2" 
+							columnClasses="tab20percent, tab20percent, tab20percent, tab20percent, tab20percent">
+							<p:outputPanel id="contDT1">
+								<ui:include src="/secure/templates/arbol/arbolNivel1.xhtml" />
+							</p:outputPanel>
+							<p:outputPanel id="contDT2">
+								<ui:include src="/secure/templates/arbol/arbolNivel2.xhtml" />
+							</p:outputPanel>
+							
+							<p:outputPanel id="contDT3">
+								<ui:include src="/secure/templates/arbol/arbolNivel3.xhtml" />
+							</p:outputPanel>
+							
+							<p:outputPanel id="contDT4">
+								<ui:include src="/secure/templates/arbol/arbolNivel4.xhtml" />
+							</p:outputPanel>
+							
+							<p:outputPanel id="contDT5">
+								<ui:include src="/secure/templates/arbol/arbolNivel5.xhtml" />
+							</p:outputPanel>
+						</p:panelGrid>
+					</p:scrollPanel>
+	
+					<p:outputPanel rendered="#{!administracionView.muestraArbol}">
+						<ui:include src="/secure/administracion/resultadoBusquedaCliente.xhtml" />
+					</p:outputPanel>
+				</p:outputPanel>
+	
+				<f:facet name="header">
+					<!-- INCLUSION MENU SELECCION DE USUARIOS -->
+					<ui:include
+						src="/secure/administracion/menuSeleccionDeUsuarios.xhtml" />
+				</f:facet>
+			</p:panel>
+		</h:form>
+	
+		<!-- *************************************************************************************** -->
+		<!-- 							DEFINICION DE PANTALLAS MODALES 							 -->
+		<!-- *************************************************************************************** -->
+		<p:dialog header="Búsqueda de Cliente" id="consultaClienteDialog"
+			widgetVar="consultaClienteDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto" dynamic="true"
+			onHide="PF('consultaClienteDialogWV').content.empty()">
+	
+			<p:outputPanel id="consultaCliente"
+				rendered="#{administracionView.muestraConsultaCliente}">
+				<ui:include src="/secure/administracion/busquedaCliente.xhtml" />
+			</p:outputPanel>
+		</p:dialog>
+	
+		<h:outputScript library="js" name="arbol.js" />
+	</sec:authorize>		
+</ui:composition>

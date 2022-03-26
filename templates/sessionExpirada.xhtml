@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:ajaxExceptionHandler
+		type="javax.faces.application.ViewExpiredException"
+		update="exceptionDialog" onexception="PF('exceptionDialog').show();" />
+	<p:dialog id="exceptionDialog" header="Atención!"
+		widgetVar="exceptionDialog" modal="true" appendTo="@(body)"
+		position="center" resizable="false" closable="false">
+		<p:panel styleClass="panelNoBorder">
+			<h:form id="frmSessionExp" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:panelGrid styleClass="panelNoBorder" style="width:100%">
+					<p:row>
+						<p:column colspan="2" style="text-align:center;">
+							<img src="${loginView.configuracionMayorista.logo}" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column colspan="2" style="text-align:center">
+							<h1 style="font-size: 2em !important;">Session Expirada</h1>
+
+							<p style="font-size: 14px !important;">
+								Vayamos al
+								<p:commandLink action="#{loginView.logout}"
+									style="font-size: 14px !important;"> inicio</p:commandLink>
+								e intentemos desde allí.
+							</p>
+
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+			</h:form>
+		</p:panel>
+	</p:dialog>
+</ui:composition>

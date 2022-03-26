@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formFooter" prependId="false">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		
+		<p:outputPanel id="panelBanner">
+			<div class="marquee" onclick="refreshBanner();">
+				<p style="color: #{usuarioHelper.usuarioSession().colorBanner};">#{usuarioHelper.usuarioSession().banner}</p>
+			</div>
+
+			<p:remoteCommand name="refreshBanner" immediate="true"
+				actionListener="#{puntoVentaView.refrescarBanner}"
+				update="panelBanner" global="false" />
+		</p:outputPanel>
+	</h:form>
+</ui:composition>

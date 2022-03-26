@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:dataTable id="arbolNivel2" widgetVar="dtWidgetVar2" var="obj2"
+			value="#{administracionView.listClientesNivel2}"
+			emptyMessage="Sin datos." lazy="true" rowKey="#{obj2.idCliente}"
+			rows="40" scrollable="true" scrollRows="40" liveScroll="true"
+			scrollHeight="99%" selectionMode="single"
+			selection="#{administracionView.clienteSeleccionado2}"
+			sortMode="single" sortOrder="ASCENDING"
+			styleClass="arbolClass">
+	
+			<f:facet name="header">
+				<div style="margin: auto;">
+					<h:outputText value="Nivel 2" />
+				</div>
+				<div style="font-size: 16px !important;width: 55px;float: right;position: relative;">
+					<p:menuButton id="mnuCfgN2" icon="pi pi-cog"
+						title="#{administracionView.obtenerCampoOrdenamientoArbolTitle(2,'N')}">
+						<p:menuitem value="Id. Cliente"
+							actionListener="#{administracionView.actualizarCampoOrdenamientoArbolN2('idCliente')}"
+							update="arbolNivel2, arbolNivel3, arbolNivel4, arbolNivel5"
+							oncomplete="ArbolFCNS.arbolResize(2);" />
+						<p:menuitem value="Razon Social"
+							actionListener="#{administracionView.actualizarCampoOrdenamientoArbolN2('razonSocial')}"
+							update="arbolNivel2, arbolNivel3, arbolNivel4, arbolNivel5"
+							oncomplete="ArbolFCNS.arbolResize(2);" />
+						<p:menuitem value="Nom. Fantasia"
+							actionListener="#{administracionView.actualizarCampoOrdenamientoArbolN2('nombreFantasia')}"
+							update="arbolNivel2, arbolNivel3, arbolNivel4, arbolNivel5"
+							oncomplete="ArbolFCNS.arbolResize(2);" />
+					</p:menuButton>
+				</div>
+			</f:facet>
+	
+			<p:columns value="#{administracionView.columnasNivel2}" var="column"
+				columnIndexVar="colIndex" sortBy="#{obj2[column.property]}"
+				filterBy="#{obj2[column.property]}">
+	
+				<f:facet name="header">
+					<h:outputText value="#{administracionView.obtenerCampoOrdenamientoArbolTitle(2,'R')}"
+					 title="#{administracionView.obtenerCampoOrdenamientoArbolTitle(2,'N')}"/>
+				</f:facet>
+	
+				<f:facet name="filter">
+				 	<p:inputText onkeypress="if (event.keyCode == 13) {PF('blockPanelGral').show();PF('dtWidgetVar2').filter();PF('blockPanelGral').hide();}" styleClass="ui-column-acg-filter">
+			            		<p:keyFilter regEx="#{administracionView.obtenerPatron(2)}" preventPaste="false" />  
+	        			</p:inputText>
+				</f:facet>
+	
+				<div style="width:16px !important;float:left;">
+					<i class="pi pi-sitemap" style="#{obj2.tipoCliente !=  'P' ? 'background:#F8D888;color:white' : 'display:none'} !important;"></i>
+					<i class="pi pi-circle-on" style="#{obj2.tipoCliente ==  'P' ? administracionView.obtenerColor(obj2.idTipoTerminal) : 'display:none'} !important;" />
+				</div>
+				<h:outputText value="#{obj2.idCliente} - #{obj2.titulo}" />
+			</p:columns>
+	
+			<p:ajax event="filter" listener="#{administracionView.onFilterN2}" oncomplete="ArbolFCNS.arbolResize(2);" global="false"/>
+			
+			<p:ajax event="sort" listener="#{administracionView.onSortN2}" oncomplete="ArbolFCNS.arbolResize(0);"/>
+			
+			<p:ajax event="rowSelect" process="@this"
+				listener="#{administracionView.onRowSelect2}" partialSubmit="true"
+				update="arbolNivel3, arbolNivel4, arbolNivel5" 
+				oncomplete="ArbolFCNS.arbolResize(2);" />
+	
+		</p:dataTable>
+	</sec:authorize>	
+</ui:composition>

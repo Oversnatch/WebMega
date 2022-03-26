@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+<sec:authorize 
+	access="hasAnyAuthority('ROL_PUNTOVENTA')">
+	<h:head>
+		<meta http-equiv="Cache-Control" content="max-age=864000" />
+		<meta name="_csrf" content="${_csrf.token}" />
+		<meta name="_csrf_header" content="${_csrf.headerName}" />
+
+		<title>STR :: <ui:insert name="title">PUNTO DE VENTA</ui:insert></title>
+		<ui:insert name="head1"></ui:insert>
+		
+		<h:outputStylesheet name="primeicons/primeicons.css"
+			library="primefaces" />
+
+		<h:outputStylesheet library="css"
+			name="administracion/header/estilos.css" />
+		<h:outputStylesheet library="css" name="primeflex.css" />
+		<h:outputScript library="js" name="ACGSiteScripts.js" />
+		<h:outputScript library="js" name="calendar_es.js" />
+		<h:outputScript library="js" name="globalScript.js" />
+		<h:outputScript library="js" name="ajaxCSRFCfg.js" />
+	</h:head>
+
+	<h:body id="panelGeneral">
+		<div class="ui-g">
+			<div class="ui-g-12 fondo_gris">
+				<h:form id="formGeneral" prependId="false">
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<ui:remove>
+					<p:growl id="mensajesGeneral" life="5000" showDetail="true"
+						showSummary="true" sticky="true" />
+						</ui:remove>
+				</h:form>
+
+				<div id="headerPpal" class="headerPrincipal">
+					<div class="ui-g container fila">
+						<ui:include
+							src="${usuarioHelper.usuarioSession().pathTemplate}/header.xhtml" />
+
+						<ui:include
+							src="${usuarioHelper.usuarioSession().pathTemplate}/menu.xhtml" />
+					</div>
+				</div>
+
+				<div id="bodyPpal" class="bodyPrincipal">
+					<ui:include src="/secure/templates/sessionExpirada.xhtml" />
+					<div id="contenedorDataAdmin" style="height: calc( 100%);">
+						<!-- DIV ICONOS DE MODULOS -->
+						<h:form id="formMnuIconos" prependId="false">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
+
+							<p:outputPanel id="panelMnuIconos"
+								rendered="#{puntoVentaView.muestraMnuIconos}">
+								<ui:include src="#{puntoVentaView.mnuOpcIconos}" />
+							</p:outputPanel>
+						</h:form>
+
+
+						<!-- DIV DE MODULOS CON FORMATO DE INCLUDE -->
+						<p:outputPanel id="opcAIncluir" style="height: calc( 100%);">
+							<ui:include src="/secure/puntoDeVenta/panelProductos.xhtml" />
+						</p:outputPanel>
+
+						<!-- DIV DE MODULOS CON FORMATO DE INSERT -->
+						<ui:insert name="body"></ui:insert>
+					</div>
+				</div>
+
+				<div id="footerPpal" class="footerPrincipal">
+					<ui:include src="/secure/templates/bannerInferior.xhtml" />
+				</div>
+			</div>
+		</div>
+
+		<!-- styleClass="blockSitio" -->
+		<p:blockUI id="blockGeneral" block="panelGeneral"
+			widgetVar="blockPanelGral" styleClass="position_fixed">
+			Procesando...<br />
+			<p:graphicImage name="images/loadingbar.gif" />
+		</p:blockUI>
+
+		<ui:insert name="status">
+			<p:ajaxStatus onstart="PF('blockPanelGral').show();"
+				oncomplete="PF('blockPanelGral').hide();"
+				onerror="PF('blockPanelGral').hide();"
+				onsuccess="PF('blockPanelGral').hide();" id="globalACGStatus" />
+		</ui:insert>
+
+		<ui:insert name="scriptsACG" />
+
+		<script>
+			$(document).ready(function() {
+				ACGSiteScriptsFCNS.puntoVentaResize();
+			});
+			
+			function accionWindowSize() {
+				ACGSiteScriptsFCNS.puntoVentaResize();
+				//ACGSiteScriptsFCNS.productoResize();
+				ACGSiteScriptsFCNS.monitorPVResize();
+			}
+
+			window.onresize = accionWindowSize;
+			
+		</script>
+	</h:body>
+</sec:authorize>
+</html>
