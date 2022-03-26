@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:dataTable id="resuBusCliDT" widgetVar="resuBusCliDTWV" var="cliente"
+			value="#{administracionView.listResuBusCli}" emptyMessage="Sin datos."
+			lazy="true" rowKey="#{cliente.idCliente}" rows="40" scrollable="true"
+			scrollRows="40" liveScroll="true" selectionMode="single"
+			selection="#{administracionView.clienteSeleccionado1}"
+			sortMode="single" sortBy="#{cliente.idCliente}" sortOrder="ASCENDING"
+			scrollHeight="99%" filterEvent="enter">
+	
+			<p:column headerText="Id. Cliente" style="border-right: 1px solid #c8c8c8 !important;"
+				filterStyle="width:100% !important;" width="80" sortBy="#{cliente.idCliente}">
+				<h:outputText value="#{cliente.idCliente}"/>
+			</p:column>
+	
+			<p:column headerText="Razón Social" style="border-right: 1px solid #c8c8c8 !important;"
+				filterStyle="width:100% !important;" width="180" sortBy="#{cliente.razonSocial}">
+				<h:outputText value="#{cliente.razonSocial}"/>
+			</p:column>
+	
+			<p:column headerText="Nombre Fantasía" style="border-right: 1px solid #c8c8c8 !important;"
+				filterStyle="width:100% !important;" width="180" sortBy="#{cliente.nombreFantasia}">
+				<h:outputText value="#{cliente.nombreFantasia}"/>
+			</p:column>
+	
+			<p:column headerText="Tipo Cliente" style="border-right: 1px solid #c8c8c8 !important;"
+				sortBy="#{cliente.tipoCliente}"
+				width="180">
+	
+				<h:outputText value="Mayorista"
+					rendered="#{cliente.tipoCliente == 'M'}" />
+				<h:outputText value="Distribuidor"
+					rendered="#{cliente.tipoCliente == 'D'}" />
+				<h:outputText value="Pto. Venta"
+					rendered="#{cliente.tipoCliente == 'P'}" />
+				<h:outputText value="NO Identificado"
+					rendered="#{cliente.tipoCliente != 'M' and cliente.tipoCliente != 'D' and cliente.tipoCliente != 'P'}" />
+			</p:column>
+	
+			<p:column headerText="Tipo Terminal" style="border-right: 1px solid #c8c8c8 !important;"
+				sortBy="#{cliente.idTipoTerminal}" width="180">
+				<h:outputText value="#{cliente.descTipoTerminal}" />
+			</p:column>
+	
+			<p:ajax event="rowDblselect" process="@this"
+				listener="#{administracionView.obtenerJerarquiaCliente}" partialSubmit="true"
+				update=":menuSeleccionCliente"/>
+	
+		</p:dataTable>
+	</sec:authorize>
+</ui:composition>

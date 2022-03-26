@@ -1,0 +1,42 @@
+<ui:composition template="/secure/templates/adminTemplate.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<ui:define name="title">Publicidad Web</ui:define>
+	
+		<ui:define name="body">
+			<f:event type="preRenderView" listener="#{mensajesView.cargarPublicidadWeb}"/>
+		
+			<h:form id="formPublicidadWeb" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:panel closable="true" header="Publicidad Web">
+					<div id="panelPublicidadWeb" style="overflow: auto;">
+						<p:editor configuration="" theme="advanced" id="editor" width="500"
+							height="300" viewMode="visual"
+							value="#{mensajesView.publicidadWeb}" useSeamText="false"
+							liveUpdatesEnabled="false">
+						</p:editor>
+						<p:confirmDialog global="true">
+							<p:commandButton value="Si" type="button"
+								onclick="PF('blockPanelGral').show()"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>	
+						<p:commandButton value="Actualizar"
+							actionListener="#{mensajesView.actualizarPublicidadWeb}">
+							<p:confirm header="Confirmacion"
+								message="Esta seguro que desea actualizar la Publicidad?" icon="ui-icon-alert" />
+						</p:commandButton>							
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</sec:authorize>
+</ui:composition>

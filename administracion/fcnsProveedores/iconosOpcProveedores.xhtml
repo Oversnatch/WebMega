@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:outputPanel id="mnuIconos" style="margin-bottom:5px">
+			<p:commandButton icon="prueba-ico" title="Administración Proveedores/Productos y Alarmas de Saldo" actionListener="#{administracionView.navegarFcnsProveedores(1)}"/>
+			<p:commandButton icon="prueba1-ico" title="Administración de Proveedores por Producto y Características" actionListener="#{administracionView.navegarFcnsProveedores(2)}"/>
+			<p:commandButton icon="prueba2-ico" title="Compra de Saldo a Proveedores" actionListener="#{administracionView.navegarFcnsProveedores(3)}"/>
+			<p:commandButton icon="prueba2-ico" title="Conciliación Proveedores" actionListener="#{administracionView.navegarFcnsProveedores(4)}"/>
+		</p:outputPanel>
+	
+		<ui:remove>	
+			<p:submenu label="Proveedores">
+				<p:menuitem
+					value="Administración Proveedores/Productos y Alarmas de Saldo"
+					url="#{usuarioHelper.usuarioSession().pathProject}/secure/shared/administracion/infDepYAdel.xhtml"
+					onclick="PF('blockPanelGral').show()" />
+
+				<p:menuitem
+					value="Administración de Proveedores por Producto y Características"
+					url="#{usuarioHelper.usuarioSession().pathProject}/secure/administracion/acreditSolicitudesBMR.xhtml"
+					onclick="PF('blockPanelGral').show()" />
+
+				<p:menuitem value="Compra de Saldo a Proveedores"
+					url="#{usuarioHelper.usuarioSession().pathProject}/secure/administracion/acreditSolicitudesBMR.xhtml"
+					onclick="PF('blockPanelGral').show()" />
+
+				<p:menuitem value="Conciliación Proveedores"
+					url="#{usuarioHelper.usuarioSession().pathProject}/secure/administracion/acreditSolicitudesBMR.xhtml"
+					onclick="PF('blockPanelGral').show()" />
+
+			</p:submenu>
+		</ui:remove>
+	</sec:authorize>
+</ui:composition>

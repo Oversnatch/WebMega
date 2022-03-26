@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:outputPanel id="mnuIconos">
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-inc-sal-may" title="Incrementar Saldo Mayorista" actionListener="#{administracionView.navegarFcnsAdministracion(1)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-cta-cte" title="Cuenta Corriente" actionListener="#{administracionView.navegarFcnsAdministracion(2)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-sal-wu" title="Reparto de Saldo Western Union" actionListener="#{administracionView.navegarFcnsAdministracion(3)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-sal-pto" title="Reparto de Saldo al Punto" actionListener="#{administracionView.navegarFcnsAdministracion(4)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-mas-sal" title="Reparto Masivo de Saldo" actionListener="#{administracionView.navegarFcnsAdministracion(5)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-dep-sol-adel" title="Informar Depositos y Solicitud de Adelantos" actionListener="#{administracionView.navegarFcnsAdministracion(6)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-acr-dep-ade-sal" title="Acreditar Depositos o Adelanto de Saldo" actionListener="#{administracionView.navegarFcnsAdministracion(7)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-acr-mov-ext" title="Acreditar Movimientos Externos" actionListener="#{administracionView.navegarFcnsAdministracion(8)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-pro-com" title="Productos y Comisiones" actionListener="#{administracionView.navegarFcnsAdministracion(9)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-car-mas" title="Cargas Masivas" actionListener="#{administracionView.navegarFcnsAdministracion(10)}"/>
+		</p:outputPanel>
+	</sec:authorize>
+
+</ui:composition>

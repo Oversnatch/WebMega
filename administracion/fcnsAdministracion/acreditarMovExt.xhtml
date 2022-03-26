@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:panelGrid columns="2">
+			<h:outputText value="Prueba1"/>
+			<h:outputText value="Prueba1"/>
+	
+			<h:outputText value="Prueba1"/>
+			<h:outputText value="Prueba1"/>
+	
+			<h:outputText value="Prueba1"/>
+			<h:outputText value="Prueba1"/>
+	
+			<h:outputText value="Prueba1"/>
+			<h:outputText value="Prueba1"/>
+	
+			<h:outputText value="Prueba1"/>
+			<h:outputText value="Prueba1"/>
+	
+		</p:panelGrid>	
+	</sec:authorize>	
+</ui:composition>

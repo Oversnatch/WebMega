@@ -1,0 +1,215 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:importEnum type="com.americacg.cargavirtual.web.enums.OperacionEnEjecucion"/>
+		  
+		<h:form id="formCRUDUsuario" prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+			<p:panelGrid>
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_nombre" value="Nombre" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText required="true" id="u_nombre" size="20" maxlength="50"
+							value="#{administracionView.usuarioSeleccionado.nombre.value}"
+							style="width:200px" />
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel for="u_apellido" value="Apellido" />
+					</p:column>
+	
+					<p:column colspan="2">
+						<p:inputText id="u_apellido" required="true" size="20"
+							maxlength="50"
+							value="#{administracionView.usuarioSeleccionado.apellido.value}"
+							style="width:200px" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_usuario" value="Usuario" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="u_usuario" size="20" required="true"
+							maxlength="15"
+							value="#{administracionView.usuarioSeleccionado.usuario.value}"
+							style="width:200px" 
+							disabled="#{administracionView.operacion == OperacionEnEjecucion.EDICION}"
+							autocomplete="false"/>
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel for="u_clave" value="Clave" />
+					</p:column>
+	
+					<p:column>
+						<p:password id="u_clave" required="true" size="20" maxlength="15"
+							value="#{administracionView.usuarioSeleccionado.clave.value}"
+							redisplay="true" style="width:200px" autocomplete="false"/>
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_tipodoc" value="Tipo Doc." />
+					</p:column>
+	
+					<p:column>
+						<p:selectOneMenu id="u_tipodoc"
+							value="#{administracionView.usuarioSeleccionado.tipoDocumento.value}"
+							style="width:200px"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemValue="DNI" itemLabel="DNI" />
+							<f:selectItem itemValue="CI" itemLabel="CI" />
+							<f:selectItem itemValue="LE" itemLabel="LE" />
+							<f:selectItem itemValue="LC" itemLabel="LC" />
+						</p:selectOneMenu>
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel for="u_nrodoc" value="Nro Doc." />
+					</p:column>
+	
+					<p:column>
+						<p:inputNumber id="u_nrodoc" required="true" maxValue="9999999999" size="20" maxlength="10" decimalPlaces="0"
+						    thousandSeparator=""
+							value="#{administracionView.usuarioSeleccionado.numeroDocumento.value}"
+							style="width:200px" converter="javax.faces.Integer"/>
+						
+					</p:column>
+					
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_telefono" value="Telefono" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="u_telefono" required="true" size="20"
+							maxlength="20"
+							value="#{administracionView.usuarioSeleccionado.telefono.value}"
+							style="width:200px" />
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel for="u_celular" value="Celular" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="u_celular" size="20" maxlength="20"
+							value="#{administracionView.usuarioSeleccionado.celular.value}"
+							style="width:200px" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_mail" value="Mail" />
+					</p:column>
+	
+					<p:column colspan="3">
+						<p:inputText id="u_mail" size="75" maxlength="50"
+							value="#{administracionView.usuarioSeleccionado.mail.value}"
+							style="width:463px" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel for="u_estado" value="Estado" />
+					</p:column>
+	
+					<p:column colspan="3">
+						<p:selectOneMenu id="u_estado"
+							value="#{administracionView.usuarioSeleccionado.estado.value}"
+							disabled="#{administracionView.usuarioSeleccionado.idUsuario.value == administracionView.usuario.idUsuario}" style="width:200px"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemValue="A" itemLabel="Habilitado" />
+							<f:selectItem itemValue="P" itemLabel="Pendiente" />
+							<f:selectItem itemValue="B" itemLabel="Inhabilitado" />
+						</p:selectOneMenu>
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column colspan="4">
+						<p:selectBooleanCheckbox id="claveBloqueada"
+							value="#{administracionView.usuarioSeleccionado.claveBloqueada.value}"
+							disabled="#{administracionView.usuarioSeleccionado.idUsuario.value == administracionView.usuario.idUsuario}"/>
+	
+				
+						<p:outputLabel for="claveBloqueada" value="Bloquear Clave" style="margin-left: 5px;" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column colspan="4">
+						<p:selectBooleanCheckbox id="cambiarClaveEnProximoIngreso"
+							value="#{administracionView.usuarioSeleccionado.cambiarClaveEnProximoIngreso.value}"
+							disabled="#{administracionView.usuarioSeleccionado.idUsuario.value == administracionView.usuario.idUsuario}" />
+	
+						<p:outputLabel for="cambiarClaveEnProximoIngreso"
+							value="Cambiar Clave en prox. Ingreso"  style="margin-left: 5px;" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column colspan="4">
+						<p:selectBooleanCheckbox id="solicitarCoordenadas"
+							value="#{administracionView.usuarioSeleccionado.usarTarjetaCoordenadas.value}"
+							disabled="#{administracionView.usuarioSeleccionado.idUsuario.value == administracionView.usuario.idUsuario}" />
+							
+						<p:outputLabel for="solicitarCoordenadas"
+							value="Solicitar Coordenadas" style="margin-left: 5px;" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column colspan="4">
+						<p:selectBooleanCheckbox id="u_soloInformes"
+							value="#{administracionView.usuarioSeleccionado.soloInformes.value}"
+							disabled="#{administracionView.usuarioSeleccionado.idUsuario.value == administracionView.usuario.idUsuario}" />
+							
+						<p:outputLabel for="u_soloInformes" value="Solo Informes" style="margin-left: 5px;" />
+					</p:column>
+				</p:row>
+	
+			</p:panelGrid>
+	
+			<p:divider/>
+			
+			<p:commandButton value="Guardar" title="Dar de alta usuario"
+				actionListener="#{administracionView.guardarModificacionUsuario}"
+				process="@form" 
+				oncomplete="if (args &amp;&amp; !args.validationFailed) PF('crudUsuarioDialogWV').hide()"
+				rendered="#{administracionView.operacion == OperacionEnEjecucion.ALTA}"/>
+	
+			<p:commandButton value="Guardar" title="Guardar cambios"
+				actionListener="#{administracionView.guardarModificacionUsuario}"
+				process="@form" 
+				oncomplete="if (args &amp;&amp; !args.validationFailed) PF('crudUsuarioDialogWV').hide()"
+				rendered="#{administracionView.operacion == OperacionEnEjecucion.EDICION}"/>
+	
+			<p:commandButton value="Generar Tarjeta Coordenadas y Enviar"
+				actionListener="#{administracionView.generarTarjetaCoordenadas}"
+				process="@this" 
+				oncomplete="if (args &amp;&amp; !args.validationFailed) PF('crudUsuarioDialogWV').hide()"/>
+				
+			<p:commandButton value="Salir" title="Salir sin guardar cambios"
+				actionListener="#{administracionView.cierraDialogoModificacionUsuario}"
+				process="@this" />
+		</h:form>
+	</sec:authorize>
+</ui:composition>

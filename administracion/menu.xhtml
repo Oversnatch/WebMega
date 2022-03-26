@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<div class="ui-g-12" style="padding-bottom: 0px;padding-left: 3px;">
+			<h:form id="formMenuPpal" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<div class="p-grid">
+					<div class="p-col" style="padding-bottom: 0.2em !important;padding-left: 8px;padding-right: 0px;">
+						<p:tabMenu id="admTabMenu" activeIndex="#{administracionView.indiceMenu}">
+	
+							<p:menuitem value="Administración"
+								actionListener="#{administracionView.activaMenuIconos(0)}" />
+	
+							<p:menuitem value="Usuario"
+								onclick="ACGSiteScriptsFCNS.cierraPanelProducto();PF('panelSelUsrWV').collapse();"
+								actionListener="#{administracionView.navegarMenuIconos(1)}"/>
+	
+							<p:menuitem value="Jerarquia"
+								actionListener="#{administracionView.activaMenuIconos(2)}" />
+	
+							<p:menuitem value="Reportes"
+								onclick="ACGSiteScriptsFCNS.cierraPanelProducto();PF('panelSelUsrWV').collapse();"
+								actionListener="#{administracionView.navegarMenuIconos(3)}"/>
+	
+							<p:menuitem value="Publicidad"
+								onclick="ACGSiteScriptsFCNS.cierraPanelProducto();PF('panelSelUsrWV').collapse();"
+								actionListener="#{administracionView.navegarMenuIconos(4)}"/>
+	
+							<p:menuitem value="Comisiones"
+								actionListener="#{administracionView.activaMenuIconos(5)}" />
+	
+							<p:menuitem value="Gestion de Activos"
+								actionListener="#{administracionView.activaMenuIconos(6)}" />
+	
+							<p:menuitem value="Proveedores"
+								actionListener="#{administracionView.activaMenuIconos(7)}" />
+	
+							<p:menuitem value="Monitoreo"
+								actionListener="#{administracionView.activaMenuIconos(8)}" />
+	
+							<p:menuitem value="Mensajes"
+								actionListener="#{administracionView.activaMenuIconos(9)}" />
+						</p:tabMenu>
+					</div>
+	
+					<div class="p-col-fixed" style="width: 50px;text-align:right;margin-right:5px;padding:0px;padding-right: 0.5em;">
+						<div style="border-bottom: 1px solid #c8c8c8;-moz-border-radius: 0px 0px 3px 0px; -webkit-border-radius: 0px 0px 3px 0px; border-radius: 0px 0px 3px 0px;">
+							<ui:include src="/secure/templates/bntSalir.xhtml" />
+						</div>					
+					</div>
+				</div>
+			</h:form>
+		</div>
+	</sec:authorize>
+</ui:composition>

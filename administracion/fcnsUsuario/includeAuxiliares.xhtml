@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<!-- ###################################################### -->
+		<!-- DEFINICION DE PANTALLAS MODALES -->
+		<!-- ###################################################### -->
+		<p:dialog header="Administración de Usuario para cliente: 
+		    #{administracionView.clienteSeleccionado.idCliente.value} - #{administracionView.clienteSeleccionado.razonSocial.value}" 
+		    id="crudUsuarioDialog"
+			widgetVar="crudUsuarioDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto" dynamic="true"
+			onHide="PF('crudUsuarioDialogWV').content.empty()">
+	
+			<p:outputPanel id="crudUsuario"
+				rendered="#{administracionView.muestraCRUDUsuario}">
+				<ui:include
+					src="/secure/administracion/fcnsUsuario/crudUsuario.xhtml" />
+			</p:outputPanel>
+		</p:dialog>
+		
+		<p:dialog header="Confirmación" id="confirmaEliminacionDialog"
+			widgetVar="confirmaEliminacionDialogWV" modal="true" resizable="false"
+			appendTo="@(body)" closable="false" width="auto">
+	
+			<h:form id="formConfirmacion" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:outputPanel style="margin-bottom: 10px;">
+					<i class="pi pi-exclamation-triangle" style="margin-right: 10px;" />
+					<h:outputText value="Esta seguro de deshabilitar el usuario?" />
+				</p:outputPanel>
+	
+				<p:divider />
+	
+				<p:commandButton icon="ui-icon-check" value="Si"
+					actionListener="#{administracionView.eliminarUsuario}"
+					process="@this"  style="margin-right: 10px;" />
+	
+				<p:commandButton icon="ui-icon-close" value="No"
+					onclick="PF('confirmaEliminacionDialogWV').hide();" />
+			</h:form>
+		</p:dialog>
+	</sec:authorize>
+</ui:composition>

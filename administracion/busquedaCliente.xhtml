@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<h:form id="formConsultaCliente" prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+			<p:panelGrid style="width:100%">
+				<p:row>
+					<p:column>
+						<p:outputLabel value="Tipo Cliente: " for="tiposCliente" />
+					</p:column>
+	
+					<p:column>
+						<p:selectOneMenu id="tiposCliente" style="width:200px;"
+							value="#{administracionView.tipoClienteFlt}"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemLabel="--- Seleccione ---" itemValue="#{null}" />
+							<f:selectItems value="#{administracionView.tiposCliente}"
+								var="tipoCliente" itemLabel="#{tipoCliente.descripcion}"
+								itemValue="#{tipoCliente}" />
+						</p:selectOneMenu>
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel value="Id. Cliente: " for="idCliente" />
+					</p:column>
+	
+					<p:column>
+						<p:inputNumber id="idCliente" inputStyle="width:200px;"
+							value="#{administracionView.idClienteFlt}" decimalPlaces="0"
+							thousandSeparator="" minValue="0" maxValue="9999999999" />
+						<p:message id="mensajeidCliente" for="idCliente" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel value="Tipo terminal: " for="tiposTerminal" />
+					</p:column>
+	
+					<p:column>
+						<p:selectOneMenu id="tiposTerminal" style="width:200px;"
+							value="#{administracionView.tipoTerminalFlt}"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemLabel="--- Seleccione ---" itemValue="#{null}" />
+							<f:selectItems value="#{administracionView.tiposTerminal}"
+								var="tipoTerminal" itemLabel="#{tipoTerminal.descripcion}"
+								itemValue="#{tipoTerminal}" />
+						</p:selectOneMenu>
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel value="Id. Usuario: " for="idUsuario" />
+					</p:column>
+	
+					<p:column>
+						<p:inputNumber id="idUsuario" inputStyle="width:200px;"
+							value="#{administracionView.idUsuarioFlt}" decimalPlaces="0"
+							thousandSeparator="" minValue="0" maxValue="9999999999" />
+						<p:message id="mensajeIdUsuario" for="idUsuario" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel value="Usuario: " for="usuario" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="usuario" style="width:200px;" value="#{administracionView.usuarioFlt}" />
+					</p:column>
+	
+					<p:column style="width:100px">
+						<p:outputLabel value="Id. Entidad: " for="idEntidad" />
+					</p:column>
+	
+					<p:column style="width:270px">
+						<p:inputNumber id="idEntidad" inputStyle="width:200px;" value="#{administracionView.idEntidadFlt}"
+							decimalPlaces="0" thousandSeparator="" minValue="0"
+							maxValue="99999999999" />
+					</p:column>
+				</p:row>	
+				
+							<p:row>
+					<p:column>
+						<p:outputLabel value="Provincia: " for="provincias" />
+					</p:column>
+	
+					<p:column>
+						<p:selectOneMenu id="provincias" style="width:200px;"
+							value="#{administracionView.provinciaFlt}"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemLabel="--- Seleccione ---" itemValue="#{null}" />
+							<f:selectItems value="#{administracionView.provincias}"/>
+	
+							<p:ajax event="change" update="localidades"
+								process="@this"
+								listener="#{administracionView.actualizarProvincia}" />
+						</p:selectOneMenu>
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel value="Localidad: " for="localidades" />
+					</p:column>
+	
+					<p:column>
+						<p:selectOneMenu id="localidades" style="width:200px;"
+							value="#{administracionView.localidadFlt}"
+							filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+							<f:selectItem itemLabel="--- Seleccione ---" itemValue="#{null}" />
+							<f:selectItems value="#{administracionView.localidades}"/>
+						</p:selectOneMenu>
+					</p:column>
+				</p:row>
+				
+				<p:row>
+					<p:column>
+						<p:outputLabel value="Razon Social: " for="razonSocial" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="razonSocial" style="width:200px;"
+							value="#{administracionView.razonSocialFlt}" />
+					</p:column>
+	
+					<p:column>
+						<p:outputLabel value="Nom. Fantasia: " for="nombreFantasia" />
+					</p:column>
+	
+					<p:column>
+						<p:inputText id="nombreFantasia" style="width:200px;"
+							value="#{administracionView.nombreFantasiaFlt}" />
+					</p:column>
+				</p:row>
+	
+				<p:row>
+					<p:column>
+						<p:outputLabel value="CUIT: " for="cuit" />
+					</p:column>
+	
+					<p:column>
+						<p:inputNumber id="cuit" inputStyle="width:200px;" value="#{administracionView.cuitFlt}"
+							decimalPlaces="0" thousandSeparator="" minValue="0"
+							maxValue="99999999999" />
+						<p:message id="mensajeCuit" for="cuit" />
+					</p:column>
+					
+					<p:column style="width:100px">
+						<p:outputLabel value="Id. Aux: " for="idAux" />
+					</p:column>
+	
+					<p:column style="width:200px">
+						<p:inputNumber id="idAux" inputStyle="width:200px;" value="#{administracionView.idAuxFlt}"
+							decimalPlaces="0" thousandSeparator="" minValue="0"
+							maxValue="99999999999" />
+					</p:column>
+				</p:row>
+				
+				<p:row>
+					<p:column style="width:100px">
+						<p:outputLabel value="Id. Aux2: " for="idAux2" />
+					</p:column>
+	
+					<p:column style="width:270px" colspan="3">
+						<p:inputNumber id="idAux2" inputStyle="width:200px;" value="#{administracionView.idAux2Flt}"
+							decimalPlaces="0" thousandSeparator="" minValue="0"
+							maxValue="99999999999" />
+					</p:column>
+				</p:row>
+	
+			</p:panelGrid>
+	
+			<p:divider />
+	
+			<p:commandButton value="Consultar"
+			    actionListener="#{administracionView.procesarBusquedaCliente}"
+				process="@form" style="margin-right: 10px;" />
+	
+			<p:commandButton value="Cancelar"
+				actionListener="#{administracionView.cancelarBusquedaCliente}"
+				process="@this" />
+		</h:form>
+	</sec:authorize>
+</ui:composition>

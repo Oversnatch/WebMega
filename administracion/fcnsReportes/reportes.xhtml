@@ -1,0 +1,349 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+	
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:fieldset legend="Recargas" styleClass="reportes">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte" > 
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(1)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Comisiones</div>
+				</p:commandLink>		
+
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(2)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Transacciones</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(3)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Stock de Pines</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(4)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Reparto de Saldos</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(5)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Compra Prov</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(6)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Resumen TRXs</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(7)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Depositos y Adelantos</div>
+				</p:commandLink>		
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(8)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente != 'P'}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Clientes, Saldos y GeoLocalizacion</div>
+				</p:commandLink>					
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(9)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Inc. Saldo Mayorista</div>
+				</p:commandLink>	
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(10)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Movimientos</div>
+				</p:commandLink>			
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(11)}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Auditorias</div>
+				</p:commandLink>					
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(12)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Cuenta Corriente</div>
+				</p:commandLink>				
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(13)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Ids Puntos Venta</div>
+				</p:commandLink>
+								
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(14)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Rentabilidad</div>
+				</p:commandLink>			
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(15)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Cons. Saldo Autom. Proveedores</div>
+				</p:commandLink>	
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(16)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Switcheo proveedores</div>
+				</p:commandLink>					
+	
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(18)}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Stock de Terminales</div>
+				</p:commandLink>		
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(20)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Inf. Cargas Automaticas</div>
+				</p:commandLink>		
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(22)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Maquinas AutoServ.</div>
+				</p:commandLink>		
+	
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(23)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarSeguros}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Inf. Seguros</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(24)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Estado Proveedores</div>
+				</p:commandLink>
+								
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(25)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Estado Bancos</div>
+				</p:commandLink>	
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(26)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Facturas</div>
+				</p:commandLink>									
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(27)}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Stock de SIMS</div>
+				</p:commandLink>		
+
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(29)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' || administracionView.mostrarReporteComisionesVigentesD}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Comisiones vigentes</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(30)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' || usuarioHelper.usuarioSession().habilitarComprobantesExternos}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Comprobantes Externos</div>
+				</p:commandLink>				
+
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset legend="SUBE" styleClass="reportes" rendered="#{usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(31)}"
+					rendered="#{usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+					<div class="botonReporte ico-inf-sube"></div>
+					<div style="text-align: center;">Stock LGs de SUBE</div>
+				</p:commandLink>
+
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(32)}"
+					rendered="#{usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+					<div class="botonReporte ico-inf-sube"></div>
+					<div style="text-align: center;">SUBE Transacciones</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(33)}"
+					rendered="#{usuarioHelper.usuarioSession().mostrarPantallasDeSube >= 1}">
+					<div class="botonReporte ico-inf-sube"></div>
+					<div style="text-align: center;">SUBE Lotes</div>
+					
+				</p:commandLink>
+	
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset legend="PNet" styleClass="reportes" rendered="#{pNetView.mostrarPantallasDePNet == 1 and usuarioHelper.usuarioSession().habilitarPNet}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(34)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarPNet}">
+					<div class="botonReporte ico-inf-pnet"></div>
+					<div style="text-align: center;">Informe PNet</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+	
+		<p:fieldset legend="WU" styleClass="reportes" rendered="#{usuarioHelper.usuarioSession().habilitarWU}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(35)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarWU}">
+					<div class="botonReporte ico-inf-pf"></div>
+					<div style="text-align: center;">Reparto Saldos WU</div>			
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(36)}"
+					rendered="#{usuarioHelper.usuarioSession().habilitarWU}">
+					<div class="botonReporte ico-inf-pf"></div>
+					<div style="text-align: center;">Informe WU</div>
+				</p:commandLink>
+
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(37)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarWU}">
+					<div class="botonReporte ico-inf-pf"></div>
+					<div style="text-align: center;">Inc. Saldo Mayorista WU</div>
+				</p:commandLink>
+								
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<p:fieldset legend="Pagos Electrónicos" styleClass="reportes" rendered="#{pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}">
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(38)}"
+					rendered="#{pagoElectronicoView.mostrarPantallasDePagosElectronicos == 1}">
+					<div class="botonReporte ico-inf-pago-online"></div>
+					<div style="text-align: center;">Listado de Cobros</div>
+					
+				</p:commandLink>
+			</p:panelGrid>
+		</p:fieldset>
+
+		<p:fieldset legend="Cargas Masivas" styleClass="reportes" >
+			<p:panelGrid columns="12" layout="grid" cellpadding="5"
+				columnClasses="ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte,
+				ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte, ui-panelgrid-cell ui-g-1 ui-md-1 btn-reporte"
+			>
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(17)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Carga de Pines</div>
+				</p:commandLink>	
+			
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(21)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Carga Masiva Depositos</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(28)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M'}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Carga Masiva clientes</div>
+				</p:commandLink>
+				
+				<p:commandLink
+					actionListener="#{administracionView.navegarFcnsReportes(19)}"
+					rendered="#{usuarioHelper.usuarioSession().tipoCliente eq 'M' and usuarioHelper.usuarioSession().habilitarVirtual == 1}">
+					<div class="botonReporte ico-inf"></div>
+					<div style="text-align: center;">Alta Cargas Automaticas</div>
+				</p:commandLink>	
+				
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<script>
+			$('#panelProductos_content').css('overflow', 'auto');
+		</script>	 		
+	</sec:authorize>
+</ui:composition>

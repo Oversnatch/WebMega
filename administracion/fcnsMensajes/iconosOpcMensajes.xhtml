@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:outputPanel id="mnuIconos">
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-inc-sal-may" title="Publicidad WEB" actionListener="#{administracionView.navegarFcnsMensajes(1)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-cta-cte" title="Banner WEB" actionListener="#{administracionView.navegarFcnsMensajes(2)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-sal-wu" title="Banner PC" actionListener="#{administracionView.navegarFcnsMensajes(3)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-sal-pto" title="Banner AutoServicio" actionListener="#{administracionView.navegarFcnsMensajes(4)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-rep-mas-sal" title="Mensaje IVR" actionListener="#{administracionView.navegarFcnsMensajes(5)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-dep-sol-adel" title="Mensaje WAP" actionListener="#{administracionView.navegarFcnsMensajes(6)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-acr-dep-ade-sal" title="Mensaje JAVA" actionListener="#{administracionView.navegarFcnsMensajes(7)}"/>
+			<p:commandButton styleClass="icono-redondo" icon="ico-barra ico-acr-mov-ext" title="Mensaje POS" actionListener="#{administracionView.navegarFcnsMensajes(8)}"/>
+		</p:outputPanel>
+	</sec:authorize>
+
+</ui:composition>

@@ -1,0 +1,53 @@
+<ui:composition template="/secure/templates/adminTemplate.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<ui:define name="title">Banner PC</ui:define>
+	
+		<ui:define name="body">
+			<f:event type="preRenderView" listener="#{mensajesView.cargarBannerPC}"/>
+		
+			<h:form id="formBannerPC" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				
+				<p:panel closable="true" header="Banner PC">
+					<div id="panelBannerPC" style="overflow: auto;">
+						<p:inputTextarea col="10" id="banner_i"
+									styleClass="letraChiq" value="#{mensajesView.bannerWEB}"
+									required="false" cols="100" rows="10" />
+	
+						<p:selectOneMenu id="colorBannerWeb"
+									value="#{mensajesView.colorBannerWeb}"
+									filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}" >
+									<f:selectItem itemValue="blue" itemLabel="Azul" />
+									<f:selectItem itemValue="brown" itemLabel="Marron" />
+									<f:selectItem itemValue="black" itemLabel="Negro" />
+									<f:selectItem itemValue="red" itemLabel="Rojo" />
+									<f:selectItem itemValue="green" itemLabel="Verde" />
+									<f:selectItem itemValue="gray" itemLabel="Gris" />
+								</p:selectOneMenu> <img src="images/pixel_blanco.jpg" width="15" /> 
+								
+						<p:confirmDialog global="true">
+							<p:commandButton value="Si" type="button"
+								onclick="PF('blockPanelGral').show()"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>								
+						<p:commandButton
+							value="Actualizar"
+							actionListener="#{mensajesView.actualizarBannerWeb}">
+							<p:confirm header="Confirmacion"
+								message="Esta seguro que desea actualizar el Banner?" icon="ui-icon-alert" />
+						</p:commandButton>									
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</sec:authorize>
+</ui:composition>

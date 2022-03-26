@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:commandLink id="btnBusquedaAvanzada" title="Busqueda en estructura" style="color: #737373;float: left;padding-top: 2px;"
+			actionListener="#{administracionView.consultarCliente}"
+			onclick="ACGSiteScriptsFCNS.cierraPanelProducto();">
+			<i class="pi pi-search"></i> 
+		</p:commandLink>			
+		<span  style="color: #737373;float: left;padding-top: 1px;padding-left: 9px;">|</span>							
+		<p:breadCrumb id="menuSeleccionCliente">
+			<p:menuitem
+				value="#{usuarioHelper.usuarioSession().idCliente} - #{usuarioHelper.usuarioSession().razonSocial}"
+				onstart="ACGSiteScriptsFCNS.cierraPanelProducto();PF('panelSelUsrWV').expand();"
+				actionListener="#{administracionView.clearSeleccionCliente0}" 
+				title="#{usuarioHelper.usuarioSession().idCliente} - #{usuarioHelper.usuarioSession().razonSocial}" 
+				global="false" onclick="PF('blockPanelGral').show()"/>
+			<p:menuitem style="padding-top: 2px !important;"
+				value="#{administracionView.clienteSeleccionado1.idCliente} - #{administracionView.clienteSeleccionado1.titulo}"
+				actionListener="#{administracionView.seleccionMenuUsuario(1)}"
+				rendered="#{not empty administracionView.clienteSeleccionado1}" 
+				disabled="#{!administracionView.muestraArbol}"/>
+			<p:menuitem style="padding-top: 2px !important;"
+				value="#{administracionView.clienteSeleccionado2.idCliente} - #{administracionView.clienteSeleccionado2.titulo}"
+				actionListener="#{administracionView.seleccionMenuUsuario(2)}"
+				rendered="#{not empty administracionView.clienteSeleccionado2}" 
+				disabled="#{!administracionView.muestraArbol}"/>
+			<p:menuitem style="padding-top: 2px !important;"
+				value="#{administracionView.clienteSeleccionado3.idCliente} - #{administracionView.clienteSeleccionado3.titulo}"
+				actionListener="#{administracionView.seleccionMenuUsuario(3)}"
+				rendered="#{not empty administracionView.clienteSeleccionado3}" 
+				disabled="#{!administracionView.muestraArbol}"/>
+			<p:menuitem style="padding-top: 2px !important;"
+				value="#{administracionView.clienteSeleccionado4.idCliente} - #{administracionView.clienteSeleccionado4.titulo}"
+				actionListener="#{administracionView.seleccionMenuUsuario(4)}"
+				rendered="#{not empty administracionView.clienteSeleccionado4}" 
+				disabled="#{!administracionView.muestraArbol}"/>
+			<p:menuitem style="padding-top: 2px !important;"
+				value="#{administracionView.clienteSeleccionado5.idCliente} - #{administracionView.clienteSeleccionado5.titulo}"
+				rendered="#{not empty administracionView.clienteSeleccionado5}" 
+				disabled="#{!administracionView.muestraArbol}"/>
+		</p:breadCrumb>
+	</sec:authorize>	
+</ui:composition>

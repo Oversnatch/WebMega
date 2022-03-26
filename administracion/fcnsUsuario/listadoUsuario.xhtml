@@ -1,0 +1,144 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyAuthority('ROL_DISTRIBUIDOR', 'ROL_MAYORISTA')">
+		<p:toolbar id="botoneraUsuario">
+			<f:facet name="left">
+				<p:commandButton process="@this" icon="pi pi-user-plus"
+					value="Agregar" id="btnAgregaUsr" action="#{administracionView.abreDialogoNuevoUsuario}"/>
+			</f:facet>
+			<f:facet name="right">
+				<p:commandButton value="Borrar Filtros"
+					onclick="PF('usuariosAdminDTWV').clearFilters()" update="usuariosAdminDT" />
+			</f:facet>
+		</p:toolbar>
+	
+		<p:dataTable id="usuariosAdminDT" widgetVar="usuariosAdminDTWV"
+			var="cabeceraUsuario"
+			value="#{administracionView.listCabeceraUsuarios}"
+			emptyMessage="Sin datos." lazy="true" rows="40" scrollable="true"
+			scrollRows="20" virtualScroll="true" sortMode="single"
+			sortBy="#{cabeceraUsuario.idUsuario}" sortOrder="ASCENDING"
+			scrollHeight="99%" filterEvent="enter" rowIndexVar="usuarioRowIndex"
+			rowHover="true">
+	
+	
+			<p:column headerText="Id. Usuario"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{cabeceraUsuario.idUsuario}"
+				filterStyle="width:100% !important;" width="80"
+				sortBy="#{cabeceraUsuario.idUsuario}">
+				<h:outputText value="#{cabeceraUsuario.idUsuario}"
+					style="float:right" />
+			</p:column>
+	
+			<p:column headerText="Usuario"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{cabeceraUsuario.usuario}"
+				filterStyle="width:100% !important;" width="180"
+				sortBy="#{cabeceraUsuario.usuario}">
+				<h:outputText value="#{cabeceraUsuario.usuario}" />
+			</p:column>
+	
+			<p:column headerText="Nombre"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{cabeceraUsuario.nombre}"
+				filterStyle="width:100% !important;" width="180"
+				sortBy="#{cabeceraUsuario.nombre}">
+				<h:outputText value="#{cabeceraUsuario.nombre}" id="usuarioNombre" />
+			</p:column>
+	
+			<p:column headerText="Apellido"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				filterBy="#{cabeceraUsuario.apellido}"
+				sortBy="#{cabeceraUsuario.apellido}" width="180">
+	
+				<h:outputText value="#{cabeceraUsuario.apellido}"
+					id="usuarioApellido" />
+			</p:column>
+	
+			<p:column headerText="Estado"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				sortBy="#{cabeceraUsuario.estado}" width="180"
+				filterBy="#{cabeceraUsuario.estado}">
+				<f:facet name="filter">
+					<p:selectOneMenu style="width:125px"
+						onchange="PF('usuariosAdminDTWV').filter()"
+						filter="#{selectOneMenuHelper.filter}" filterMatchMode="#{selectOneMenuHelper.filterMatchModeContains}">
+						<f:selectItem itemLabel="Todas" itemValue="" />
+						<f:selectItems value="#{administracionView.estadosCliente}"
+							var="est" itemLabel="#{est.descripcion}" itemValue="#{est}" />
+					</p:selectOneMenu>
+				</f:facet>
+	
+				<p:outputPanel id="usuarioEstado">
+					<h:outputText value="Activo"
+						rendered="#{cabeceraUsuario.estado == 'A'}" />
+					<h:outputText value="Inactivo"
+						rendered="#{cabeceraUsuario.estado == 'B'}" />
+				</p:outputPanel>
+			</p:column>
+	
+			<p:column headerText="Solo Informes"
+				style="border-right: 1px solid #c8c8c8 !important;"
+				sortBy="#{cabeceraUsuario.soloInformes}"
+				filterBy="#{cabeceraUsuario.soloInformes}" width="180">
+				<f:facet name="filter">
+					<p:selectBooleanButton onLabel="Si" offLabel="No" style="width:60px"
+						onchange="PF('usuariosAdminDTWV').filter()" />
+				</f:facet>
+	
+				<p:outputPanel rendered="#{cabeceraUsuario.soloInformes}"
+					style="text-align:center">
+					<i class="pi pi-circle-on" style="color: green" />
+				</p:outputPanel>
+			</p:column>
+	
+			<p:column headerText="Accion" style="text-align: center" width="60">
+				<p:link href="#"
+					onclick="editarUsuario([{name:'idUsuario', value:#{cabeceraUsuario.idUsuario}},{name:'usuarioRowIndex', value:'#{usuarioRowIndex}'}])"
+					title="Modificar Usuario" id="usuarioModificar"
+					style="margin-right: 10px;">
+					<i class="pi pi-user-edit" />
+				</p:link>
+	
+				<p:link href="#"
+					onclick="confirmarEliminaUsuario([{name:'idUsuario', value:#{cabeceraUsuario.idUsuario}},{name:'usuarioRowIndex', value:'#{usuarioRowIndex}'}])"
+					title="Deshabilitar Usuario"
+					disabled="#{cabeceraUsuario.estado == 'B'}" id="usuarioEliminar">
+					<i class="pi pi-times" />
+				</p:link>
+			</p:column>
+	
+			<p:ajax event="filter"
+				oncomplete="ACGSiteScriptsFCNS.resultadoResize();" global="false" />
+		</p:dataTable>
+	
+		<p:confirmDialog global="true">
+			<p:commandButton value="Si" type="button"
+				onclick="PF('blockPanelGral').show()"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	
+	
+		<!-- ###################################################### -->
+		<!-- REMOTE CONTROLS -->
+		<!-- ###################################################### -->
+		<p:remoteCommand name="editarUsuario"
+			action="#{administracionView.abreDialogoModificacionUsuario}" />
+		<p:remoteCommand name="confirmarEliminaUsuario"
+			action="#{administracionView.confirmarEliminaUsuario}" process="@form" />
+	
+	
+		<!-- ###################################################### -->
+		<!-- INCLUSION DE SCRIPTS -->
+		<!-- ###################################################### -->
+		<h:outputScript library="js" name="administracionUsuariosScript.js" />
+	</sec:authorize>
+</ui:composition>
